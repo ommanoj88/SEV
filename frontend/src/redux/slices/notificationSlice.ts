@@ -86,7 +86,7 @@ export const fetchUnreadCount = createAsyncThunk(
 export const markAsRead = createAsyncThunk(
   'notifications/markAsRead',
   async (id: string) => {
-    await notificationService.markAsRead(id);
+    await notificationService.markAsRead(Number(id));
     return id;
   }
 );
@@ -139,7 +139,7 @@ const notificationSlice = createSlice({
         state.alerts = MOCK_ALERTS;
       })
       .addCase(fetchUnreadCount.fulfilled, (state, action) => {
-        state.unreadCount = action.payload;
+        state.unreadCount = action.payload.count;
       })
       .addCase(fetchUnreadCount.rejected, (state, action) => {
         console.warn('[notificationSlice] Failed to fetch unread count:', action.error.message);

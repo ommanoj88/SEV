@@ -358,8 +358,8 @@ const driverSlice = createSlice({
       })
       .addCase(deleteDriver.fulfilled, (state, action) => {
         state.loading = false;
-        state.drivers = state.drivers.filter(d => d.id !== action.payload);
-        if (state.selectedDriver?.id === action.payload) {
+        state.drivers = state.drivers.filter(d => d.id !== String(action.payload));
+        if (state.selectedDriver?.id === String(action.payload)) {
           state.selectedDriver = null;
         }
       })

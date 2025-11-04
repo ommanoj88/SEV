@@ -90,6 +90,7 @@ const MOCK_SESSIONS: ChargingSession[] = [
     startBatteryLevel: 35,
     endBatteryLevel: 95,
     energyDelivered: 24,
+    cost: 0,
     status: ChargingSessionStatus.CHARGING,
     paymentStatus: 'PENDING',
   },
@@ -138,7 +139,7 @@ export const fetchNearestStations = createAsyncThunk(
 
 export const fetchStationsByProvider = createAsyncThunk(
   'charging/fetchStationsByProvider',
-  async (providerId: number) => {
+  async (providerId: string) => {
     return await chargingService.getStationsByProvider(providerId);
   }
 );
@@ -199,7 +200,7 @@ export const startChargingSession = createAsyncThunk(
   async (data: {
     vehicleId: number;
     stationId: number;
-    targetBatteryLevel?: number;
+    startBatteryLevel: number;
   }) => {
     return await chargingService.startSession(data);
   }
@@ -207,8 +208,8 @@ export const startChargingSession = createAsyncThunk(
 
 export const endChargingSession = createAsyncThunk(
   'charging/endSession',
-  async (sessionId: number) => {
-    return await chargingService.endSession(sessionId);
+  async (data: { sessionId: number; endBatteryLevel: number }) => {
+    return await chargingService.endSession(data.sessionId, { endBatteryLevel: data.endBatteryLevel });
   }
 );
 
@@ -241,8 +242,12 @@ export const optimizeChargingRoute = createAsyncThunk(
     origin: { latitude: number; longitude: number };
     destination: { latitude: number; longitude: number };
     vehicleId: number;
+    currentBatteryLevel: number;
+    batteryCapacity: number;
+    preferredStationType?: ChargingStationType;
+    maxDetourDistance?: number;
   }) => {
-    return await chargingService.optimizeRoute(data);
+    return await chargingService.optimizeRoute(data as any);
   }
 );
 
@@ -390,8 +395,8 @@ const chargingSlice = createSlice({
       })
       .addCase(deleteChargingStation.fulfilled, (state, action) => {
         state.loading = false;
-        state.stations = state.stations.filter(s => s.id !== action.payload);
-        if (state.selectedStation?.id === action.payload) {
+        state.stations = state.stations.filter(s => s.id !== String(action.payload));
+        if (state.selectedStation?.id === String(action.payload)) {
           state.selectedStation = null;
         }
       })
