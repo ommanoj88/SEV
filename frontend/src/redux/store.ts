@@ -7,6 +7,8 @@ import maintenanceReducer from './slices/maintenanceSlice';
 import analyticsReducer from './slices/analyticsSlice';
 import notificationReducer from './slices/notificationSlice';
 import billingReducer from './slices/billingSlice';
+import geofenceReducer from './slices/geofenceSlice';
+import tripReducer from './slices/tripSlice';
 
 export const store = configureStore({
   reducer: {
@@ -18,6 +20,8 @@ export const store = configureStore({
     analytics: analyticsReducer,
     notifications: notificationReducer,
     billing: billingReducer,
+    geofences: geofenceReducer,
+    trips: tripReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

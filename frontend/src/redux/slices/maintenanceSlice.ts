@@ -99,7 +99,7 @@ export const createRecord = createAsyncThunk(
 export const updateRecord = createAsyncThunk(
   'maintenance/updateRecord',
   async ({ id, data }: { id: string; data: any }) => {
-    return await maintenanceService.updateRecord(id, data);
+    return await maintenanceService.updateRecord(Number(id), data);
   }
 );
 

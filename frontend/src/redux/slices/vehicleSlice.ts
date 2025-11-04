@@ -109,7 +109,7 @@ export const fetchVehicles = createAsyncThunk(
 export const fetchVehicle = createAsyncThunk(
   'vehicles/fetchVehicle',
   async (id: string) => {
-    return await vehicleService.getVehicle(id);
+    return await vehicleService.getVehicle(Number(id));
   }
 );
 
@@ -123,14 +123,14 @@ export const createVehicle = createAsyncThunk(
 export const updateVehicle = createAsyncThunk(
   'vehicles/updateVehicle',
   async ({ id, data }: { id: string; data: Partial<VehicleFormData> }) => {
-    return await vehicleService.updateVehicle(id, data);
+    return await vehicleService.updateVehicle(Number(id), data);
   }
 );
 
 export const deleteVehicle = createAsyncThunk(
   'vehicles/deleteVehicle',
   async (id: string) => {
-    await vehicleService.deleteVehicle(id);
+    await vehicleService.deleteVehicle(Number(id));
     return id;
   }
 );
@@ -138,7 +138,7 @@ export const deleteVehicle = createAsyncThunk(
 export const fetchVehicleTrips = createAsyncThunk(
   'vehicles/fetchTrips',
   async (vehicleId: string) => {
-    return await tripService.getTrips({ vehicleId });
+    return await tripService.getTripsByVehicle(Number(vehicleId));
   }
 );
 

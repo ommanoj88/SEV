@@ -64,7 +64,7 @@ export const fetchActiveGeofences = createAsyncThunk(
 export const createGeofence = createAsyncThunk(
   'geofences/create',
   async (data: Partial<Geofence>) => {
-    return await geofenceService.createGeofence(data);
+    return await geofenceService.createGeofence(data as any);
   }
 );
 

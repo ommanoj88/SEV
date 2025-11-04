@@ -128,7 +128,9 @@ const ChargingManagementPage: React.FC = () => {
     if (!session.id) return;
     setActionLoading(true);
     try {
-      dispatch(endChargingSession(Number(session.id)) as any);
+      // Use the current battery level as the end battery level if available
+      const endBatteryLevel = session.endBatteryLevel || session.startBatteryLevel || 80;
+      dispatch(endChargingSession({ sessionId: Number(session.id), endBatteryLevel }) as any);
       dispatch(fetchAllSessions(undefined) as any);
     } finally {
       setActionLoading(false);
