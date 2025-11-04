@@ -1,0 +1,17 @@
+
+> ev-fleet-management-frontend@1.0.0 build
+> react-scripts build
+
+Creating an optimized production build...
+Failed to compile.
+
+TS2322: Type 'void' is not assignable to type 'WritableDraft<PaymentMethod> | null'.
+  [0m [90m 361 |[39m       [33m.[39maddCase(setDefaultPaymentMethod[33m.[39mfulfilled[33m,[39m (state[33m,[39m action) [33m=>[39m {
+   [90m 362 |[39m         state[33m.[39mloading [33m=[39m [36mfalse[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 363 |[39m         state[33m.[39mdefaultPaymentMethod [33m=[39m action[33m.[39mpayload[33m;[39m
+   [90m     |[39m         [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 364 |[39m         [90m// Update payment methods to reflect default[39m
+   [90m 365 |[39m         state[33m.[39mpaymentMethods [33m=[39m state[33m.[39mpaymentMethods[33m.[39mmap((pm) [33m=>[39m ({
+   [90m 366 |[39m           [33m...[39mpm[33m,[39m[0m
+
+

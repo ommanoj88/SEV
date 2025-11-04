@@ -1,0 +1,68 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Mapbox styles */
+.mapboxgl-popup-content {
+  padding: 12px !important;
+  border-radius: 8px !important;
+}
+
+.mapboxgl-popup-close-button {
+  font-size: 20px !important;
+  padding: 4px 8px !important;
+}
+
+/* React Toastify custom styles */
+.Toastify__toast {
+  border-radius: 8px !important;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif !important;
+}
+
+.Toastify__toast--success {
+  background-color: #4caf50 !important;
+}
+
+.Toastify__toast--error {
+  background-color: #f44336 !important;
+}
+
+.Toastify__toast--warning {
+  background-color: #ff9800 !important;
+}
+
+.Toastify__toast--info {
+  background-color: #2196f3 !important;
+}

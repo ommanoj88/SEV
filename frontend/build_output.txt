@@ -1,0 +1,17 @@
+
+> ev-fleet-management-frontend@1.0.0 build
+> react-scripts build
+
+Creating an optimized production build...
+Failed to compile.
+
+TS2322: Type 'string' is not assignable to type 'number'.
+  [0m [90m 84 |[39m       dispatch(
+   [90m 85 |[39m         endTrip({
+  [31m[1m>[22m[39m[90m 86 |[39m           tripId[33m:[39m trip[33m.[39mid[33m,[39m
+   [90m    |[39m           [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 87 |[39m           data[33m:[39m {
+   [90m 88 |[39m             endLocation[33m:[39m trip[33m.[39mendLocation [33m||[39m { latitude[33m:[39m [35m0[39m[33m,[39m longitude[33m:[39m [35m0[39m }[33m,[39m
+   [90m 89 |[39m             distance[33m:[39m trip[33m.[39mdistance[33m,[39m[0m
+
+
