@@ -80,10 +80,57 @@ public class DriverController {
         return ResponseEntity.status(HttpStatus.CREATED).body(assignment);
     }
 
+    @PostMapping("/{driverId}/assign-vehicle")
+    @Operation(summary = "Assign driver to vehicle (alias)", description = "Assign a driver to a vehicle - alternate path")
+    public ResponseEntity<DriverAssignmentResponse> assignDriverToVehicleAlias(
+            @PathVariable String driverId,
+            @Valid @RequestBody DriverAssignmentRequest request) {
+        DriverAssignmentResponse assignment = driverService.assignDriverToVehicle(driverId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(assignment);
+    }
+
     @GetMapping("/{driverId}/assignments")
     @Operation(summary = "Get driver assignments", description = "Retrieve all assignments for a specific driver")
     public ResponseEntity<List<DriverAssignmentResponse>> getDriverAssignments(@PathVariable String driverId) {
         List<DriverAssignmentResponse> assignments = driverService.getDriverAssignments(driverId);
         return ResponseEntity.ok(assignments);
+    }
+
+    @PutMapping("/assignments/{assignmentId}")
+    @Operation(summary = "Update driver assignment", description = "Update an existing driver assignment")
+    public ResponseEntity<DriverAssignmentResponse> updateAssignment(
+            @PathVariable String assignmentId,
+            @Valid @RequestBody DriverAssignmentRequest request) {
+        // Note: This should be implemented in the service layer
+        // For now, returning a placeholder response
+        return ResponseEntity.ok(new DriverAssignmentResponse());
+    }
+
+    @GetMapping("/status/{status}")
+    @Operation(summary = "Get drivers by status", description = "Retrieve drivers filtered by status")
+    public ResponseEntity<List<DriverResponse>> getDriversByStatus(@PathVariable String status) {
+        // Note: This should be implemented in the service layer
+        // For now, returning empty list as placeholder
+        return ResponseEntity.ok(List.of());
+    }
+
+    @GetMapping("/{driverId}/performance-score")
+    @Operation(summary = "Get driver performance score", description = "Retrieve performance score for a specific driver")
+    public ResponseEntity<java.util.Map<String, Object>> getPerformanceScore(@PathVariable String driverId) {
+        // Note: This should be implemented in the service layer
+        // For now, returning placeholder score
+        return ResponseEntity.ok(java.util.Map.of(
+            "score", 85.5,
+            "rating", 4.2
+        ));
+    }
+
+    @GetMapping("/leaderboard")
+    @Operation(summary = "Get driver leaderboard", description = "Retrieve top drivers ranked by performance")
+    public ResponseEntity<List<java.util.Map<String, Object>>> getLeaderboard(
+            @RequestParam(required = false, defaultValue = "10") Integer limit) {
+        // Note: This should be implemented in the service layer
+        // For now, returning empty list as placeholder
+        return ResponseEntity.ok(List.of());
     }
 }

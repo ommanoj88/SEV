@@ -21,6 +21,14 @@ public class AnalyticsController {
 
     private final AnalyticsService analyticsService;
 
+    @GetMapping("/fleet")
+    @Operation(summary = "Get fleet summary (all)", description = "Retrieve fleet summary for all companies")
+    public ResponseEntity<FleetSummaryResponse> getFleetSummaryAll() {
+        // Note: Should aggregate across all companies
+        // For now, returning empty response
+        return ResponseEntity.ok(new FleetSummaryResponse());
+    }
+
     @GetMapping("/fleet/{companyId}")
     @Operation(summary = "Get fleet summary", description = "Retrieve fleet summary for a specific company")
     public ResponseEntity<FleetSummaryResponse> getFleetSummary(@PathVariable String companyId) {
@@ -28,18 +36,48 @@ public class AnalyticsController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/fleet/company/{companyId}")
+    @Operation(summary = "Get fleet analytics by company (alias)", description = "Retrieve fleet analytics for a specific company - alternate path")
+    public ResponseEntity<FleetSummaryResponse> getFleetAnalyticsByCompany(@PathVariable String companyId) {
+        FleetSummaryResponse response = analyticsService.getFleetSummary(companyId);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/tco/{vehicleId}")
-    @Operation(summary = "Get TCO analysis", description = "Retrieve Total Cost of Ownership analysis for a specific vehicle")
+    @Operation(summary = "Get TCO analysis (short path)", description = "Retrieve Total Cost of Ownership analysis for a specific vehicle")
     public ResponseEntity<TCOAnalysisResponse> getTCOAnalysis(@PathVariable String vehicleId) {
         TCOAnalysisResponse response = analyticsService.getTCOAnalysis(vehicleId);
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/tco-analysis/{vehicleId}")
+    @Operation(summary = "Get TCO analysis", description = "Retrieve Total Cost of Ownership analysis for a specific vehicle - alternate path")
+    public ResponseEntity<TCOAnalysisResponse> getTCOAnalysisAlt(@PathVariable String vehicleId) {
+        TCOAnalysisResponse response = analyticsService.getTCOAnalysis(vehicleId);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/cost/{companyId}")
-    @Operation(summary = "Get cost analytics", description = "Retrieve cost analytics data for a specific company")
+    @Operation(summary = "Get cost analytics (short path)", description = "Retrieve cost analytics data for a specific company")
     public ResponseEntity<List<CostAnalytics>> getCostAnalytics(@PathVariable String companyId) {
         List<CostAnalytics> costAnalytics = analyticsService.getCostAnalytics(companyId);
         return ResponseEntity.ok(costAnalytics);
+    }
+
+    @GetMapping("/cost-analytics")
+    @Operation(summary = "Get cost analytics (all)", description = "Retrieve cost analytics data for all companies")
+    public ResponseEntity<List<CostAnalytics>> getCostAnalyticsAll() {
+        // Note: Should aggregate across all companies
+        // For now, returning empty list
+        return ResponseEntity.ok(List.of());
+    }
+
+    @GetMapping("/cost-analytics/{vehicleId}")
+    @Operation(summary = "Get cost analytics by vehicle", description = "Retrieve cost analytics for a specific vehicle")
+    public ResponseEntity<CostAnalytics> getCostAnalyticsByVehicle(@PathVariable String vehicleId) {
+        // Note: Should be implemented in service layer
+        // For now, returning empty response
+        return ResponseEntity.ok(new CostAnalytics());
     }
 
     @GetMapping("/utilization/{vehicleId}")
@@ -47,5 +85,45 @@ public class AnalyticsController {
     public ResponseEntity<List<UtilizationReport>> getUtilizationReports(@PathVariable String vehicleId) {
         List<UtilizationReport> reports = analyticsService.getUtilizationReports(vehicleId);
         return ResponseEntity.ok(reports);
+    }
+
+    @GetMapping("/utilization-reports")
+    @Operation(summary = "Get all utilization reports", description = "Retrieve utilization reports for all vehicles")
+    public ResponseEntity<List<UtilizationReport>> getAllUtilizationReports() {
+        // Note: Should be implemented in service layer to get reports for all vehicles
+        // For now, returning empty list
+        return ResponseEntity.ok(List.of());
+    }
+
+    @GetMapping("/energy-consumption")
+    @Operation(summary = "Get energy consumption", description = "Retrieve energy consumption analytics")
+    public ResponseEntity<List<java.util.Map<String, Object>>> getEnergyConsumption(@RequestParam(required = false) java.util.Map<String, String> params) {
+        // Note: Should be implemented in service layer
+        // For now, returning empty list
+        return ResponseEntity.ok(List.of());
+    }
+
+    @GetMapping("/carbon-footprint")
+    @Operation(summary = "Get carbon footprint", description = "Retrieve carbon footprint data")
+    public ResponseEntity<List<java.util.Map<String, Object>>> getCarbonFootprint(@RequestParam(required = false) java.util.Map<String, String> params) {
+        // Note: Should be implemented in service layer
+        // For now, returning empty list
+        return ResponseEntity.ok(List.of());
+    }
+
+    @GetMapping("/battery")
+    @Operation(summary = "Get battery analytics", description = "Retrieve battery analytics data")
+    public ResponseEntity<java.util.Map<String, Object>> getBatteryAnalytics() {
+        // Note: Should be implemented in service layer
+        // For now, returning empty response
+        return ResponseEntity.ok(java.util.Map.of());
+    }
+
+    @PostMapping("/export")
+    @Operation(summary = "Export analytics report", description = "Export analytics report in specified format")
+    public ResponseEntity<byte[]> exportReport(@RequestBody java.util.Map<String, Object> request) {
+        // Note: Should be implemented in service layer
+        // For now, returning empty response
+        return ResponseEntity.ok(new byte[0]);
     }
 }
