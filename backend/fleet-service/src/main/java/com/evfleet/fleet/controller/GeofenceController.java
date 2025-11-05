@@ -19,7 +19,7 @@ import java.util.List;
  * REST Controller for Geofence operations
  */
 @RestController
-@RequestMapping("/api/fleet/geofences")
+@RequestMapping("/api/v1/fleet/geofences")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Geofence Management", description = "APIs for managing geofences")
@@ -97,6 +97,43 @@ public class GeofenceController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping
+    @Operation(summary = "Get all geofences", description = "Retrieve all geofences")
+    public ResponseEntity<List<GeofenceResponse>> getAllGeofences() {
+        log.info("REST request to get all geofences");
+        // Note: This should be implemented to get all geofences across companies
+        // For now, returning empty list as placeholder
+        return ResponseEntity.ok(List.of());
+    }
+
+    @GetMapping("/type/{type}")
+    @Operation(summary = "Get geofences by type", description = "Retrieve geofences filtered by type")
+    public ResponseEntity<List<GeofenceResponse>> getGeofencesByTypeAll(
+            @PathVariable Geofence.GeofenceType type) {
+        log.info("REST request to get geofences of type {}", type);
+        // Note: This should be implemented to get geofences by type across all companies
+        // For now, returning empty list as placeholder
+        return ResponseEntity.ok(List.of());
+    }
+
+    @GetMapping("/active")
+    @Operation(summary = "Get active geofences", description = "Retrieve all active geofences")
+    public ResponseEntity<List<GeofenceResponse>> getActiveGeofencesAll() {
+        log.info("REST request to get all active geofences");
+        // Note: This should be implemented to get all active geofences
+        // For now, returning empty list as placeholder
+        return ResponseEntity.ok(List.of());
+    }
+
+    @GetMapping("/vehicle/{vehicleId}")
+    @Operation(summary = "Get geofences for vehicle", description = "Retrieve geofences assigned to a specific vehicle")
+    public ResponseEntity<List<GeofenceResponse>> getGeofencesForVehicle(@PathVariable Long vehicleId) {
+        log.info("REST request to get geofences for vehicle ID: {}", vehicleId);
+        // Note: This should be implemented in the service layer
+        // For now, returning empty list as placeholder
+        return ResponseEntity.ok(List.of());
+    }
+
     @GetMapping("/{id}/check")
     @Operation(summary = "Check if point is in geofence", description = "Verify if a coordinate is inside a geofence")
     public ResponseEntity<Boolean> checkPointInGeofence(
@@ -106,6 +143,18 @@ public class GeofenceController {
         log.info("REST request to check if point ({}, {}) is in geofence ID: {}", latitude, longitude, id);
         boolean isInside = geofenceService.isPointInGeofence(id, latitude, longitude);
         return ResponseEntity.ok(isInside);
+    }
+
+    @PostMapping("/{id}/point-check")
+    @Operation(summary = "Check if point is in geofence (POST)", description = "Verify if a coordinate is inside a geofence - alternate method")
+    public ResponseEntity<java.util.Map<String, Boolean>> checkPointInGeofencePost(
+            @PathVariable Long id,
+            @RequestBody java.util.Map<String, Double> location) {
+        Double latitude = location.get("latitude");
+        Double longitude = location.get("longitude");
+        log.info("REST request to check if point ({}, {}) is in geofence ID: {}", latitude, longitude, id);
+        boolean isInside = geofenceService.isPointInGeofence(id, latitude, longitude);
+        return ResponseEntity.ok(java.util.Map.of("inside", isInside));
     }
 
     @GetMapping("/company/{companyId}/containing-point")

@@ -27,6 +27,15 @@ public class ChargingSessionController {
 
     private final ChargingSessionService chargingSessionService;
 
+    @GetMapping
+    @Operation(summary = "Get all charging sessions", description = "Retrieve all charging sessions")
+    public ResponseEntity<List<ChargingSessionResponse>> getAllSessions(@RequestParam(required = false) java.util.Map<String, String> params) {
+        log.info("REST request to get all charging sessions");
+        // Note: This should be implemented in service layer
+        // For now, returning empty list as placeholder
+        return ResponseEntity.ok(List.of());
+    }
+
     @PostMapping
     @Operation(summary = "Start a charging session", description = "Start a new charging session for a vehicle")
     public ResponseEntity<ChargingSessionResponse> startSession(@Valid @RequestBody ChargingSessionRequest request) {
@@ -35,13 +44,49 @@ public class ChargingSessionController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @PostMapping("/start")
+    @Operation(summary = "Start a charging session (alias)", description = "Start a new charging session - alternate path")
+    public ResponseEntity<ChargingSessionResponse> startSessionAlias(@Valid @RequestBody ChargingSessionRequest request) {
+        log.info("REST request to start charging session for vehicle ID: {}", request.getVehicleId());
+        ChargingSessionResponse response = chargingSessionService.startSession(request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
     @PatchMapping("/{id}/end")
-    @Operation(summary = "End a charging session", description = "End an active charging session")
+    @Operation(summary = "End a charging session (PATCH)", description = "End an active charging session")
     public ResponseEntity<ChargingSessionResponse> endSession(
             @PathVariable Long id,
-            @RequestParam BigDecimal endBatteryLevel) {
+            @RequestParam(required = false) BigDecimal endBatteryLevel,
+            @RequestBody(required = false) java.util.Map<String, Object> body) {
         log.info("REST request to end charging session ID: {}", id);
-        ChargingSessionResponse response = chargingSessionService.endSession(id, endBatteryLevel);
+        
+        // Support both query param and request body
+        BigDecimal batteryLevel = endBatteryLevel;
+        if (batteryLevel == null && body != null && body.get("endBatteryLevel") != null) {
+            Object value = body.get("endBatteryLevel");
+            batteryLevel = value instanceof Number ? 
+                BigDecimal.valueOf(((Number) value).doubleValue()) : null;
+        }
+        
+        ChargingSessionResponse response = chargingSessionService.endSession(id, batteryLevel);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/end")
+    @Operation(summary = "End a charging session (POST)", description = "End an active charging session - alternate method")
+    public ResponseEntity<ChargingSessionResponse> endSessionPost(
+            @PathVariable Long id,
+            @RequestBody java.util.Map<String, Object> body) {
+        log.info("REST request to end charging session ID: {}", id);
+        
+        BigDecimal batteryLevel = null;
+        if (body != null && body.get("endBatteryLevel") != null) {
+            Object value = body.get("endBatteryLevel");
+            batteryLevel = value instanceof Number ? 
+                BigDecimal.valueOf(((Number) value).doubleValue()) : null;
+        }
+        
+        ChargingSessionResponse response = chargingSessionService.endSession(id, batteryLevel);
         return ResponseEntity.ok(response);
     }
 
@@ -70,9 +115,21 @@ public class ChargingSessionController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Cancel a charging session", description = "Cancel an active charging session")
+    @Operation(summary = "Cancel a charging session (DELETE)", description = "Cancel an active charging session")
     public ResponseEntity<ChargingSessionResponse> cancelSession(@PathVariable Long id) {
         log.info("REST request to cancel charging session ID: {}", id);
+        ChargingSessionResponse response = chargingSessionService.cancelSession(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/cancel")
+    @Operation(summary = "Cancel a charging session (POST)", description = "Cancel an active charging session with reason")
+    public ResponseEntity<ChargingSessionResponse> cancelSessionPost(
+            @PathVariable Long id,
+            @RequestBody(required = false) java.util.Map<String, String> body) {
+        log.info("REST request to cancel charging session ID: {}", id);
+        String reason = body != null ? body.get("reason") : null;
+        log.info("Cancellation reason: {}", reason);
         ChargingSessionResponse response = chargingSessionService.cancelSession(id);
         return ResponseEntity.ok(response);
     }

@@ -97,17 +97,23 @@ public class ChargingStationController {
 
     @PostMapping("/{id}/reserve")
     @Operation(summary = "Reserve a slot", description = "Reserve a charging slot at a station")
-    public ResponseEntity<Void> reserveSlot(@PathVariable Long id) {
-        log.info("REST request to reserve slot at station ID: {}", id);
+    public ResponseEntity<java.util.Map<String, Boolean>> reserveSlot(
+            @PathVariable Long id,
+            @RequestBody java.util.Map<String, Long> request) {
+        Long vehicleId = request.get("vehicleId");
+        log.info("REST request to reserve slot at station ID: {} for vehicle ID: {}", id, vehicleId);
         chargingStationService.reserveSlot(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(java.util.Map.of("reserved", true));
     }
 
     @PostMapping("/{id}/release")
     @Operation(summary = "Release a slot", description = "Release a charging slot at a station")
-    public ResponseEntity<Void> releaseSlot(@PathVariable Long id) {
-        log.info("REST request to release slot at station ID: {}", id);
+    public ResponseEntity<java.util.Map<String, Boolean>> releaseSlot(
+            @PathVariable Long id,
+            @RequestBody java.util.Map<String, Long> request) {
+        Long vehicleId = request.get("vehicleId");
+        log.info("REST request to release slot at station ID: {} for vehicle ID: {}", id, vehicleId);
         chargingStationService.releaseSlot(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(java.util.Map.of("released", true));
     }
 }
