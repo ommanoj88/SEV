@@ -1,6 +1,19 @@
 import React from 'react';
 import { Box, Skeleton, Card, CardContent, Grid } from '@mui/material';
 
+/**
+ * SkeletonLoader Component
+ * 
+ * Provides loading state placeholders with shimmer animation.
+ * 
+ * @interface SkeletonLoaderProps
+ * @property {string} [variant='card'] - Type of skeleton to display:
+ *   - 'card': Card-style skeleton with image and text placeholders
+ *   - 'table': Table-style skeleton with rows
+ *   - 'list': List-style skeleton with avatar and text
+ *   - 'dashboard': Dashboard grid of card skeletons
+ * @property {number} [count=3] - Number of skeleton items to render
+ */
 interface SkeletonLoaderProps {
   variant?: 'card' | 'table' | 'list' | 'dashboard';
   count?: number;

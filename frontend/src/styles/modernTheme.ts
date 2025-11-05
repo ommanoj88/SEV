@@ -1,4 +1,4 @@
-import { createTheme, ThemeOptions, alpha } from '@mui/material/styles';
+import { createTheme, ThemeOptions, alpha, Shadows } from '@mui/material/styles';
 
 /**
  * Modern Enhanced Theme for EV Fleet Management Platform
@@ -201,7 +201,7 @@ const getModernTheme = (mode: 'light' | 'dark') => {
     shape: {
       borderRadius: 12,
     },
-    shadows: mode === 'light' 
+    shadows: (mode === 'light' 
       ? [
           'none',
           '0px 1px 2px rgba(0, 0, 0, 0.05)',
@@ -211,7 +211,7 @@ const getModernTheme = (mode: 'light' | 'dark') => {
           '0px 20px 25px -5px rgba(0, 0, 0, 0.1), 0px 10px 10px -5px rgba(0, 0, 0, 0.04)',
           '0px 25px 50px -12px rgba(0, 0, 0, 0.25)',
           ...Array(18).fill('none'),
-        ] as any
+        ]
       : [
           'none',
           '0px 1px 2px rgba(0, 0, 0, 0.3)',
@@ -221,7 +221,7 @@ const getModernTheme = (mode: 'light' | 'dark') => {
           '0px 20px 25px -5px rgba(0, 0, 0, 0.5), 0px 10px 10px -5px rgba(0, 0, 0, 0.2)',
           '0px 25px 50px -12px rgba(0, 0, 0, 0.6)',
           ...Array(18).fill('none'),
-        ] as any,
+        ]) as Shadows,
     components: {
       MuiCssBaseline: {
         styleOverrides: {

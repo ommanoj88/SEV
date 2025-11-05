@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   Paper,
   InputBase,
@@ -23,6 +23,7 @@ interface SearchBarProps {
   onFilterRemove?: (filter: string) => void;
   autoFocus?: boolean;
   fullWidth?: boolean;
+  debounceMs?: number;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
@@ -33,13 +34,28 @@ const SearchBar: React.FC<SearchBarProps> = ({
   onFilterRemove,
   autoFocus = false,
   fullWidth = true,
+  debounceMs = 300,
 }) => {
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
 
+  // Debounced search handler
+  const debouncedSearch = useCallback(
+    (() => {
+      let timeoutId: NodeJS.Timeout;
+      return (value: string) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          onSearch(value);
+        }, debounceMs);
+      };
+    })(),
+    [onSearch, debounceMs]
+  );
+
   const handleSearch = (value: string) => {
     setQuery(value);
-    onSearch(value);
+    debouncedSearch(value);
   };
 
   const handleClear = () => {
