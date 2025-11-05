@@ -11,6 +11,7 @@ import {
   Box,
   Divider,
   ListItemIcon,
+  Tooltip,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -18,6 +19,8 @@ import {
   AccountCircle,
   Settings,
   Logout,
+  Brightness4,
+  Brightness7,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
@@ -27,9 +30,11 @@ import { APP_NAME } from '../../utils/constants';
 
 interface HeaderProps {
   onMenuClick: () => void;
+  onThemeToggle: () => void;
+  themeMode: 'light' | 'dark';
 }
 
-const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
+const Header: React.FC<HeaderProps> = ({ onMenuClick, onThemeToggle, themeMode }) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
@@ -62,35 +67,105 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   };
 
   return (
-    <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    <AppBar 
+      position="fixed" 
+      sx={{ 
+        zIndex: (theme) => theme.zIndex.drawer + 1,
+      }}
+    >
       <Toolbar>
         <IconButton
           color="inherit"
           edge="start"
           onClick={onMenuClick}
-          sx={{ mr: 2 }}
+          sx={{ 
+            mr: 2,
+            display: { md: 'none' },
+          }}
         >
           <MenuIcon />
         </IconButton>
 
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        <Typography 
+          variant="h6" 
+          component="div" 
+          sx={{ 
+            flexGrow: 1,
+            fontWeight: 700,
+            background: 'linear-gradient(135deg, currentColor 0%, currentColor 100%)',
+            WebkitBackgroundClip: 'text',
+          }}
+        >
           {APP_NAME}
         </Typography>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <IconButton color="inherit" onClick={() => navigate('/notifications')}>
-            <Badge badgeContent={unreadCount} color="error">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
+          <Tooltip title={`Switch to ${themeMode === 'light' ? 'dark' : 'light'} mode`}>
+            <IconButton 
+              color="inherit" 
+              onClick={onThemeToggle}
+              sx={{
+                transition: 'transform 0.3s ease',
+                '&:hover': {
+                  transform: 'rotate(180deg)',
+                },
+              }}
+            >
+              {themeMode === 'light' ? <Brightness4 /> : <Brightness7 />}
+            </IconButton>
+          </Tooltip>
 
-          <IconButton onClick={handleMenuOpen} color="inherit">
-            {user?.profileImageUrl ? (
-              <Avatar src={user.profileImageUrl} sx={{ width: 32, height: 32 }} />
-            ) : (
-              <AccountCircle />
-            )}
-          </IconButton>
+          <Tooltip title="Notifications">
+            <IconButton 
+              color="inherit" 
+              onClick={() => navigate('/notifications')}
+              sx={{
+                transition: 'transform 0.2s ease',
+                '&:hover': {
+                  transform: 'scale(1.1)',
+                },
+              }}
+            >
+              <Badge 
+                badgeContent={unreadCount} 
+                color="error"
+                sx={{
+                  '& .MuiBadge-badge': {
+                    animation: unreadCount > 0 ? 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' : 'none',
+                  },
+                }}
+              >
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Account">
+            <IconButton 
+              onClick={handleMenuOpen} 
+              color="inherit"
+              sx={{
+                transition: 'transform 0.2s ease',
+                '&:hover': {
+                  transform: 'scale(1.05)',
+                },
+              }}
+            >
+              {user?.profileImageUrl ? (
+                <Avatar 
+                  src={user.profileImageUrl} 
+                  sx={{ 
+                    width: 36, 
+                    height: 36,
+                    border: '2px solid',
+                    borderColor: 'background.paper',
+                  }} 
+                />
+              ) : (
+                <AccountCircle sx={{ fontSize: 36 }} />
+              )}
+            </IconButton>
+          </Tooltip>
 
           <Menu
             anchorEl={anchorEl}
@@ -98,32 +173,52 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             onClose={handleMenuClose}
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            PaperProps={{
+              sx: {
+                mt: 1.5,
+                minWidth: 220,
+                borderRadius: 2,
+              },
+            }}
           >
-            <Box sx={{ px: 2, py: 1 }}>
+            <Box sx={{ px: 2, py: 1.5 }}>
               <Typography variant="subtitle1" fontWeight={600}>
                 {user?.firstName} {user?.lastName}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                 {user?.email}
               </Typography>
             </Box>
             <Divider />
-            <MenuItem onClick={handleProfile}>
+            <MenuItem 
+              onClick={handleProfile}
+              sx={{ py: 1.5, gap: 1.5 }}
+            >
               <ListItemIcon>
                 <AccountCircle fontSize="small" />
               </ListItemIcon>
               Profile
             </MenuItem>
-            <MenuItem onClick={handleSettings}>
+            <MenuItem 
+              onClick={handleSettings}
+              sx={{ py: 1.5, gap: 1.5 }}
+            >
               <ListItemIcon>
                 <Settings fontSize="small" />
               </ListItemIcon>
               Settings
             </MenuItem>
             <Divider />
-            <MenuItem onClick={handleLogout}>
+            <MenuItem 
+              onClick={handleLogout}
+              sx={{ 
+                py: 1.5, 
+                gap: 1.5,
+                color: 'error.main',
+              }}
+            >
               <ListItemIcon>
-                <Logout fontSize="small" />
+                <Logout fontSize="small" color="error" />
               </ListItemIcon>
               Logout
             </MenuItem>

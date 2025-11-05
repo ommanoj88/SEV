@@ -7,7 +7,6 @@ import {
   TCOAnalysis,
   CarbonFootprint,
   BatteryAnalytics,
-  TimeRangeFilter,
 } from '../types';
 
 /**

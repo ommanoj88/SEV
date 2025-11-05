@@ -11,8 +11,9 @@ import {
   Alert,
   InputAdornment,
   IconButton,
+  alpha,
 } from '@mui/material';
-import { Visibility, VisibilityOff, Google as GoogleIcon } from '@mui/icons-material';
+import { Visibility, VisibilityOff, Google as GoogleIcon, Email, Lock } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -66,19 +67,81 @@ const Login: React.FC = () => {
       alignItems="center"
       justifyContent="center"
       minHeight="100vh"
-      sx={{ backgroundColor: 'background.default', p: 2 }}
+      sx={{ 
+        background: (theme) => 
+          theme.palette.mode === 'light'
+            ? `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.05)} 0%, ${alpha(theme.palette.secondary.main, 0.05)} 100%)`
+            : `linear-gradient(135deg, ${alpha(theme.palette.primary.dark, 0.2)} 0%, ${alpha(theme.palette.secondary.dark, 0.2)} 100%)`,
+        p: 2,
+        position: 'relative',
+        overflow: 'hidden',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: '-50%',
+          right: '-10%',
+          width: '600px',
+          height: '600px',
+          borderRadius: '50%',
+          background: (theme) => alpha(theme.palette.primary.main, 0.1),
+          filter: 'blur(80px)',
+        },
+        '&::after': {
+          content: '""',
+          position: 'absolute',
+          bottom: '-50%',
+          left: '-10%',
+          width: '500px',
+          height: '500px',
+          borderRadius: '50%',
+          background: (theme) => alpha(theme.palette.secondary.main, 0.1),
+          filter: 'blur(80px)',
+        },
+      }}
     >
-      <Card sx={{ maxWidth: 450, width: '100%' }}>
+      <Card 
+        sx={{ 
+          maxWidth: 480, 
+          width: '100%',
+          position: 'relative',
+          zIndex: 1,
+          backdropFilter: 'blur(10px)',
+          background: (theme) => 
+            theme.palette.mode === 'light'
+              ? alpha(theme.palette.background.paper, 0.9)
+              : alpha(theme.palette.background.paper, 0.8),
+        }}
+        className="fade-in"
+      >
         <CardContent sx={{ p: 4 }}>
-          <Typography variant="h4" align="center" gutterBottom fontWeight={600}>
-            Welcome Back
-          </Typography>
-          <Typography variant="body2" align="center" color="text.secondary" paragraph>
-            Sign in to your EV Fleet Management account
-          </Typography>
+          <Box textAlign="center" mb={4}>
+            <Typography 
+              variant="h3" 
+              gutterBottom 
+              fontWeight={800}
+              sx={{
+                background: (theme) => 
+                  `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              Welcome Back
+            </Typography>
+            <Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>
+              Sign in to your EV Fleet Management account
+            </Typography>
+          </Box>
 
           {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
+            <Alert 
+              severity="error" 
+              sx={{ 
+                mb: 3,
+                borderRadius: 2,
+              }}
+            >
               {error}
             </Alert>
           )}
@@ -93,6 +156,14 @@ const Login: React.FC = () => {
               error={!!errors.email}
               helperText={errors.email?.message}
               disabled={loading}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Email color="action" />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{ mb: 2 }}
             />
 
             <TextField
@@ -105,11 +176,17 @@ const Login: React.FC = () => {
               helperText={errors.password?.message}
               disabled={loading}
               InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Lock color="action" />
+                  </InputAdornment>
+                ),
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
                       onClick={() => setShowPassword(!showPassword)}
                       edge="end"
+                      tabIndex={-1}
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
@@ -118,13 +195,20 @@ const Login: React.FC = () => {
               }}
             />
 
-            <Box textAlign="right" mt={1} mb={2}>
+            <Box textAlign="right" mt={1} mb={3}>
               <Link
                 component="button"
                 type="button"
                 variant="body2"
                 onClick={() => navigate('/forgot-password')}
-                sx={{ textDecoration: 'none' }}
+                sx={{ 
+                  textDecoration: 'none',
+                  fontWeight: 600,
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    textDecoration: 'underline',
+                  },
+                }}
               >
                 Forgot password?
               </Link>
@@ -136,12 +220,27 @@ const Login: React.FC = () => {
               size="large"
               type="submit"
               disabled={loading}
-              sx={{ mb: 2 }}
+              sx={{ 
+                mb: 2,
+                py: 1.5,
+                fontWeight: 700,
+                fontSize: '1rem',
+                background: (theme) => 
+                  `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+                '&:hover': {
+                  background: (theme) => 
+                    `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
+                },
+              }}
             >
               {loading ? <LoadingSpinner size={24} /> : 'Sign In'}
             </Button>
 
-            <Divider sx={{ my: 2 }}>OR</Divider>
+            <Divider sx={{ my: 3 }}>
+              <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                OR
+              </Typography>
+            </Divider>
 
             <Button
               fullWidth
@@ -150,23 +249,40 @@ const Login: React.FC = () => {
               startIcon={<GoogleIcon />}
               onClick={handleGoogleLogin}
               disabled={loading}
-              sx={{ mb: 2 }}
+              sx={{ 
+                mb: 3,
+                py: 1.5,
+                fontWeight: 600,
+                borderWidth: 2,
+                '&:hover': {
+                  borderWidth: 2,
+                },
+              }}
             >
               Continue with Google
             </Button>
 
-            <Typography variant="body2" align="center" color="text.secondary">
-              Don't have an account?{' '}
+            <Box textAlign="center">
+              <Typography variant="body2" color="text.secondary" component="span">
+                Don't have an account?{' '}
+              </Typography>
               <Link
                 component="button"
                 type="button"
                 variant="body2"
                 onClick={() => navigate('/register')}
-                sx={{ textDecoration: 'none', fontWeight: 600 }}
+                sx={{ 
+                  textDecoration: 'none',
+                  fontWeight: 700,
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    textDecoration: 'underline',
+                  },
+                }}
               >
                 Sign Up
               </Link>
-            </Typography>
+            </Box>
           </Box>
         </CardContent>
       </Card>

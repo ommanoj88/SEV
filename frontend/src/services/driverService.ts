@@ -1,5 +1,5 @@
 import { apiClient } from './api';
-import { Driver, DriverFormData, DriverBehavior, DriverAttendance, DriverLeaderboard } from '../types';
+import { Driver, DriverFormData, DriverBehavior, DriverLeaderboard } from '../types';
 
 /**
  * Driver Service

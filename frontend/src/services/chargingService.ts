@@ -2,7 +2,6 @@ import { apiClient } from './api';
 import {
   ChargingStation,
   ChargingSession,
-  ChargingSchedule,
   RouteOptimization,
   OptimizedRoute,
 } from '../types';
