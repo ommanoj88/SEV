@@ -4,7 +4,7 @@ import { ThemeProvider, CssBaseline, Box } from '@mui/material';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from './hooks/useAuth';
-import getTheme from './styles/theme';
+import getModernTheme from './styles/modernTheme';
 import './styles/global.css';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import Header from './components/common/Header';
@@ -15,12 +15,23 @@ import LoadingSpinner from './components/common/LoadingSpinner';
 const App: React.FC = () => {
   const { isAuthenticated, loading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [themeMode] = useState<'light' | 'dark'>('light');
+  
+  // Get system preference for dark mode
+  const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const [themeMode, setThemeMode] = useState<'light' | 'dark'>(
+    localStorage.getItem('themeMode') as 'light' | 'dark' || (prefersDarkMode ? 'dark' : 'light')
+  );
 
-  const theme = useMemo(() => getTheme(themeMode), [themeMode]);
+  const theme = useMemo(() => getModernTheme(themeMode), [themeMode]);
 
   const handleSidebarToggle = () => {
     setSidebarOpen(!sidebarOpen);
+  };
+
+  const handleThemeToggle = () => {
+    const newMode = themeMode === 'light' ? 'dark' : 'light';
+    setThemeMode(newMode);
+    localStorage.setItem('themeMode', newMode);
   };
 
   if (loading) {
@@ -39,7 +50,11 @@ const App: React.FC = () => {
         <BrowserRouter>
           {isAuthenticated ? (
             <Box sx={{ display: 'flex' }}>
-              <Header onMenuClick={handleSidebarToggle} />
+              <Header 
+                onMenuClick={handleSidebarToggle} 
+                onThemeToggle={handleThemeToggle}
+                themeMode={themeMode}
+              />
               <Sidebar open={sidebarOpen} onClose={handleSidebarToggle} />
               <Box
                 component="main"
@@ -48,6 +63,7 @@ const App: React.FC = () => {
                   p: 3,
                   width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
                   mt: 8,
+                  minHeight: '100vh',
                 }}
               >
                 <AppRoutes />
@@ -66,6 +82,7 @@ const App: React.FC = () => {
             pauseOnFocusLoss
             draggable
             pauseOnHover
+            theme={themeMode}
           />
         </BrowserRouter>
       </ThemeProvider>

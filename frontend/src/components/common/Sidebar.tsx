@@ -9,6 +9,8 @@ import {
   Toolbar,
   Divider,
   Box,
+  Typography,
+  alpha,
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
@@ -23,7 +25,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const DRAWER_WIDTH = 240;
+const DRAWER_WIDTH = 260;
 
 interface SidebarProps {
   open: boolean;
@@ -38,6 +40,9 @@ const menuItems = [
   { text: 'Maintenance', icon: <MaintenanceIcon />, path: '/maintenance' },
   { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
   { text: 'Billing', icon: <BillingIcon />, path: '/billing' },
+];
+
+const bottomMenuItems = [
   { text: 'Profile', icon: <ProfileIcon />, path: '/profile' },
   { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
 ];
@@ -52,39 +57,143 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
   };
 
   const drawer = (
-    <Box>
-      <Toolbar />
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Toolbar>
+        <Box sx={{ py: 1 }}>
+          <Typography 
+            variant="h6" 
+            fontWeight={700}
+            sx={{
+              background: (theme) => 
+                `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${alpha(theme.palette.primary.main, 0.7)} 100%)`,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            EV Fleet
+          </Typography>
+          <Typography variant="caption" color="text.secondary" fontWeight={600}>
+            Management Platform
+          </Typography>
+        </Box>
+      </Toolbar>
       <Divider />
-      <List>
-        {menuItems.map((item) => {
-          const isActive = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
-          return (
-            <ListItem key={item.text} disablePadding>
-              <ListItemButton
-                selected={isActive}
-                onClick={() => handleNavigation(item.path)}
-                sx={{
-                  '&.Mui-selected': {
-                    backgroundColor: 'primary.main',
-                    color: 'primary.contrastText',
+      
+      <Box sx={{ flexGrow: 1, overflowY: 'auto', py: 1 }}>
+        <List>
+          {menuItems.map((item) => {
+            const isActive = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
+            return (
+              <ListItem key={item.text} disablePadding>
+                <ListItemButton
+                  selected={isActive}
+                  onClick={() => handleNavigation(item.path)}
+                  sx={{
+                    mx: 1,
+                    borderRadius: 2,
+                    minHeight: 48,
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                    '&.Mui-selected': {
+                      background: (theme) => 
+                        `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.12)} 0%, ${alpha(theme.palette.primary.main, 0.08)} 100%)`,
+                      color: 'primary.main',
+                      fontWeight: 600,
+                      '&:hover': {
+                        background: (theme) => 
+                          `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.18)} 0%, ${alpha(theme.palette.primary.main, 0.12)} 100%)`,
+                      },
+                      '& .MuiListItemIcon-root': {
+                        color: 'primary.main',
+                      },
+                      '&::before': {
+                        content: '""',
+                        position: 'absolute',
+                        left: 0,
+                        top: '20%',
+                        bottom: '20%',
+                        width: '4px',
+                        borderRadius: '0 4px 4px 0',
+                        backgroundColor: 'primary.main',
+                      },
+                    },
                     '&:hover': {
-                      backgroundColor: 'primary.dark',
+                      backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.04),
+                      transform: 'translateX(4px)',
                     },
-                    '& .MuiListItemIcon-root': {
-                      color: 'primary.contrastText',
+                  }}
+                >
+                  <ListItemIcon 
+                    sx={{ 
+                      color: isActive ? 'primary.main' : 'text.secondary',
+                      minWidth: 40,
+                      transition: 'transform 0.2s ease',
+                      '.Mui-selected &': {
+                        transform: 'scale(1.1)',
+                      },
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary={item.text}
+                    primaryTypographyProps={{
+                      fontWeight: isActive ? 600 : 500,
+                      fontSize: '0.938rem',
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
+        </List>
+      </Box>
+
+      <Divider />
+      
+      <Box sx={{ py: 1 }}>
+        <List>
+          {bottomMenuItems.map((item) => {
+            const isActive = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
+            return (
+              <ListItem key={item.text} disablePadding>
+                <ListItemButton
+                  selected={isActive}
+                  onClick={() => handleNavigation(item.path)}
+                  sx={{
+                    mx: 1,
+                    borderRadius: 2,
+                    minHeight: 48,
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                    '&.Mui-selected': {
+                      background: (theme) => 
+                        `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.12)} 0%, ${alpha(theme.palette.primary.main, 0.08)} 100%)`,
+                      color: 'primary.main',
+                      '& .MuiListItemIcon-root': {
+                        color: 'primary.main',
+                      },
                     },
-                  },
-                }}
-              >
-                <ListItemIcon sx={{ color: isActive ? 'inherit' : 'text.secondary' }}>
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText primary={item.text} />
-              </ListItemButton>
-            </ListItem>
-          );
-        })}
-      </List>
+                    '&:hover': {
+                      backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.04),
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ color: isActive ? 'primary.main' : 'text.secondary', minWidth: 40 }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary={item.text}
+                    primaryTypographyProps={{
+                      fontWeight: isActive ? 600 : 500,
+                      fontSize: '0.938rem',
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
+        </List>
+      </Box>
     </Box>
   );
 
@@ -112,9 +221,9 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
         open={open}
         onClose={onClose}
         ModalProps={{
-          keepMounted: true, // Better mobile performance
-          disableEnforceFocus: true, // Prevent aria-hidden focus issues
-          disableRestoreFocus: true, // Prevent focus restoration conflicts
+          keepMounted: true,
+          disableEnforceFocus: true,
+          disableRestoreFocus: true,
         }}
         sx={{
           display: { xs: 'block', md: 'none' },

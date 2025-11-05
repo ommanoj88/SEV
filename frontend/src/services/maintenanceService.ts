@@ -4,7 +4,6 @@ import {
   BatteryHealthRecord,
   MaintenanceSchedule,
   ServiceReminder,
-  MaintenanceFormData,
 } from '../types';
 
 /**

@@ -3,7 +3,6 @@ import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Paper, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useAppSelector } from '../../redux/hooks';
 
 const BatteryHealth: React.FC = () => {
   const theme = useTheme();

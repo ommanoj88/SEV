@@ -1,5 +1,5 @@
 import { apiClient } from './api';
-import { Trip, TripStatus } from '../types';
+import { Trip } from '../types';
 
 /**
  * Trip Service
