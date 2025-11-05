@@ -195,19 +195,20 @@ public class BillingServiceImpl implements BillingService {
     @Override
     @Transactional
     public void setDefaultPaymentMethod(String companyId, String paymentMethodId) {
-        // First, unset all defaults for this company
+        // Get all payment methods for this company
         List<PaymentMethod> methods = paymentMethodRepository.findByCompanyId(companyId);
-        methods.forEach(method -> {
-            method.setIsDefault(false);
-            paymentMethodRepository.save(method);
-        });
+        
+        // Update all methods in memory
+        methods.forEach(method -> method.setIsDefault(false));
         
         // Set the new default
-        Optional<PaymentMethod> method = paymentMethodRepository.findById(paymentMethodId);
-        method.ifPresent(pm -> {
-            pm.setIsDefault(true);
-            paymentMethodRepository.save(pm);
-        });
+        Optional<PaymentMethod> selectedMethod = methods.stream()
+                .filter(m -> m.getId().equals(paymentMethodId))
+                .findFirst();
+        selectedMethod.ifPresent(pm -> pm.setIsDefault(true));
+        
+        // Save all in one batch
+        paymentMethodRepository.saveAll(methods);
     }
 
     @Override

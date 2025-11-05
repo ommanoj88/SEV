@@ -26,8 +26,9 @@ public class BillingController {
 
     private final BillingService billingService;
     
+    // TODO: Extract company ID from authentication context in production
     // For demo purposes, using a default company ID
-    // In production, this would be extracted from authentication context
+    // In production, this should be extracted from JWT token or authenticated user session
     private static final String DEFAULT_COMPANY_ID = "COMP001";
 
     // ========== SUBSCRIPTION MANAGEMENT ==========

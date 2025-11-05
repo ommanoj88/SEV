@@ -42,7 +42,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         // Try to find as schedule first
         Optional<MaintenanceSchedule> schedule = maintenanceScheduleRepository.findById(id);
         if (schedule.isPresent()) {
-            List<ServiceHistory> histories = serviceHistoryRepository.findByVehicleId(schedule.get().getVehicleId());
+            List<ServiceHistory> histories = serviceHistoryRepository.findByVehicleIdOrderByServiceDateDesc(schedule.get().getVehicleId());
             return Optional.of(createRecord(schedule.get(), histories.isEmpty() ? null : histories.get(0)));
         }
         
@@ -87,7 +87,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     public ServiceHistory updateServiceHistory(String id, ServiceHistory serviceHistory) {
         Optional<ServiceHistory> existing = serviceHistoryRepository.findById(id);
         if (existing.isEmpty()) {
-            throw new RuntimeException("Service history not found with id: " + id);
+            throw new IllegalArgumentException("Service history not found with id: " + id);
         }
         serviceHistory.setId(id);
         return serviceHistoryRepository.save(serviceHistory);
@@ -139,7 +139,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     public MaintenanceSchedule updateMaintenanceSchedule(String id, MaintenanceSchedule schedule) {
         Optional<MaintenanceSchedule> existing = maintenanceScheduleRepository.findById(id);
         if (existing.isEmpty()) {
-            throw new RuntimeException("Maintenance schedule not found with id: " + id);
+            throw new IllegalArgumentException("Maintenance schedule not found with id: " + id);
         }
         schedule.setId(id);
         return maintenanceScheduleRepository.save(schedule);
