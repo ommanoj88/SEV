@@ -23943,7 +23943,7 @@ def test_mega_ab_testing_scenarios() -> TestSuite:
                     "users": random.randint(500, 50000),
                     "conversions": random.randint(50, 30000),
                     "revenue": random.uniform(5000, 300000)
-                } for j in range(random.randint(1, 3))
+                }
             ],
             "metrics": {
                 "primaryMetric": random.choice([
