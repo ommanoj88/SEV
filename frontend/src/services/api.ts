@@ -11,6 +11,12 @@ declare module 'axios' {
       silent404?: boolean;
     };
   }
+  export interface AxiosRequestConfig {
+    metadata?: {
+      skipErrorToast?: boolean;
+      silent404?: boolean;
+    };
+  }
 }
 
 // Create Axios instance
@@ -130,21 +136,31 @@ export default api;
 
 // Helper functions for making requests
 export const apiClient = {
-  get: <T>(url: string, params?: any, options?: { silent404?: boolean }) =>
-    api.get<T>(url, { 
+  get: async <T = any>(url: string, params?: any, options?: { silent404?: boolean }): Promise<T> => {
+    const response = await api.get<T>(url, { 
       params,
       metadata: { silent404: options?.silent404 }
-    }).then((res) => res.data),
+    });
+    return response.data;
+  },
 
-  post: <T>(url: string, data?: any) =>
-    api.post<T>(url, data).then((res) => res.data),
+  post: async <T = any>(url: string, data?: any): Promise<T> => {
+    const response = await api.post<T>(url, data);
+    return response.data;
+  },
 
-  put: <T>(url: string, data?: any) =>
-    api.put<T>(url, data).then((res) => res.data),
+  put: async <T = any>(url: string, data?: any): Promise<T> => {
+    const response = await api.put<T>(url, data);
+    return response.data;
+  },
 
-  patch: <T>(url: string, data?: any) =>
-    api.patch<T>(url, data).then((res) => res.data),
+  patch: async <T = any>(url: string, data?: any): Promise<T> => {
+    const response = await api.patch<T>(url, data);
+    return response.data;
+  },
 
-  delete: <T>(url: string) =>
-    api.delete<T>(url).then((res) => res.data),
+  delete: async <T = any>(url: string): Promise<T> => {
+    const response = await api.delete<T>(url);
+    return response.data;
+  },
 };
