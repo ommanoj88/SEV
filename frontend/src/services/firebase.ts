@@ -30,6 +30,11 @@ const googleProvider = new GoogleAuthProvider();
 // Configure provider to reduce popup-related issues
 // The 'select_account' prompt ensures user actively selects account,
 // reducing issues with popup blocking and COOP policy enforcement
+//
+// Note: You may see COOP warnings in the console during popup auth:
+// "Cross-Origin-Opener-Policy policy would block the window.closed call"
+// These are non-functional warnings from Firebase SDK's internal checks
+// and can be safely ignored. See: frontend/COOP_WARNINGS.md for details.
 googleProvider.setCustomParameters({
   prompt: 'select_account'
 });

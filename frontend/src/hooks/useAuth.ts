@@ -14,8 +14,15 @@ export const useAuth = () => {
   const lastFirebaseUid = useRef<string | null>(null);
   const retryCountRef = useRef(0);
   const maxRetries = 3;
+  const hasInitializedRef = useRef(false);
 
   useEffect(() => {
+    // Ensure we only set up the listener once
+    if (hasInitializedRef.current) {
+      return;
+    }
+    hasInitializedRef.current = true;
+
     const unsubscribe = firebaseAuth.onAuthStateChanged(async (firebaseUser) => {
       // Prevent infinite loops - only process if UID changed
       if (firebaseUser && firebaseUser.uid === lastFirebaseUid.current) {
@@ -134,8 +141,12 @@ export const useAuth = () => {
       }
     });
 
-    return () => unsubscribe();
-  }, [dispatch]);
+    return () => {
+      hasInitializedRef.current = false;
+      unsubscribe();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   return auth;
 };
