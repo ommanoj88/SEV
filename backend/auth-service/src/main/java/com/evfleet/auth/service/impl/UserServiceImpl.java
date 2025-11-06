@@ -245,16 +245,24 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public AuthResponse syncUser(RegisterRequest request) {
-        log.info("Syncing Firebase user with database: {}", request.getEmail());
+        log.info("=== SYNC USER STARTED === Email: {}, Firebase UID: {}", 
+                request.getEmail(), request.getFirebaseUid());
 
         // Try to find user by Firebase UID first (already synced)
         var existingUserByFirebaseUid = userRepository.findByFirebaseUid(request.getFirebaseUid());
         if (existingUserByFirebaseUid.isPresent()) {
-            log.info("User already synced with Firebase UID: {}", request.getFirebaseUid());
-            UserResponse userResponse = UserResponse.fromUser(existingUserByFirebaseUid.get());
+            User user = existingUserByFirebaseUid.get();
+            log.info("✓ User found by Firebase UID - User ID: {}, Email: {}", 
+                    user.getId(), user.getEmail());
+            
+            // Update last login
+            user.setLastLogin(LocalDateTime.now());
+            userRepository.save(user);
+            
+            UserResponse userResponse = UserResponse.fromUser(user);
             return AuthResponse.builder()
                     .success(true)
-                    .message("User already synced")
+                    .message("User already exists in database")
                     .user(userResponse)
                     .build();
         }
@@ -262,31 +270,36 @@ public class UserServiceImpl implements UserService {
         // Check if user exists by email (email/password registration, now trying Google login)
         var existingUserByEmail = userRepository.findByEmail(request.getEmail());
         if (existingUserByEmail.isPresent()) {
-            log.info("Updating existing user with Firebase UID: {}", request.getEmail());
             User user = existingUserByEmail.get();
+            log.info("✓ User found by email (linking Firebase account) - User ID: {}, Email: {}", 
+                    user.getId(), user.getEmail());
 
             // Update their Firebase UID to link their email/password account with Google
             user.setFirebaseUid(request.getFirebaseUid());
-            if (request.getName() != null) {
+            if (request.getName() != null && !request.getName().isBlank()) {
                 user.setName(request.getName());
             }
-            if (request.getPhone() != null) {
+            if (request.getPhone() != null && !request.getPhone().isBlank()) {
                 user.setPhone(request.getPhone());
             }
+            user.setLastLogin(LocalDateTime.now());
 
             User updatedUser = userRepository.save(user);
-            log.info("User updated with Firebase UID successfully: {}", updatedUser.getId());
+            log.info("✓ User updated with Firebase UID - User ID: {}", updatedUser.getId());
 
             UserResponse userResponse = UserResponse.fromUser(updatedUser);
             return AuthResponse.builder()
                     .success(true)
-                    .message("User synced successfully")
+                    .message("User account linked with Firebase successfully")
                     .user(userResponse)
                     .build();
         }
 
         // User doesn't exist, create new user
-        log.info("Creating new user from Firebase data: {}", request.getEmail());
-        return registerUser(request);
+        log.info("✗ User not found in database - Creating new user for email: {}", request.getEmail());
+        AuthResponse response = registerUser(request);
+        log.info("=== SYNC USER COMPLETED === New user created with ID: {}", 
+                response.getUser().getId());
+        return response;
     }
 }
