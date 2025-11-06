@@ -130,10 +130,10 @@ export default api;
 
 // Helper functions for making requests
 export const apiClient = {
-  get: <T>(url: string, params?: any) =>
+  get: <T>(url: string, params?: any, options?: { silent404?: boolean }) =>
     api.get<T>(url, { 
       params,
-      metadata: { silent404: url.includes('/auth/me') } // Suppress 404 toasts for user fetch
+      metadata: { silent404: options?.silent404 }
     }).then((res) => res.data),
 
   post: <T>(url: string, data?: any) =>

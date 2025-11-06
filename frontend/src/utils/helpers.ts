@@ -325,13 +325,23 @@ export const pluralizeWithCount = (count: number, singular: string, plural?: str
  * Extract a display name from an email address
  * Takes the part before @ and capitalizes it
  * @param email - The email address
- * @returns A formatted display name
+ * @returns A formatted display name, or 'User' if email is invalid
  */
 export const getNameFromEmail = (email: string): string => {
+  // Handle edge cases
+  if (!email || typeof email !== 'string' || !email.includes('@')) {
+    return 'User';
+  }
+  
   const username = email.split('@')[0];
+  if (!username) {
+    return 'User';
+  }
+  
   // Capitalize first letter and replace dots/underscores with spaces
   return username
     .split(/[._]/)
+    .filter(part => part.length > 0) // Remove empty parts
     .map(part => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
+    .join(' ') || 'User'; // Fallback if all parts were empty
 };
