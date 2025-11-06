@@ -310,3 +310,12 @@ export const generateId = (): string => {
 export const isOnline = (): boolean => {
   return navigator.onLine;
 };
+
+// Text Helpers
+export const pluralize = (count: number, singular: string, plural?: string): string => {
+  return count === 1 ? singular : (plural || `${singular}s`);
+};
+
+export const pluralizeWithCount = (count: number, singular: string, plural?: string): string => {
+  return `${count} ${pluralize(count, singular, plural)}`;
+};

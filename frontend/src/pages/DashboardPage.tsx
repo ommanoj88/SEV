@@ -6,6 +6,7 @@ import { fetchAlerts, selectAlerts } from '../redux/slices/notificationSlice';
 import FleetSummaryCard from '../components/dashboard/FleetSummaryCard';
 import { Battery80, TrendingUp, Warning, DirectionsCar } from '@mui/icons-material';
 import { formatNumber, formatPercentage } from '../utils/formatters';
+import { pluralizeWithCount } from '../utils/helpers';
 import { FleetAnalytics } from '../types';
 
 const DashboardPage: React.FC = () => {
@@ -193,7 +194,7 @@ const DashboardPage: React.FC = () => {
                   </Typography>
                   {criticalAlerts.length > 0 && (
                     <Typography variant="caption" color="error.dark" fontWeight={500}>
-                      {criticalAlerts.length} critical alert{criticalAlerts.length !== 1 ? 's' : ''} require attention
+                      {pluralizeWithCount(criticalAlerts.length, 'critical alert')} require attention
                     </Typography>
                   )}
                 </CardContent>

@@ -140,20 +140,25 @@ def get_process_on_port(port: int) -> Optional[str]:
             check=False
         )
         if result.returncode == 0 and result.stdout.strip():
-            return result.stdout.strip()
+            pids = result.stdout.strip().split('\n')
+            return pids[0] if pids else None
         
         # Fallback to netstat (cross-platform)
-        result = subprocess.run(
-            ['netstat', '-ano'],
-            capture_output=True,
-            text=True,
-            check=False
-        )
-        for line in result.stdout.split('\n'):
-            if f':{port}' in line and 'LISTENING' in line:
-                parts = line.split()
-                if parts:
-                    return parts[-1]
+        if sys.platform == 'win32':
+            result = subprocess.run(
+                ['netstat', '-ano'],
+                capture_output=True,
+                text=True,
+                check=False
+            )
+            for line in result.stdout.split('\n'):
+                if f':{port}' in line and 'LISTENING' in line:
+                    parts = line.split()
+                    if parts:
+                        pid = parts[-1].strip()
+                        # Validate PID is numeric
+                        if pid.isdigit():
+                            return pid
     except Exception:
         pass
     return None
@@ -164,6 +169,11 @@ def kill_port(port: int):
     pid = get_process_on_port(port)
     if pid:
         try:
+            # Validate PID is numeric
+            if not pid.isdigit():
+                print_warning(f"Invalid PID format for port {port}: {pid}")
+                return False
+                
             print_info(f"Killing process {pid} on port {port}")
             if sys.platform == 'win32':
                 subprocess.run(['taskkill', '/F', '/PID', pid], check=False)

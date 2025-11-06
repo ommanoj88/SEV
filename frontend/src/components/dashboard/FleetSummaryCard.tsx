@@ -61,8 +61,8 @@ const FleetSummaryCard: React.FC<FleetSummaryCardProps> = ({ analytics }) => {
         </Box>
 
         <Grid container spacing={2}>
-          {statusItems.map((item) => (
-            <Grid item xs={12} sm={6} md={4} lg={2.4} key={item.label}>
+          {statusItems.map((item, index) => (
+            <Grid item xs={12} sm={6} md={4} lg={2} xl={2} key={item.label}>
               <Box 
                 sx={{ 
                   p: 2, 
