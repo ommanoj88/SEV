@@ -13,7 +13,7 @@ import AppRoutes from './routes';
 import LoadingSpinner from './components/common/LoadingSpinner';
 
 const App: React.FC = () => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
   // Get system preference for dark mode
@@ -43,12 +43,15 @@ const App: React.FC = () => {
     );
   }
 
+  // Only show authenticated UI if both Firebase user and backend user exist
+  const isFullyAuthenticated = isAuthenticated && user !== null;
+
   return (
     <ErrorBoundary>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <BrowserRouter>
-          {isAuthenticated ? (
+          {isFullyAuthenticated ? (
             <Box sx={{ display: 'flex' }}>
               <Header 
                 onMenuClick={handleSidebarToggle} 
