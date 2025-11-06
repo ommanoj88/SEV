@@ -1,27 +1,6 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
-  postgres:
-    image: postgres:15-alpine
-    container_name: evfleet-postgres
-    environment:
-      POSTGRES_USER: evfleet
-      POSTGRES_PASSWORD: evfleet123
-      POSTGRES_MULTIPLE_DATABASES: auth_db,fleet_db,charging_db,maintenance_db,driver_db,analytics_db,notification_db,billing_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./postgres/init-multiple-databases.sh:/docker-entrypoint-initdb.d/init-multiple-databases.sh
-    networks:
-      - evfleet-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U evfleet"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   # Redis Cache
   redis:
     image: redis:7-alpine
@@ -121,10 +100,12 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_CLOUD_CONFIG_ENABLED=false
       - FIREBASE_CONFIG_FILE=/app/firebase-credentials.json
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/evfleet_auth
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_REDIS_HOST=redis
     depends_on:
       eureka-server:
-        condition: service_healthy
-      postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -151,10 +132,13 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_CLOUD_CONFIG_ENABLED=false
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/evfleet_fleet
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_REDIS_HOST=redis
     depends_on:
       eureka-server:
-        condition: service_healthy
-      postgres:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
@@ -181,10 +165,13 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_CLOUD_CONFIG_ENABLED=false
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/evfleet_charging
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_REDIS_HOST=redis
     depends_on:
       eureka-server:
-        condition: service_healthy
-      postgres:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
@@ -211,10 +198,13 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_CLOUD_CONFIG_ENABLED=false
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/evfleet_maintenance
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_REDIS_HOST=redis
     depends_on:
       eureka-server:
-        condition: service_healthy
-      postgres:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
@@ -241,10 +231,13 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_CLOUD_CONFIG_ENABLED=false
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/evfleet_driver
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_REDIS_HOST=redis
     depends_on:
       eureka-server:
-        condition: service_healthy
-      postgres:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
@@ -271,10 +264,13 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_CLOUD_CONFIG_ENABLED=false
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/evfleet_analytics
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_REDIS_HOST=redis
     depends_on:
       eureka-server:
-        condition: service_healthy
-      postgres:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
@@ -301,10 +297,13 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_CLOUD_CONFIG_ENABLED=false
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/evfleet_notification
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_REDIS_HOST=redis
     depends_on:
       eureka-server:
-        condition: service_healthy
-      postgres:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
@@ -331,10 +330,13 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_CLOUD_CONFIG_ENABLED=false
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/evfleet_billing
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_REDIS_HOST=redis
     depends_on:
       eureka-server:
-        condition: service_healthy
-      postgres:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
@@ -373,6 +375,5 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data:
   redis_data:
   rabbitmq_data:
