@@ -51,13 +51,12 @@ PORTS = {
     'analytics': [8086],
     'notification': [8087],
     'billing': [8088],
-    'postgres': [5432],
     'redis': [6379],
     'rabbitmq': [5672, 15672],
 }
 
 # Service definitions in dependency order
-INFRASTRUCTURE_SERVICES = ['postgres', 'redis', 'rabbitmq']
+INFRASTRUCTURE_SERVICES = ['redis', 'rabbitmq']  # postgres runs on host machine
 DISCOVERY_SERVICES = ['eureka-server']
 GATEWAY_SERVICES = ['api-gateway']
 BUSINESS_SERVICES = [
