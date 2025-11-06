@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { setFirebaseUser, fetchCurrentUser, selectAuth } from '../redux/slices/authSlice';
+import { setFirebaseUser, fetchCurrentUser, selectAuth, logout } from '../redux/slices/authSlice';
 import { firebaseAuth } from '../services/firebase';
 import authService from '../services/authService';
 import { toast } from 'react-toastify';
@@ -35,11 +35,13 @@ export const useAuth = () => {
 
         // Check retry limit to prevent infinite loops
         if (retryCountRef.current >= maxRetries) {
-          console.error('[useAuth] Max retries reached. Backend may be down. Please refresh the page.');
-          toast.warning('Backend services are unavailable. Running in offline mode. Some features may be limited.', {
-            autoClose: 10000,
-            toastId: 'backend-unavailable'
+          console.error('[useAuth] Max retries reached. Backend sync required but unavailable.');
+          toast.error('Unable to connect to backend services. Please ensure the backend is running and try again.', {
+            autoClose: false,
+            toastId: 'backend-sync-required'
           });
+          // Log out user from Firebase since backend sync is required
+          await dispatch(logout());
           return;
         }
 
@@ -48,9 +50,10 @@ export const useAuth = () => {
           retryCountRef.current += 1;
 
           await dispatch(fetchCurrentUser()).unwrap();
-          console.log('[useAuth] User fetched successfully');
+          console.log('[useAuth] User fetched successfully from backend');
           retryCountRef.current = 0; // Reset on success
-          toast.dismiss('backend-unavailable'); // Dismiss offline warning if shown
+          toast.dismiss('backend-unavailable');
+          toast.dismiss('backend-sync-required');
         } catch (error: any) {
           // Check if it's a 503 Service Unavailable error
           if (error?.response?.status === 503 || error?.code === 'ERR_BAD_RESPONSE') {
@@ -66,40 +69,56 @@ export const useAuth = () => {
               console.log('[useAuth] User fetched after retry');
               retryCountRef.current = 0; // Reset on success
               toast.dismiss('backend-unavailable');
+              toast.dismiss('backend-sync-required');
             } catch (retryError) {
-              console.error('[useAuth] Retry failed. Backend still unavailable.');
-              toast.warning('Backend services are temporarily unavailable. Some features may be limited.', {
-                autoClose: 8000,
-                toastId: 'backend-retry-failed'
+              console.error('[useAuth] Retry failed. Backend sync is required but unavailable.');
+              toast.error('Backend services are required for authentication. Please ensure services are running.', {
+                autoClose: false,
+                toastId: 'backend-sync-required'
               });
+              // Log out user from Firebase since backend sync is required
+              await dispatch(logout());
             }
-          } else {
+          } else if (error?.response?.status === 404) {
             // User doesn't exist in backend, try to sync from Firebase
             console.log('[useAuth] User not found in backend, syncing from Firebase...');
             try {
               await authService.syncUser(firebaseUser);
-              console.log('[useAuth] Sync completed, retrying fetch...');
+              console.log('[useAuth] User synced to backend, retrying fetch...');
               // Retry fetching user after sync
               await dispatch(fetchCurrentUser()).unwrap();
-              console.log('[useAuth] User fetched after sync');
+              console.log('[useAuth] User fetched after sync - authentication complete');
               retryCountRef.current = 0; // Reset on success
               toast.dismiss('backend-unavailable');
-              toast.dismiss('backend-retry-failed');
+              toast.dismiss('backend-sync-required');
+              toast.success('Account synced successfully!', {
+                autoClose: 3000,
+              });
             } catch (syncError: any) {
               if (syncError?.response?.status === 503) {
-                console.error('[useAuth] Cannot sync - backend unavailable (503). Please wait for services to start.');
-                toast.warning('Backend services are starting up. Please wait...', {
-                  autoClose: 8000,
-                  toastId: 'backend-starting'
+                console.error('[useAuth] Cannot sync - backend unavailable (503).');
+                toast.error('Backend services are required but unavailable. Please ensure services are running.', {
+                  autoClose: false,
+                  toastId: 'backend-sync-required'
                 });
               } else {
-                console.error('[useAuth] Error syncing user:', syncError);
-                toast.info('You are signed in with Firebase. Backend sync pending...', {
-                  autoClose: 5000,
-                  toastId: 'firebase-only-login'
+                console.error('[useAuth] Error syncing user to backend:', syncError);
+                toast.error('Failed to sync your account with backend database. Authentication requires backend sync.', {
+                  autoClose: false,
+                  toastId: 'backend-sync-failed'
                 });
               }
+              // Log out user from Firebase since backend sync is required
+              await dispatch(logout());
             }
+          } else {
+            // Other errors - still require backend sync
+            console.error('[useAuth] Unexpected error during backend sync:', error);
+            toast.error('Authentication requires backend database sync. Please contact support.', {
+              autoClose: false,
+              toastId: 'backend-sync-error'
+            });
+            await dispatch(logout());
           }
         } finally {
           syncingRef.current = false;
@@ -107,6 +126,10 @@ export const useAuth = () => {
       } else {
         // User logged out, reset retry counter
         retryCountRef.current = 0;
+        toast.dismiss('backend-unavailable');
+        toast.dismiss('backend-sync-required');
+        toast.dismiss('backend-sync-failed');
+        toast.dismiss('backend-sync-error');
       }
     });
 
