@@ -27,7 +27,9 @@ try {
 
 // Google Auth Provider
 const googleProvider = new GoogleAuthProvider();
-// Reduce COOP-related popup issues
+// Configure provider to reduce popup-related issues
+// The 'select_account' prompt ensures user actively selects account,
+// reducing issues with popup blocking and COOP policy enforcement
 googleProvider.setCustomParameters({
   prompt: 'select_account'
 });

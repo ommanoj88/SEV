@@ -7,14 +7,16 @@ import reportWebVitals from './reportWebVitals';
 
 // Suppress COOP warnings from Firebase popup authentication
 // These are expected when using Firebase Google sign-in and don't affect functionality
+// Only suppress the specific Firebase COOP warning to avoid hiding other errors
 if (process.env.NODE_ENV === 'production') {
   const originalError = console.error;
   console.error = (...args: any[]) => {
     if (
       typeof args[0] === 'string' &&
-      args[0].includes('Cross-Origin-Opener-Policy')
+      (args[0].includes('Cross-Origin-Opener-Policy policy would block the window.closed call') ||
+       args[0].includes('popup.ts'))
     ) {
-      return; // Suppress COOP warnings
+      return; // Suppress Firebase COOP warnings only
     }
     originalError.apply(console, args);
   };

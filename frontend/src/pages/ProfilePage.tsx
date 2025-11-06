@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { useAuth } from '../hooks/useAuth';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { getNameFromEmail } from '../utils/helpers';
 
 export const ProfilePage: React.FC = () => {
   const { user, firebaseUser, isAuthenticated } = useAuth();
@@ -41,7 +42,7 @@ export const ProfilePage: React.FC = () => {
       // Use Firebase user data when backend data is not available
       setFormData({
         email: firebaseUser.email || '',
-        name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || '',
+        name: firebaseUser.displayName || getNameFromEmail(firebaseUser.email || ''),
         phone: firebaseUser.phoneNumber || '',
         company: '',
         role: 'User',

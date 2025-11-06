@@ -319,3 +319,19 @@ export const pluralize = (count: number, singular: string, plural?: string): str
 export const pluralizeWithCount = (count: number, singular: string, plural?: string): string => {
   return `${count} ${pluralize(count, singular, plural)}`;
 };
+
+// User Helpers
+/**
+ * Extract a display name from an email address
+ * Takes the part before @ and capitalizes it
+ * @param email - The email address
+ * @returns A formatted display name
+ */
+export const getNameFromEmail = (email: string): string => {
+  const username = email.split('@')[0];
+  // Capitalize first letter and replace dots/underscores with spaces
+  return username
+    .split(/[._]/)
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+};

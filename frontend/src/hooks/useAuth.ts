@@ -37,7 +37,7 @@ export const useAuth = () => {
         if (retryCountRef.current >= maxRetries) {
           console.error('[useAuth] Max retries reached. Backend may be down. Please refresh the page.');
           toast.warning('Backend services are unavailable. Running in offline mode. Some features may be limited.', {
-            autoClose: false,
+            autoClose: 10000,
             toastId: 'backend-unavailable'
           });
           return;

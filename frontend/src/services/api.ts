@@ -3,6 +3,16 @@ import { API_BASE_URL, ERROR_MESSAGES } from '../utils/constants';
 import { getAuth } from 'firebase/auth';
 import { toast } from 'react-toastify';
 
+// Extend AxiosRequestConfig to include custom metadata
+declare module 'axios' {
+  export interface InternalAxiosRequestConfig {
+    metadata?: {
+      skipErrorToast?: boolean;
+      silent404?: boolean;
+    };
+  }
+}
+
 // Create Axios instance
 const api: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -81,8 +91,8 @@ api.interceptors.response.use(
           break;
 
         case 404:
-          // Don't show toast for 404s on user fetch (expected during sync)
-          if (!originalRequest.url?.includes('/auth/me')) {
+          // Check metadata to skip toast for expected 404s (e.g., during user sync)
+          if (!originalRequest.metadata?.silent404) {
             toast.error(data?.message || ERROR_MESSAGES.NOT_FOUND, { toastId: 'not-found' });
           }
           break;
@@ -121,7 +131,10 @@ export default api;
 // Helper functions for making requests
 export const apiClient = {
   get: <T>(url: string, params?: any) =>
-    api.get<T>(url, { params }).then((res) => res.data),
+    api.get<T>(url, { 
+      params,
+      metadata: { silent404: url.includes('/auth/me') } // Suppress 404 toasts for user fetch
+    }).then((res) => res.data),
 
   post: <T>(url: string, data?: any) =>
     api.post<T>(url, data).then((res) => res.data),
