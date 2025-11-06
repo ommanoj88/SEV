@@ -6,6 +6,7 @@ import { fetchAlerts, selectAlerts } from '../redux/slices/notificationSlice';
 import FleetSummaryCard from '../components/dashboard/FleetSummaryCard';
 import { Battery80, TrendingUp, Warning, DirectionsCar } from '@mui/icons-material';
 import { formatNumber, formatPercentage } from '../utils/formatters';
+import { pluralizeWithCount } from '../utils/helpers';
 import { FleetAnalytics } from '../types';
 
 const DashboardPage: React.FC = () => {
@@ -55,53 +56,48 @@ const DashboardPage: React.FC = () => {
     <Card 
       className="fade-in"
       sx={{
-        position: 'relative',
-        overflow: 'hidden',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          width: '100px',
-          height: '100px',
-          borderRadius: '50%',
-          background: (theme) => alpha(color, 0.1),
-          transform: 'translate(30%, -30%)',
+        height: '100%',
+        background: (theme) => theme.palette.background.paper,
+        border: (theme) => `1px solid ${theme.palette.divider}`,
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        '&:hover': {
+          borderColor: alpha(color, 0.5),
+          boxShadow: (theme) => `0 8px 24px ${alpha(color, 0.15)}`,
         },
       }}
     >
-      <CardContent>
-        <Box display="flex" alignItems="center" gap={1.5} mb={2}>
+      <CardContent sx={{ p: 2.5 }}>
+        <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={2}>
+          <Typography variant="subtitle2" color="text.secondary" fontWeight={500} textTransform="uppercase" letterSpacing="0.05em">
+            {title}
+          </Typography>
           <Box 
             sx={{ 
               color,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: 48,
-              height: 48,
+              width: 40,
+              height: 40,
               borderRadius: 2,
               background: (theme) => alpha(color, 0.1),
             }}
           >
             {icon}
           </Box>
-          <Typography variant="subtitle2" color="text.secondary" fontWeight={600}>
-            {title}
-          </Typography>
         </Box>
         <Typography 
-          variant="h3" 
-          fontWeight={800} 
+          variant="h4" 
+          fontWeight={700} 
           sx={{ 
-            color,
-            mb: subtitle ? 1 : 0,
+            color: 'text.primary',
+            mb: subtitle ? 0.5 : 0,
           }}
         >
           {value}
         </Typography>
         {subtitle && (
-          <Typography variant="caption" color="text.secondary" fontWeight={500}>
+          <Typography variant="caption" color="text.secondary" fontWeight={400}>
             {subtitle}
           </Typography>
         )}
@@ -114,20 +110,16 @@ const DashboardPage: React.FC = () => {
       <Box mb={4}>
         <Typography 
           variant="h3" 
-          fontWeight={800}
+          fontWeight={700}
           sx={{
-            background: (theme) => 
-              `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            mb: 1,
+            color: 'text.primary',
+            mb: 0.5,
           }}
         >
-          Dashboard
+          Fleet Overview
         </Typography>
-        <Typography variant="body1" color="text.secondary" fontWeight={500}>
-          Welcome back! Here's an overview of your fleet.
+        <Typography variant="body1" color="text.secondary" fontWeight={400}>
+          Real-time insights and performance metrics for your electric vehicle fleet
         </Typography>
       </Box>
 
@@ -162,51 +154,47 @@ const DashboardPage: React.FC = () => {
               <Card 
                 className="fade-in"
                 sx={{
-                  position: 'relative',
-                  overflow: 'hidden',
+                  height: '100%',
                   background: criticalAlerts.length > 0 
-                    ? (theme) => alpha(theme.palette.error.main, 0.05)
+                    ? (theme) => alpha(theme.palette.error.main, 0.03)
                     : 'background.paper',
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    right: 0,
-                    width: '100px',
-                    height: '100px',
-                    borderRadius: '50%',
-                    background: (theme) => alpha(theme.palette.error.main, 0.1),
-                    transform: 'translate(30%, -30%)',
+                  border: (theme) => criticalAlerts.length > 0
+                    ? `1px solid ${alpha(theme.palette.error.main, 0.3)}`
+                    : `1px solid ${theme.palette.divider}`,
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    borderColor: (theme) => alpha(theme.palette.error.main, 0.5),
+                    boxShadow: (theme) => `0 8px 24px ${alpha(theme.palette.error.main, 0.15)}`,
                   },
                 }}
               >
-                <CardContent>
-                  <Box display="flex" alignItems="center" gap={1.5} mb={2}>
+                <CardContent sx={{ p: 2.5 }}>
+                  <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={2}>
+                    <Typography variant="subtitle2" color="text.secondary" fontWeight={500} textTransform="uppercase" letterSpacing="0.05em">
+                      Active Alerts
+                    </Typography>
                     <Box 
                       sx={{ 
                         color: 'error.main',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        width: 48,
-                        height: 48,
+                        width: 40,
+                        height: 40,
                         borderRadius: 2,
                         background: (theme) => alpha(theme.palette.error.main, 0.1),
                       }}
                       className={criticalAlerts.length > 0 ? 'pulse' : ''}
                     >
-                      <Warning sx={{ fontSize: 28 }} />
+                      <Warning sx={{ fontSize: 24 }} />
                     </Box>
-                    <Typography variant="subtitle2" color="text.secondary" fontWeight={600}>
-                      Active Alerts
-                    </Typography>
                   </Box>
-                  <Typography variant="h3" fontWeight={800} color="error.main" mb={1}>
+                  <Typography variant="h4" fontWeight={700} color="error.main" mb={0.5}>
                     {unresolvedAlerts.length}
                   </Typography>
                   {criticalAlerts.length > 0 && (
-                    <Typography variant="caption" color="error.dark" fontWeight={600}>
-                      {criticalAlerts.length} critical alerts
+                    <Typography variant="caption" color="error.dark" fontWeight={500}>
+                      {pluralizeWithCount(criticalAlerts.length, 'critical alert')} require attention
                     </Typography>
                   )}
                 </CardContent>
