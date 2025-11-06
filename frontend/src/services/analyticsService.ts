@@ -26,7 +26,7 @@ export const analyticsService = {
    * Get fleet analytics by company
    */
   getFleetAnalyticsByCompany: async (companyId: number, params?: any): Promise<FleetAnalytics> => {
-    return apiClient.get(`/v1/analytics/fleet/company/${companyId}`, params);
+    return apiClient.get<FleetAnalytics>(`/v1/analytics/fleet/company/${companyId}`, params);
   },
 
   /**
