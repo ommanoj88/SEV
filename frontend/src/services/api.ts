@@ -43,6 +43,18 @@ api.interceptors.request.use(
       console.error('Error getting auth token:', error);
     }
 
+    // Normalize duplicate /v1 in baseURL + url to avoid /api/v1/v1/... calls
+    try {
+      const base = config.baseURL || API_BASE_URL;
+      const url = config.url || '';
+      if (base.endsWith('/v1') && url.startsWith('/v1')) {
+        // strip the leading /v1 from the request url
+        config.url = url.replace(/^\/v1/, '');
+      }
+    } catch (e) {
+      // ignore normalization errors
+    }
+
     return config;
   },
   (error) => {

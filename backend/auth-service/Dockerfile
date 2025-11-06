@@ -28,8 +28,8 @@ RUN addgroup -S spring && adduser -S spring -G spring
 # Copy the jar from build stage
 COPY --from=build /app/target/*.jar app.jar
 
-# Copy firebase config if exists (optional)
-# COPY firebase-service-account.json /app/firebase-service-account.json
+# Copy firebase credentials
+COPY firebase-service-account.json ./
 
 # Change ownership to non-root user
 RUN chown -R spring:spring /app

@@ -11,6 +11,9 @@ FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
+# Copy Firebase credentials (optional - will not fail if missing)
+COPY firebase-credentials.json* ./ 
+
 # Add curl for healthcheck
 RUN apk add --no-cache curl
 

@@ -4,13 +4,13 @@ export const WS_URL = process.env.REACT_APP_WEBSOCKET_URL || 'ws://localhost:808
 
 // Firebase Configuration
 export const FIREBASE_CONFIG = {
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_FIREBASE_APP_ID,
-  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "AIzaSyCZAd5WmJE7SrUYj4yNZDG5sltaEnrUQgk",
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN || "rentvat.firebaseapp.com",
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID || "rentvat",
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET || "rentvat.firebasestorage.app",
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID || "59823572862",
+  appId: process.env.REACT_APP_FIREBASE_APP_ID || "1:59823572862:web:0e8e7f53f82ac3b2a7152f",
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID || "G-6QHKKBTFYN",
 };
 
 // Mapbox Configuration

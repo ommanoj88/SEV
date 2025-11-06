@@ -76,8 +76,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    volumes:
-      - ../impresourcesfortesting/firebase-service-account-test.json:/app/firebase-credentials.json
     networks:
       - evfleet-network
     healthcheck:
@@ -99,18 +97,16 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_CLOUD_CONFIG_ENABLED=false
-      - FIREBASE_CONFIG_FILE=/app/firebase-credentials.json
+      - FIREBASE_CONFIG_FILE=/app/firebase-service-account.json
       - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/evfleet_auth
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_PASSWORD=Shobharain11@
       - SPRING_REDIS_HOST=redis
     depends_on:
       eureka-server:
         condition: service_healthy
       redis:
         condition: service_healthy
-    volumes:
-      - ../impresourcesfortesting/firebase-service-account-test.json:/app/firebase-credentials.json
     networks:
       - evfleet-network
     healthcheck:
@@ -134,7 +130,7 @@ services:
       - SPRING_CLOUD_CONFIG_ENABLED=false
       - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/evfleet_fleet
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_PASSWORD=Shobharain11@
       - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_REDIS_HOST=redis
     depends_on:
@@ -167,7 +163,7 @@ services:
       - SPRING_CLOUD_CONFIG_ENABLED=false
       - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/evfleet_charging
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_PASSWORD=Shobharain11@
       - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_REDIS_HOST=redis
     depends_on:
@@ -200,7 +196,7 @@ services:
       - SPRING_CLOUD_CONFIG_ENABLED=false
       - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/evfleet_maintenance
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_PASSWORD=Shobharain11@
       - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_REDIS_HOST=redis
     depends_on:
@@ -233,7 +229,7 @@ services:
       - SPRING_CLOUD_CONFIG_ENABLED=false
       - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/evfleet_driver
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_PASSWORD=Shobharain11@
       - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_REDIS_HOST=redis
     depends_on:
@@ -266,7 +262,7 @@ services:
       - SPRING_CLOUD_CONFIG_ENABLED=false
       - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/evfleet_analytics
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_PASSWORD=Shobharain11@
       - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_REDIS_HOST=redis
     depends_on:
@@ -299,7 +295,7 @@ services:
       - SPRING_CLOUD_CONFIG_ENABLED=false
       - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/evfleet_notification
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_PASSWORD=Shobharain11@
       - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_REDIS_HOST=redis
     depends_on:
@@ -332,7 +328,7 @@ services:
       - SPRING_CLOUD_CONFIG_ENABLED=false
       - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/evfleet_billing
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_PASSWORD=Shobharain11@
       - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_REDIS_HOST=redis
     depends_on:

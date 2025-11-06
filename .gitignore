@@ -9,6 +9,7 @@
 
 # Sensitive Files
 **/firebase-service-account*.json
+**/firebase-credentials.json
 **/service-account*.json
 **/*.key
 **/*.pem

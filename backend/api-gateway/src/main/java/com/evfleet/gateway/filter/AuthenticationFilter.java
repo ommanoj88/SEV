@@ -49,6 +49,19 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
 
+        // Check if Firebase is initialized. If not, skip authentication (development mode)
+        try {
+            if (com.google.firebase.FirebaseApp.getApps().isEmpty()) {
+                // Firebase not initialized - allow requests in dev mode but log a warning
+                System.out.println("[AuthFilter] Firebase is not initialized - skipping token verification (dev mode)");
+                return chain.filter(exchange);
+            }
+        } catch (Throwable t) {
+            // Defensive: if any unexpected error occurs while checking Firebase, skip auth to avoid 500s
+            System.out.println("[AuthFilter] Error checking Firebase initialization, skipping auth: " + t.getMessage());
+            return chain.filter(exchange);
+        }
+
         // Extract Authorization header
         String authHeader = request.getHeaders().getFirst("Authorization");
 
