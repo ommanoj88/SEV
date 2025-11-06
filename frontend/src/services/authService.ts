@@ -23,6 +23,9 @@ export const authService = {
       firebaseUid: firebaseUser.uid,
       email: firebaseUser.email,
       name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
+      phone: firebaseUser.phoneNumber || null,
+      companyId: null,
+      companyName: null,
     });
     // Backend returns AuthResponse { success, message, user }, extract user
     return response.user || response;
