@@ -117,6 +117,30 @@ Before you begin, ensure you have the following installed:
 
 ## Getting Started
 
+### Quick Start with Universal Launcher (Recommended)
+
+The easiest way to start the entire application with the latest code:
+
+```bash
+# Start all services (builds with --no-cache to ensure latest code)
+python run_app.py start
+
+# Access the application at http://localhost:3000
+```
+
+This launcher script:
+- ✅ Automatically kills processes on required ports
+- ✅ Rebuilds Docker images with `--no-cache` (ensures latest code is used)
+- ✅ Starts all services in the correct dependency order
+- ✅ Provides service health monitoring
+- ✅ Shows all service endpoints
+
+For more details, see [RUN_APP_GUIDE.md](RUN_APP_GUIDE.md)
+
+### Manual Setup (Alternative)
+
+If you prefer to set up manually:
+
 ### 1. Clone the Repository
 
 ```bash
@@ -124,7 +148,7 @@ git clone <repository-url>
 cd SEV
 ```
 
-### 2. Set Up Firebase
+### 3. Set Up Firebase
 
 1. Go to [Firebase Console](https://console.firebase.google.com/)
 2. Create a new project or use existing project
@@ -132,7 +156,7 @@ cd SEV
 4. Download service account key JSON file
 5. Place it in `impresourcesfortesting/firebase-service-account-test.json`
 
-### 3. Configure Environment Variables
+### 4. Configure Environment Variables
 
 Create a `.env` file in the root directory:
 
@@ -151,7 +175,7 @@ RABBITMQ_USER=evfleet
 RABBITMQ_PASSWORD=evfleet123
 ```
 
-### 4. Start Infrastructure Services with Docker Compose
+### 5. Start Infrastructure Services with Docker Compose
 
 ```bash
 cd docker
@@ -164,7 +188,7 @@ Wait for all services to be healthy:
 docker-compose ps
 ```
 
-### 5. Build All Microservices
+### 6. Build All Microservices
 
 Navigate to each backend service and build:
 
@@ -188,14 +212,14 @@ mvn clean package
 # ... repeat for all services
 ```
 
-### 6. Start All Services with Docker Compose
+### 7. Start All Services with Docker Compose
 
 ```bash
 cd docker
 docker-compose up -d
 ```
 
-### 7. Access the Applications
+### 8. Access the Applications
 
 - **Eureka Dashboard**: http://localhost:8761
 - **API Gateway**: http://localhost:8080
