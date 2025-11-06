@@ -156,7 +156,10 @@ def build_auth_service():
     """Build the auth-service to ensure migrations are packaged"""
     print_header("STEP 2: Building Auth Service")
     
-    auth_service_path = os.path.join(os.path.dirname(__file__), 'backend', 'auth-service')
+    # Allow custom auth service path via environment variable
+    auth_service_path = os.getenv('AUTH_SERVICE_PATH')
+    if not auth_service_path:
+        auth_service_path = os.path.join(os.path.dirname(__file__), 'backend', 'auth-service')
     
     if not os.path.exists(auth_service_path):
         print_error(f"Auth service directory not found: {auth_service_path}")
@@ -165,8 +168,9 @@ def build_auth_service():
     try:
         print_step("Building auth-service with Maven...")
         os.chdir(auth_service_path)
+        # Use 'package' instead of 'install' to avoid unnecessary installation to local repository
         result = subprocess.run(
-            ['mvn', 'clean', 'install', '-DskipTests'],
+            ['mvn', 'clean', 'package', '-DskipTests'],
             capture_output=True,
             text=True
         )
@@ -185,7 +189,10 @@ def run_migrations():
     """Run database migrations for auth-service"""
     print_header("STEP 3: Running Database Migrations")
     
-    auth_service_path = os.path.join(os.path.dirname(__file__), 'backend', 'auth-service')
+    # Allow custom auth service path via environment variable
+    auth_service_path = os.getenv('AUTH_SERVICE_PATH')
+    if not auth_service_path:
+        auth_service_path = os.path.join(os.path.dirname(__file__), 'backend', 'auth-service')
     
     if not os.path.exists(auth_service_path):
         print_error(f"Auth service directory not found: {auth_service_path}")
@@ -230,6 +237,7 @@ def verify_tables():
     
     try:
         print_step("Checking for required tables...")
+        # Use -t flag for tuple-only output (no headers/footers) for more reliable parsing
         success, stdout, stderr = run_psql_command(
             "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE' ORDER BY table_name",
             database='evfleet_auth'
@@ -239,7 +247,16 @@ def verify_tables():
             print_error(f"Failed to query tables: {stderr}")
             return False
         
-        tables = [line.strip() for line in stdout.split('\n') if line.strip() and not line.startswith('-') and 'table_name' not in line and '(' not in line]
+        # More robust parsing - filter out empty lines and formatting artifacts
+        tables = [
+            line.strip() 
+            for line in stdout.split('\n') 
+            if line.strip() 
+            and not line.startswith('-') 
+            and not line.startswith('table_name')
+            and not line.startswith('(')
+            and 'row' not in line.lower()
+        ]
         
         if tables:
             print_success(f"Found {len(tables)} tables:")
@@ -268,7 +285,16 @@ def verify_tables():
             print_error(f"Failed to query roles: {stderr}")
             return False
         
-        roles = [line.strip() for line in stdout.split('\n') if line.strip() and not line.startswith('-') and 'name' not in line and '(' not in line]
+        # More robust parsing for role names
+        roles = [
+            line.strip() 
+            for line in stdout.split('\n') 
+            if line.strip() 
+            and not line.startswith('-') 
+            and not line.startswith('name')
+            and not line.startswith('(')
+            and 'row' not in line.lower()
+        ]
         
         if roles:
             print_success(f"Found {len(roles)} roles:")

@@ -93,6 +93,7 @@ export const useAuth = () => {
               toast.dismiss('backend-sync-required');
               toast.success('Account synced successfully!', {
                 autoClose: 3000,
+                toastId: 'account-synced',
               });
             } catch (syncError: any) {
               if (syncError?.response?.status === 503) {
