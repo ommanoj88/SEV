@@ -12,8 +12,6 @@ import os
 import sys
 import subprocess
 import time
-import psycopg2
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 # Database configuration
 DB_HOST = os.getenv('DB_HOST', 'localhost')
@@ -51,72 +49,22 @@ def print_error(message):
     """Print an error message"""
     print(f"✗ ERROR: {message}", file=sys.stderr)
 
-def connect_to_postgres():
-    """Connect to PostgreSQL server (postgres database)"""
-    try:
-        print_step("Connecting to PostgreSQL server...")
-        conn = psycopg2.connect(
-            host=DB_HOST,
-            port=DB_PORT,
-            user=DB_USER,
-            password=DB_PASSWORD,
-            database='postgres'
-        )
-        conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-        print_success("Connected to PostgreSQL server")
-        return conn
-    except Exception as e:
-        print_error(f"Failed to connect to PostgreSQL: {e}")
-        sys.exit(1)
-
-def drop_database(cursor, db_name):
-    """Drop a database if it exists"""
-    try:
-        print_step(f"Dropping database '{db_name}'...")
-        # Terminate all connections to the database first
-        cursor.execute(f"""
-            SELECT pg_terminate_backend(pg_stat_activity.pid)
-            FROM pg_stat_activity
-            WHERE pg_stat_activity.datname = '{db_name}'
-              AND pid <> pg_backend_pid();
-        """)
-        cursor.execute(f"DROP DATABASE IF EXISTS {db_name}")
-        print_success(f"Database '{db_name}' dropped")
-    except Exception as e:
-        print_error(f"Failed to drop database '{db_name}': {e}")
-
-def create_database(cursor, db_name):
-    """Create a database"""
-    try:
-        print_step(f"Creating database '{db_name}'...")
-        cursor.execute(f"CREATE DATABASE {db_name}")
-        print_success(f"Database '{db_name}' created")
-    except Exception as e:
-        print_error(f"Failed to create database '{db_name}': {e}")
-        raise
-
-def reset_databases():
-    """Drop and recreate all databases"""
-    print_header("STEP 1: Resetting Databases")
+def run_psql_command(sql_command, database='postgres'):
+    """Run a psql command"""
+    env = os.environ.copy()
+    env['PGPASSWORD'] = DB_PASSWORD
     
-    conn = connect_to_postgres()
-    cursor = conn.cursor()
+    cmd = [
+        'psql',
+        '-h', DB_HOST,
+        '-p', DB_PORT,
+        '-U', DB_USER,
+        '-d', database,
+        '-c', sql_command
+    ]
     
-    # Drop all databases
-    print_step("Dropping all existing databases...")
-    for db_name in DATABASES:
-        drop_database(cursor, db_name)
-    
-    print("\n")
-    
-    # Create all databases
-    print_step("Creating all databases...")
-    for db_name in DATABASES:
-        create_database(cursor, db_name)
-    
-    cursor.close()
-    conn.close()
-    print_success("All databases reset successfully")
+    result = subprocess.run(cmd, capture_output=True, text=True, env=env)
+    return result.returncode == 0, result.stdout, result.stderr
 
 def wait_for_postgres():
     """Wait for PostgreSQL to be ready"""
@@ -124,26 +72,85 @@ def wait_for_postgres():
     max_retries = 30
     retry_count = 0
     
+    env = os.environ.copy()
+    env['PGPASSWORD'] = DB_PASSWORD
+    
     while retry_count < max_retries:
-        try:
-            conn = psycopg2.connect(
-                host=DB_HOST,
-                port=DB_PORT,
-                user=DB_USER,
-                password=DB_PASSWORD,
-                database='postgres'
-            )
-            conn.close()
+        result = subprocess.run(
+            ['psql', '-h', DB_HOST, '-p', DB_PORT, '-U', DB_USER, '-d', 'postgres', '-c', 'SELECT 1'],
+            capture_output=True,
+            env=env
+        )
+        
+        if result.returncode == 0:
             print_success("PostgreSQL is ready")
             return True
-        except Exception:
-            retry_count += 1
-            if retry_count < max_retries:
-                print(f"  Waiting for PostgreSQL... (attempt {retry_count}/{max_retries})")
-                time.sleep(2)
+        
+        retry_count += 1
+        if retry_count < max_retries:
+            print(f"  Waiting for PostgreSQL... (attempt {retry_count}/{max_retries})")
+            time.sleep(2)
     
     print_error("PostgreSQL is not available")
     return False
+
+def drop_database(db_name):
+    """Drop a database if it exists"""
+    try:
+        print_step(f"Dropping database '{db_name}'...")
+        
+        # Terminate all connections to the database first
+        terminate_sql = f"""
+            SELECT pg_terminate_backend(pg_stat_activity.pid)
+            FROM pg_stat_activity
+            WHERE pg_stat_activity.datname = '{db_name}'
+              AND pid <> pg_backend_pid();
+        """
+        run_psql_command(terminate_sql)
+        
+        # Drop the database
+        success, stdout, stderr = run_psql_command(f"DROP DATABASE IF EXISTS {db_name}")
+        if success:
+            print_success(f"Database '{db_name}' dropped")
+        else:
+            print_error(f"Failed to drop database '{db_name}': {stderr}")
+    except Exception as e:
+        print_error(f"Failed to drop database '{db_name}': {e}")
+
+def create_database(db_name):
+    """Create a database"""
+    try:
+        print_step(f"Creating database '{db_name}'...")
+        success, stdout, stderr = run_psql_command(f"CREATE DATABASE {db_name}")
+        if success:
+            print_success(f"Database '{db_name}' created")
+            return True
+        else:
+            print_error(f"Failed to create database '{db_name}': {stderr}")
+            return False
+    except Exception as e:
+        print_error(f"Failed to create database '{db_name}': {e}")
+        return False
+
+def reset_databases():
+    """Drop and recreate all databases"""
+    print_header("STEP 1: Resetting Databases")
+    
+    # Drop all databases
+    print_step("Dropping all existing databases...")
+    for db_name in DATABASES:
+        drop_database(db_name)
+    
+    print("\n")
+    
+    # Create all databases
+    print_step("Creating all databases...")
+    for db_name in DATABASES:
+        if not create_database(db_name):
+            return False
+    
+    print_success("All databases reset successfully")
+    return True
 
 def build_auth_service():
     """Build the auth-service to ensure migrations are packaged"""
@@ -222,27 +229,17 @@ def verify_tables():
     print_header("STEP 4: Verifying Database Schema")
     
     try:
-        print_step("Connecting to evfleet_auth database...")
-        conn = psycopg2.connect(
-            host=DB_HOST,
-            port=DB_PORT,
-            user=DB_USER,
-            password=DB_PASSWORD,
+        print_step("Checking for required tables...")
+        success, stdout, stderr = run_psql_command(
+            "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE' ORDER BY table_name",
             database='evfleet_auth'
         )
-        cursor = conn.cursor()
         
-        # Check for tables
-        print_step("Checking for required tables...")
-        cursor.execute("""
-            SELECT table_name 
-            FROM information_schema.tables 
-            WHERE table_schema = 'public' 
-            AND table_type = 'BASE TABLE'
-            ORDER BY table_name
-        """)
+        if not success:
+            print_error(f"Failed to query tables: {stderr}")
+            return False
         
-        tables = [row[0] for row in cursor.fetchall()]
+        tables = [line.strip() for line in stdout.split('\n') if line.strip() and not line.startswith('-') and 'table_name' not in line and '(' not in line]
         
         if tables:
             print_success(f"Found {len(tables)} tables:")
@@ -252,7 +249,7 @@ def verify_tables():
             print_error("No tables found!")
             return False
         
-        # Check for roles
+        # Check for required tables
         required_tables = ['roles', 'users', 'user_roles']
         missing_tables = [t for t in required_tables if t not in tables]
         
@@ -262,8 +259,16 @@ def verify_tables():
         
         # Check role data
         print_step("Checking default roles...")
-        cursor.execute("SELECT name FROM roles ORDER BY name")
-        roles = [row[0] for row in cursor.fetchall()]
+        success, stdout, stderr = run_psql_command(
+            "SELECT name FROM roles ORDER BY name",
+            database='evfleet_auth'
+        )
+        
+        if not success:
+            print_error(f"Failed to query roles: {stderr}")
+            return False
+        
+        roles = [line.strip() for line in stdout.split('\n') if line.strip() and not line.startswith('-') and 'name' not in line and '(' not in line]
         
         if roles:
             print_success(f"Found {len(roles)} roles:")
@@ -272,9 +277,6 @@ def verify_tables():
         else:
             print_error("No roles found!")
             return False
-        
-        cursor.close()
-        conn.close()
         
         print_success("Database schema verified successfully")
         return True
@@ -305,7 +307,8 @@ def main():
     
     # Reset databases
     try:
-        reset_databases()
+        if not reset_databases():
+            sys.exit(1)
     except Exception as e:
         print_error(f"Failed during database reset: {e}")
         sys.exit(1)

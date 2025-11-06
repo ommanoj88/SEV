@@ -12,18 +12,14 @@ This script will reset and initialize the EV Fleet Management Platform databases
 ## Prerequisites
 
 - PostgreSQL server running (default: localhost:5432)
+- PostgreSQL client (`psql`) installed
 - Python 3.6+ installed
-- `psycopg2` Python package installed
 - Maven installed (for running migrations)
 - Backend services built (or will be built by the script)
 
 ## Installation
 
-Install required Python dependencies:
-
-```bash
-pip install psycopg2-binary
-```
+No additional Python packages required! The script uses only standard library modules and the PostgreSQL `psql` command-line tool.
 
 ## Usage
 
