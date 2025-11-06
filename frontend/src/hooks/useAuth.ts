@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { setFirebaseUser, fetchCurrentUser, selectAuth, logout } from '../redux/slices/authSlice';
 import { firebaseAuth } from '../services/firebase';

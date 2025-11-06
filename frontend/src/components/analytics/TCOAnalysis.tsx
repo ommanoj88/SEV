@@ -38,6 +38,23 @@ import TimelineIcon from '@mui/icons-material/Timeline';
 import LocalGasStationIcon from '@mui/icons-material/LocalGasStation';
 import BuildIcon from '@mui/icons-material/Build';
 
+// Constants for TCO comparison calculations
+const ICE_VEHICLE_CONSTANTS = {
+  PURCHASE_PRICE: 35000,
+  FUEL_COSTS_5YR: 15000,      // Average fuel costs over 5 years
+  MAINTENANCE_COSTS_5YR: 8000, // Average maintenance costs over 5 years
+  INSURANCE_COSTS_5YR: 2000,   // Average insurance costs over 5 years
+};
+
+// CO₂ calculation constants
+// Formula: (totalSavings / avgCostPerTonne) * conversionFactor
+// Average cost per tonne of CO₂: ₹500
+// Conversion factor: 0.3 (accounts for fuel type and efficiency differences)
+const CO2_CALC_CONSTANTS = {
+  AVG_COST_PER_TONNE: 500,
+  CONVERSION_FACTOR: 0.3,
+};
+
 const TCOAnalysis: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -58,19 +75,19 @@ const TCOAnalysis: React.FC = () => {
 
   // Enhanced comparison data
   const comparisonData = [
-    { name: 'Acquisition', EV: purchasePrice, ICE: 35000, category: 'Initial' },
-    { name: 'Energy/Fuel (5yr)', EV: energyCosts, ICE: 15000, category: 'Operating' },
-    { name: 'Maintenance (5yr)', EV: maintenanceCosts, ICE: 8000, category: 'Operating' },
-    { name: 'Insurance (5yr)', EV: insuranceCosts, ICE: 2000, category: 'Operating' },
+    { name: 'Acquisition', EV: purchasePrice, ICE: ICE_VEHICLE_CONSTANTS.PURCHASE_PRICE, category: 'Initial' },
+    { name: 'Energy/Fuel (5yr)', EV: energyCosts, ICE: ICE_VEHICLE_CONSTANTS.FUEL_COSTS_5YR, category: 'Operating' },
+    { name: 'Maintenance (5yr)', EV: maintenanceCosts, ICE: ICE_VEHICLE_CONSTANTS.MAINTENANCE_COSTS_5YR, category: 'Operating' },
+    { name: 'Insurance (5yr)', EV: insuranceCosts, ICE: ICE_VEHICLE_CONSTANTS.INSURANCE_COSTS_5YR, category: 'Operating' },
   ];
 
   // 5-year cost projection
   const projectionData = [
-    { year: 'Year 1', EV: purchasePrice + (energyCosts * 0.2) + (maintenanceCosts * 0.2), ICE: 35000 + (15000 * 0.2) + (8000 * 0.2) },
-    { year: 'Year 2', EV: purchasePrice + (energyCosts * 0.4) + (maintenanceCosts * 0.4), ICE: 35000 + (15000 * 0.4) + (8000 * 0.4) },
-    { year: 'Year 3', EV: purchasePrice + (energyCosts * 0.6) + (maintenanceCosts * 0.6), ICE: 35000 + (15000 * 0.6) + (8000 * 0.6) },
-    { year: 'Year 4', EV: purchasePrice + (energyCosts * 0.8) + (maintenanceCosts * 0.8), ICE: 35000 + (15000 * 0.8) + (8000 * 0.8) },
-    { year: 'Year 5', EV: totalCost, ICE: 35000 + 15000 + 8000 + 2000 },
+    { year: 'Year 1', EV: purchasePrice + (energyCosts * 0.2) + (maintenanceCosts * 0.2), ICE: ICE_VEHICLE_CONSTANTS.PURCHASE_PRICE + (ICE_VEHICLE_CONSTANTS.FUEL_COSTS_5YR * 0.2) + (ICE_VEHICLE_CONSTANTS.MAINTENANCE_COSTS_5YR * 0.2) },
+    { year: 'Year 2', EV: purchasePrice + (energyCosts * 0.4) + (maintenanceCosts * 0.4), ICE: ICE_VEHICLE_CONSTANTS.PURCHASE_PRICE + (ICE_VEHICLE_CONSTANTS.FUEL_COSTS_5YR * 0.4) + (ICE_VEHICLE_CONSTANTS.MAINTENANCE_COSTS_5YR * 0.4) },
+    { year: 'Year 3', EV: purchasePrice + (energyCosts * 0.6) + (maintenanceCosts * 0.6), ICE: ICE_VEHICLE_CONSTANTS.PURCHASE_PRICE + (ICE_VEHICLE_CONSTANTS.FUEL_COSTS_5YR * 0.6) + (ICE_VEHICLE_CONSTANTS.MAINTENANCE_COSTS_5YR * 0.6) },
+    { year: 'Year 4', EV: purchasePrice + (energyCosts * 0.8) + (maintenanceCosts * 0.8), ICE: ICE_VEHICLE_CONSTANTS.PURCHASE_PRICE + (ICE_VEHICLE_CONSTANTS.FUEL_COSTS_5YR * 0.8) + (ICE_VEHICLE_CONSTANTS.MAINTENANCE_COSTS_5YR * 0.8) },
+    { year: 'Year 5', EV: totalCost, ICE: ICE_VEHICLE_CONSTANTS.PURCHASE_PRICE + ICE_VEHICLE_CONSTANTS.FUEL_COSTS_5YR + ICE_VEHICLE_CONSTANTS.MAINTENANCE_COSTS_5YR + ICE_VEHICLE_CONSTANTS.INSURANCE_COSTS_5YR },
   ];
 
   // Cost breakdown for pie chart
@@ -192,7 +209,7 @@ const TCOAnalysis: React.FC = () => {
                 </Typography>
               </Stack>
               <Typography variant="h4" color="success.main" fontWeight="bold">
-                {((totalSavings / 500) * 0.3).toFixed(1)}t
+                {((totalSavings / CO2_CALC_CONSTANTS.AVG_COST_PER_TONNE) * CO2_CALC_CONSTANTS.CONVERSION_FACTOR).toFixed(1)}t
               </Typography>
               <Typography variant="body2" color="text.secondary" mt={1}>
                 Carbon emissions avoided
@@ -352,7 +369,7 @@ const TCOAnalysis: React.FC = () => {
                     Lower Maintenance Costs
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    EVs save ${((8000 - maintenanceCosts)).toLocaleString()} over 5 years due to fewer moving parts and reduced wear
+                    EVs save ${((ICE_VEHICLE_CONSTANTS.MAINTENANCE_COSTS_5YR - maintenanceCosts)).toLocaleString()} over 5 years due to fewer moving parts and reduced wear
                   </Typography>
                 </Box>
               </Stack>
@@ -367,7 +384,7 @@ const TCOAnalysis: React.FC = () => {
                     Energy Efficiency
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Electricity costs are ${((15000 - energyCosts)).toLocaleString()} lower than fuel over the same period
+                    Electricity costs are ${((ICE_VEHICLE_CONSTANTS.FUEL_COSTS_5YR - energyCosts)).toLocaleString()} lower than fuel over the same period
                   </Typography>
                 </Box>
               </Stack>
