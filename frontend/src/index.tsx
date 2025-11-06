@@ -5,6 +5,21 @@ import { store } from './redux/store';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+// Suppress COOP warnings from Firebase popup authentication
+// These are expected when using Firebase Google sign-in and don't affect functionality
+if (process.env.NODE_ENV === 'production') {
+  const originalError = console.error;
+  console.error = (...args: any[]) => {
+    if (
+      typeof args[0] === 'string' &&
+      args[0].includes('Cross-Origin-Opener-Policy')
+    ) {
+      return; // Suppress COOP warnings
+    }
+    originalError.apply(console, args);
+  };
+}
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );

@@ -47,8 +47,9 @@ const Login: React.FC = () => {
     try {
       await dispatch(loginWithEmail(data)).unwrap();
       navigate('/dashboard');
-    } catch (err) {
-      // Error handled by Redux
+    } catch (err: any) {
+      // Error already displayed by useAuth hook
+      console.error('[Login] Email login error:', err);
     }
   };
 
@@ -56,8 +57,9 @@ const Login: React.FC = () => {
     try {
       await dispatch(loginWithGoogle()).unwrap();
       navigate('/dashboard');
-    } catch (err) {
-      // Error handled by Redux
+    } catch (err: any) {
+      // Error already displayed by useAuth hook
+      console.error('[Login] Google login error:', err);
     }
   };
 

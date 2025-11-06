@@ -27,6 +27,10 @@ try {
 
 // Google Auth Provider
 const googleProvider = new GoogleAuthProvider();
+// Reduce COOP-related popup issues
+googleProvider.setCustomParameters({
+  prompt: 'select_account'
+});
 
 // Authentication Functions
 export const firebaseAuth = {
@@ -60,9 +64,16 @@ export const firebaseAuth = {
   // Sign in with Google
   signInWithGoogle: async () => {
     try {
+      // Use popup for better COOP compatibility
       const result = await signInWithPopup(auth, googleProvider);
       return result.user;
     } catch (error: any) {
+      // Handle specific COOP-related errors gracefully
+      if (error.code === 'auth/popup-closed-by-user') {
+        throw new Error('Sign-in popup was closed. Please try again.');
+      } else if (error.code === 'auth/cancelled-popup-request') {
+        throw new Error('Another sign-in is in progress. Please wait.');
+      }
       throw new Error(getAuthErrorMessage(error.code));
     }
   },

@@ -66,43 +66,50 @@ api.interceptors.response.use(
               } else {
                 // No user, redirect to login
                 window.location.href = '/login';
-                toast.error(ERROR_MESSAGES.SESSION_EXPIRED);
+                toast.error(ERROR_MESSAGES.SESSION_EXPIRED, { toastId: 'session-expired' });
               }
             } catch (refreshError) {
               window.location.href = '/login';
-              toast.error(ERROR_MESSAGES.SESSION_EXPIRED);
+              toast.error(ERROR_MESSAGES.SESSION_EXPIRED, { toastId: 'session-expired' });
               return Promise.reject(refreshError);
             }
           }
           break;
 
         case 403:
-          toast.error(ERROR_MESSAGES.UNAUTHORIZED);
+          toast.error(ERROR_MESSAGES.UNAUTHORIZED, { toastId: 'unauthorized' });
           break;
 
         case 404:
-          toast.error(data?.message || ERROR_MESSAGES.NOT_FOUND);
+          // Don't show toast for 404s on user fetch (expected during sync)
+          if (!originalRequest.url?.includes('/auth/me')) {
+            toast.error(data?.message || ERROR_MESSAGES.NOT_FOUND, { toastId: 'not-found' });
+          }
           break;
 
         case 422:
-          toast.error(data?.message || ERROR_MESSAGES.VALIDATION_ERROR);
+          toast.error(data?.message || ERROR_MESSAGES.VALIDATION_ERROR, { toastId: 'validation-error' });
           break;
 
         case 500:
         case 502:
         case 503:
         case 504:
-          toast.error(ERROR_MESSAGES.SERVER_ERROR);
+          // Don't spam toasts for backend unavailability - handled by useAuth
+          console.warn(`[API] Server error ${status}:`, data?.message || ERROR_MESSAGES.SERVER_ERROR);
           break;
 
         default:
-          toast.error(data?.message || 'An error occurred');
+          // Only show toast for unexpected errors
+          if (status >= 400) {
+            toast.error(data?.message || 'An error occurred', { toastId: `error-${status}` });
+          }
       }
     } else if (error.request) {
-      // Network error
-      toast.error(ERROR_MESSAGES.NETWORK_ERROR);
+      // Network error - Don't spam toasts, just log
+      console.warn('[API] Network error - backend may be unavailable');
     } else {
-      toast.error('An unexpected error occurred');
+      console.error('[API] Unexpected error:', error.message);
     }
 
     return Promise.reject(error);
