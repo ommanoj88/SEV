@@ -14,9 +14,10 @@ import {
 } from '@mui/material';
 import { useAuth } from '../hooks/useAuth';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { getNameFromEmail } from '../utils/helpers';
 
 export const ProfilePage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, firebaseUser, isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -28,6 +29,7 @@ export const ProfilePage: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
+    // Prioritize backend user data, fallback to Firebase user
     if (user) {
       setFormData({
         email: user.email || '',
@@ -36,8 +38,17 @@ export const ProfilePage: React.FC = () => {
         company: '',
         role: user.role || '',
       });
+    } else if (firebaseUser) {
+      // Use Firebase user data when backend data is not available
+      setFormData({
+        email: firebaseUser.email || '',
+        name: firebaseUser.displayName || getNameFromEmail(firebaseUser.email || ''),
+        phone: firebaseUser.phoneNumber || '',
+        company: '',
+        role: 'User',
+      });
     }
-  }, [user]);
+  }, [user, firebaseUser]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -61,7 +72,17 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
-  if (!user) {
+  if (!isAuthenticated) {
+    return (
+      <Container maxWidth="md" sx={{ py: 4, textAlign: 'center' }}>
+        <Typography variant="h5" color="textSecondary">
+          Please log in to view your profile.
+        </Typography>
+      </Container>
+    );
+  }
+
+  if (!user && !firebaseUser) {
     return <LoadingSpinner />;
   }
 
@@ -74,6 +95,11 @@ export const ProfilePage: React.FC = () => {
         <Typography color="textSecondary">
           Manage your account information and preferences
         </Typography>
+        {!user && firebaseUser && (
+          <Typography color="warning.main" variant="body2" sx={{ mt: 1 }}>
+            Note: Backend services are unavailable. Showing Firebase profile data only.
+          </Typography>
+        )}
       </Box>
 
       <Grid container spacing={3}>
@@ -101,6 +127,11 @@ export const ProfilePage: React.FC = () => {
               <Typography variant="body2" color="textSecondary">
                 Role: {formData.role || 'Not assigned'}
               </Typography>
+              {!user && firebaseUser && (
+                <Typography variant="caption" color="warning.main" sx={{ mt: 1, display: 'block' }}>
+                  Firebase user only
+                </Typography>
+              )}
             </CardContent>
           </Card>
         </Grid>
@@ -177,10 +208,15 @@ export const ProfilePage: React.FC = () => {
                     type="submit"
                     variant="contained"
                     color="primary"
-                    disabled={loading}
+                    disabled={loading || !user}
                   >
                     {loading ? 'Saving...' : 'Save Changes'}
                   </Button>
+                  {!user && (
+                    <Typography variant="caption" color="warning.main">
+                      Profile updates require backend connection
+                    </Typography>
+                  )}
                 </Stack>
               </Stack>
             </form>
@@ -207,7 +243,7 @@ export const ProfilePage: React.FC = () => {
                 Member Since
               </Typography>
               <Typography variant="h6">
-                {new Date(user.createdAt || Date.now()).getFullYear()}
+                {user?.createdAt ? new Date(user.createdAt).getFullYear() : 'N/A'}
               </Typography>
             </CardContent>
           </Card>

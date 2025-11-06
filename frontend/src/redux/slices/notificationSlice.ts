@@ -120,7 +120,8 @@ const notificationSlice = createSlice({
       .addCase(fetchNotifications.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch notifications';
-        console.warn('[notificationSlice] Failed to fetch notifications:', action.error.message);
+        // Only log warning, don't show error to user - use mock data as fallback
+        console.warn('[notificationSlice] Failed to fetch notifications - using mock data:', action.error.message);
         // Use mock data as fallback
         state.notifications = MOCK_NOTIFICATIONS;
       })
@@ -134,7 +135,8 @@ const notificationSlice = createSlice({
       .addCase(fetchAlerts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch alerts';
-        console.warn('[notificationSlice] Failed to fetch alerts:', action.error.message);
+        // Only log warning, don't show error to user - use mock data as fallback
+        console.warn('[notificationSlice] Failed to fetch alerts - using mock data:', action.error.message);
         // Use mock data as fallback
         state.alerts = MOCK_ALERTS;
       })
@@ -142,7 +144,8 @@ const notificationSlice = createSlice({
         state.unreadCount = action.payload.count;
       })
       .addCase(fetchUnreadCount.rejected, (state, action) => {
-        console.warn('[notificationSlice] Failed to fetch unread count:', action.error.message);
+        // Silently fail and use default count
+        console.warn('[notificationSlice] Failed to fetch unread count - using default:', action.error.message);
         state.unreadCount = 0;
       })
       .addCase(markAsRead.fulfilled, (state, action) => {

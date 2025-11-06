@@ -9,7 +9,7 @@ export const authService = {
 
   // Get current user profile
   getCurrentUser: async (): Promise<User> => {
-    return apiClient.get('/auth/me');
+    return apiClient.get('/auth/me', undefined, { silent404: true });
   },
 
   // Update user profile
