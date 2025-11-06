@@ -311,6 +311,24 @@ Once services are running, access Swagger UI:
 
 ## Database Management
 
+### Database Reset and Initialization
+
+⚠️ **IMPORTANT**: Backend database sync is now **required** for authentication. Users must be synced from Firebase to the backend database.
+
+To reset and initialize all databases with proper schema and seed data:
+
+```bash
+python reset_database.py
+```
+
+This script will:
+- Drop all existing databases
+- Create fresh databases for all microservices
+- Run Flyway migrations to create tables
+- Seed default roles (SUPER_ADMIN, ADMIN, FLEET_MANAGER, DRIVER, VIEWER)
+
+For detailed documentation, see [Database Reset Guide](DATABASE_RESET_GUIDE.md) and [Authentication Changes](AUTHENTICATION_CHANGES.md).
+
 ### Accessing PostgreSQL
 
 ```bash
@@ -319,7 +337,15 @@ docker exec -it evfleet-postgres psql -U evfleet -d auth_db
 
 ### Database Migrations
 
-Each service uses Hibernate's `ddl-auto=update`. For production, use Flyway or Liquibase for migrations.
+The auth-service now uses **Flyway** for database migrations. Migration files are located in:
+- `backend/auth-service/src/main/resources/db/migration/`
+
+Migrations run automatically when the service starts. For manual migration:
+
+```bash
+cd backend/auth-service
+mvn flyway:migrate
+```
 
 ---
 
