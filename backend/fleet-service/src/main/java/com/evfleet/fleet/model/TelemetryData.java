@@ -88,4 +88,47 @@ public class TelemetryData {
 
     @Column(name = "signal_strength")
     private Integer signalStrength; // GPS/Network signal strength
+
+    // ===== ICE-SPECIFIC FIELDS (for ICE and HYBRID vehicles) =====
+    /**
+     * Current fuel level in liters
+     * Relevant for: FuelType.ICE, FuelType.HYBRID
+     * @since 2.0.0 (Multi-fuel support)
+     */
+    @Column(name = "fuel_level")
+    private Double fuelLevel; // in liters
+
+    /**
+     * Engine RPM (Revolutions Per Minute)
+     * Relevant for: FuelType.ICE, FuelType.HYBRID
+     * @since 2.0.0 (Multi-fuel support)
+     */
+    @Column(name = "engine_rpm")
+    private Integer engineRpm;
+
+    /**
+     * Engine temperature in Celsius
+     * Relevant for: FuelType.ICE, FuelType.HYBRID
+     * @since 2.0.0 (Multi-fuel support)
+     */
+    @Column(name = "engine_temperature")
+    private Double engineTemperature; // in Celsius
+
+    /**
+     * Engine load percentage (0-100)
+     * Indicates how hard the engine is working
+     * Relevant for: FuelType.ICE, FuelType.HYBRID
+     * @since 2.0.0 (Multi-fuel support)
+     */
+    @Column(name = "engine_load")
+    private Double engineLoad; // 0-100%
+
+    /**
+     * Total engine operating hours
+     * Used for maintenance scheduling
+     * Relevant for: FuelType.ICE, FuelType.HYBRID
+     * @since 2.0.0 (Multi-fuel support)
+     */
+    @Column(name = "engine_hours")
+    private Double engineHours; // in hours
 }
