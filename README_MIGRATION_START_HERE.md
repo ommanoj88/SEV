@@ -4,22 +4,53 @@
 
 ---
 
-## 📚 THE 5 DOCUMENTS YOU HAVE
+## 📚 THE DOCUMENTS YOU HAVE
 
-### 1. **MASTER_COPILOT_CONTEXT.md** ⭐ START HERE
-**Purpose:** The system prompt for GitHub Copilot
+### 1. **COPILOT_STRICT_SINGLE_PR_PROMPT.md** ⭐⭐ RECOMMENDED - START HERE
+**Purpose:** Strict single-PR system prompt for GitHub Copilot (NO auto-detection, NO hallucination)
 **Use:** Paste this ONCE at the beginning of your Copilot session
 **When:** One-time setup
 **How:** Copy entire content → Paste into Claude Code / GitHub Copilot
 
 ```
 This document contains:
+✅ EXPLICIT MODE: "Work on PR [NUMBER]" (e.g., "Work on PR 5")
+✅ QUEUE MODE: "Work on next PR" (auto-picks first pending PR)
+✅ PR Completion Tracking (marks PRs as complete/pending)
+✅ Rejects ambiguous requests (prevents hallucination)
+✅ Strategic vision & context
+✅ Architecture principles
+✅ All 18 PRs with detailed specifications
+✅ Key design patterns
+✅ Critical reminders (DO's & DON'Ts)
+✅ File location references
+
+🎯 Why this is better:
+- No guessing which PR you mean
+- Clear tracking of what's done
+- Two explicit modes prevent confusion
+- Prevents Copilot from "hallucinating" PRs
+```
+
+---
+
+### 1B. **MASTER_COPILOT_CONTEXT.md** (ALTERNATIVE)
+**Purpose:** Original auto-detection system prompt for GitHub Copilot
+**Use:** Use this if you prefer description-based PR detection
+**When:** One-time setup (alternative to STRICT prompt above)
+**How:** Copy entire content → Paste into Claude Code / GitHub Copilot
+
+```
+This document contains:
+✅ Auto-detects PR from descriptions (e.g., "Add fuel type support" → PR 1)
 ✅ Strategic vision & context
 ✅ Architecture principles
 ✅ All 18 PRs summarized
 ✅ Key design patterns
 ✅ Critical reminders (DO's & DON'Ts)
 ✅ File location references
+
+⚠️ Note: May sometimes "hallucinate" or mis-detect PRs
 ```
 
 ---
@@ -106,11 +137,12 @@ This document contains:
 ### **STEP 1: Setup (First Time Only)**
 
 ```bash
-# 1. Read MASTER_COPILOT_CONTEXT.md from top to bottom
+# RECOMMENDED: Use the STRICT mode (prevents hallucination)
+# 1. Read COPILOT_STRICT_SINGLE_PR_PROMPT.md from top to bottom
 #    (Takes ~30 minutes, but essential)
 
 # 2. Copy the entire content:
-#    - Open MASTER_COPILOT_CONTEXT.md
+#    - Open COPILOT_STRICT_SINGLE_PR_PROMPT.md
 #    - Ctrl+A to select all
 #    - Ctrl+C to copy
 
@@ -119,14 +151,60 @@ This document contains:
 #    - Paste the context
 #    - Wait for Copilot to acknowledge
 
+# 4. Use ONE of these two modes:
+#    EXPLICIT: "Work on PR 1" (specify PR number)
+#    QUEUE: "Work on next PR" (auto-picks first pending PR)
+
 ✅ You're now ready to start!
+
+# ALTERNATIVE: Use MASTER_COPILOT_CONTEXT.md if you prefer 
+# description-based detection (e.g., "Add fuel type support" → PR 1)
+# Note: May sometimes mis-detect PRs
 ```
 
 ### **STEP 2: Work on PR #1 (Day 1)**
 
+**Using STRICT MODE (Recommended):**
 ```bash
 # 1. Create a new feature branch:
 git checkout -b feature/pr-1-vehicle-fuel-type
+
+# 2. Say to Copilot (EXPLICIT mode):
+"Work on PR 1"
+
+# OR use QUEUE mode:
+"Work on next PR"
+
+# 3. Copilot will:
+#    - Confirm: "Starting PR 1: Add Vehicle Fuel Type Support"
+#    - Generate code
+#    - You review carefully
+
+# 4. Implement locally:
+#    - Create the generated files
+#    - Run tests: mvn clean test
+#    - Verify all tests pass
+
+# 5. Mark complete:
+#    - Say to Copilot: "PR 1 complete"
+#    - Copilot updates tracking: Completed: 1, Pending: 2,3,4...
+
+# 6. Track progress:
+#    - Open COPILOT_PR_CHECKLIST.md
+#    - Check off items as you complete them
+#    - Update MIGRATION_ROADMAP_VISUAL.md (mark 🟢 COMPLETE)
+
+# 7. Create PR on GitHub:
+#    - Use PR template from COPILOT_QUICK_START.md
+#    - Include acceptance criteria
+#    - Link to this migration document
+```
+
+**Using MASTER/UNIVERSAL MODE (Alternative):**
+```bash
+# If you used MASTER_COPILOT_CONTEXT.md instead:
+
+# 1. Create branch: git checkout -b feature/pr-1-vehicle-fuel-type
 
 # 2. Open COPILOT_QUICK_START.md
 #    - Find section "PR #1: Add Vehicle Fuel Type Support"
@@ -136,24 +214,37 @@ git checkout -b feature/pr-1-vehicle-fuel-type
 #    - Copilot will generate code
 #    - Review carefully
 
-# 4. Implement locally:
-#    - Create the generated files
-#    - Run tests: mvn clean test
-#    - Verify all tests pass
-
-# 5. Track progress:
-#    - Open COPILOT_PR_CHECKLIST.md
-#    - Check off items as you complete them
-#    - Update MIGRATION_ROADMAP_VISUAL.md (mark 🟢 COMPLETE)
-
-# 6. Create PR on GitHub:
-#    - Use PR template from COPILOT_QUICK_START.md
-#    - Include acceptance criteria
-#    - Link to this migration document
+# 4-7. Same as STRICT MODE above
 ```
 
 ### **STEP 3: Repeat for PRs #2-18**
 
+**Using STRICT MODE (Recommended):**
+```bash
+# For each remaining PR, use QUEUE mode for natural flow:
+
+# Option A - QUEUE mode (auto-flow):
+"Work on next PR"  # Copilot picks PR 2
+# [complete the work]
+"PR 2 complete"
+
+"Work on next PR"  # Copilot picks PR 3
+# [complete the work]
+"PR 3 complete"
+
+# Repeat until all 18 PRs done
+
+# Option B - EXPLICIT mode (jump around):
+"Work on PR 5"  # Skip to PR 5 if needed
+# [complete the work]
+"PR 5 complete"
+
+"Work on PR 2"  # Go back to PR 2
+# [complete the work]
+"PR 2 complete"
+```
+
+**Using MASTER/UNIVERSAL MODE (Alternative):**
 ```bash
 # For each remaining PR, follow the same pattern:
 
@@ -174,8 +265,11 @@ git checkout -b feature/pr-X-[title]
 
 ### When You Need...
 
+**"I want a foolproof way to work through PRs without confusion"**
+→ Read: `COPILOT_STRICT_SINGLE_PR_PROMPT.md` ⭐ RECOMMENDED (Architecture & Vision + Explicit PR control)
+
 **"I want to understand the big picture"**
-→ Read: `MASTER_COPILOT_CONTEXT.md` (Architecture & Vision)
+→ Read: `MASTER_COPILOT_CONTEXT.md` (Architecture & Vision with auto-detection)
 
 **"I need to know exactly what PR #X should do"**
 → Read: `MIGRATION_STRATEGY_GENERAL_EV.md` (Find PR section)
@@ -192,6 +286,53 @@ git checkout -b feature/pr-X-[title]
 ---
 
 ## 🔄 WORKFLOW LOOP (Repeat 18 Times)
+
+**Using STRICT MODE (Recommended):**
+```
+┌─────────────────────────────────────────────┐
+│ 1. Say to Copilot: "Work on next PR"       │
+│    (QUEUE mode picks first pending PR)      │
+│    OR: "Work on PR 5" (EXPLICIT mode)       │
+└─────────────────────┬───────────────────────┘
+                      ↓
+┌─────────────────────────────────────────────┐
+│ 2. Copilot confirms and generates code      │
+│    "Starting PR X: [Title]"                 │
+│    Review generated code                    │
+│    Ask for refinements if needed            │
+└─────────────────────┬───────────────────────┘
+                      ↓
+┌─────────────────────────────────────────────┐
+│ 3. Implement Locally                        │
+│    Create files                             │
+│    Write tests                              │
+│    Run: mvn clean test                      │
+│    Verify: npm test (if frontend)           │
+└─────────────────────┬───────────────────────┘
+                      ↓
+┌─────────────────────────────────────────────┐
+│ 4. Say to Copilot: "PR X complete"          │
+│    Copilot updates tracking automatically   │
+│    Completed: X                             │
+│    Pending: (remaining PRs)                 │
+└─────────────────────┬───────────────────────┘
+                      ↓
+┌─────────────────────────────────────────────┐
+│ 5. Create GitHub PR                         │
+│    Push branch: git push origin feature-..  │
+│    Create PR with description template      │
+│    Wait for code review                     │
+└─────────────────────┬───────────────────────┘
+                      ↓
+┌─────────────────────────────────────────────┐
+│ 6. Update Progress Tracking                 │
+│    Mark ✅ in COPILOT_PR_CHECKLIST.md       │
+│    Update 🟢 in MIGRATION_ROADMAP_VISUAL.md │
+│    Say: "Work on next PR" (repeat)          │
+└─────────────────────────────────────────────┘
+```
+
+**Using MASTER/UNIVERSAL MODE (Alternative):**
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -352,14 +493,16 @@ ENTERPRISE (₹999)   → Large operations, custom needs
 2. ✅ Skim MASTER_COPILOT_CONTEXT.md quickly
 
 ### Next 15 Minutes:
-3. ✅ Read MASTER_COPILOT_CONTEXT.md carefully
+3. ✅ Read COPILOT_STRICT_SINGLE_PR_PROMPT.md carefully (RECOMMENDED)
+   OR: Read MASTER_COPILOT_CONTEXT.md (alternative approach)
 4. ✅ Understand the architecture and 18 PRs
 
 ### Next 1 Hour:
-5. ✅ Copy MASTER_COPILOT_CONTEXT.md
+5. ✅ Copy COPILOT_STRICT_SINGLE_PR_PROMPT.md (recommended)
+   OR: Copy MASTER_COPILOT_CONTEXT.md (alternative)
 6. ✅ Paste into Copilot
 7. ✅ Create feature branch for PR #1
-8. ✅ Start first Copilot prompt
+8. ✅ Say to Copilot: "Work on PR 1" or "Work on next PR"
 
 ### By End of Day 1:
 9. ✅ Complete PR #1
@@ -386,6 +529,7 @@ You have:
 
 | Need | Document | Section |
 |------|----------|---------|
+| Strict PR control (RECOMMENDED) | COPILOT_STRICT_SINGLE_PR_PROMPT.md | Full document |
 | Architecture overview | MASTER_COPILOT_CONTEXT.md | Top section |
 | PR #X detailed spec | MIGRATION_STRATEGY_GENERAL_EV.md | Find "PR #X" |
 | PR #X Copilot prompt | COPILOT_QUICK_START.md | Find "PR #X" |
