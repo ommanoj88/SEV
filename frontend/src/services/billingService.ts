@@ -89,6 +89,39 @@ export const billingService = {
   },
 
   /**
+   * Get all pricing tiers
+   */
+  getPricingTiers: async (): Promise<any[]> => {
+    return apiClient.get('/billing/pricing/tiers');
+  },
+
+  /**
+   * Get specific pricing tier by name
+   */
+  getPricingTier: async (tierName: string): Promise<any> => {
+    return apiClient.get(`/billing/pricing/tiers/${tierName}`);
+  },
+
+  /**
+   * Calculate pricing based on tier, vehicle count, and billing cycle
+   */
+  calculatePricing: async (data: {
+    tier: string;
+    vehicleCount: number;
+    billingCycle: string;
+  }): Promise<any> => {
+    return apiClient.post('/billing/pricing/calculate', data);
+  },
+
+  /**
+   * Get recommended pricing tier
+   */
+  getRecommendedTier: async (vehicleCount: number, hasEVVehicles?: boolean): Promise<any> => {
+    const params = { vehicleCount, hasEVVehicles: hasEVVehicles ?? true };
+    return apiClient.get('/billing/pricing/recommend', params);
+  },
+
+  /**
    * Get billing address
    */
   getBillingAddress: async (): Promise<BillingAddress> => {
