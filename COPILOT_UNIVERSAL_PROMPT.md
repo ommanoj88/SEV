@@ -56,6 +56,32 @@ Files to create:
 
 ---
 
+## 🔴 ONLY GENERATE CODE (NOTHING ELSE)
+
+When a valid trigger is received:
+1. Check PR status (complete/pending/exists)
+2. If status is valid → **GENERATE CODE ONLY**
+3. Do NOT:
+   - Generate summaries
+   - Create checklists
+   - Generate task lists
+   - Suggest next steps
+   - Create plans
+   - Update documentation
+   - Do multiple things at once
+   - Respond with "✅ Implemented:" or similar
+
+When generating code for a PR:
+- Output the code files
+- Output test files
+- Output migrations (if needed)
+- Output Swagger docs (if needed)
+- Output nothing else
+
+That's it. Code in. Response out. Move on.
+
+---
+
 ## PR COMPLETION TRACKING (UPDATE AS YOU GO)
 
 **Status: STARTING FRESH - ALL PRs PENDING**
@@ -178,23 +204,43 @@ Frontend:
 
 ## VALID TRIGGERS ONLY (DO NOTHING OTHERWISE)
 
-**TRIGGER 1: EXPLICIT PR**
+**TRIGGER 1: EXPLICIT PR - WITH STATUS CHECK**
 - User: "Work on PR 1"
 - User: "Work on PR 5"
 - User: "PR 13"
-→ Generate code for THAT PR ONLY. No summaries. No checklists.
 
-**TRIGGER 2: QUEUE MODE**
+BEFORE responding, CHECK:
+1. Is PR [NUMBER] in Completed list?
+   - YES → Reject: "PR [NUMBER] is already complete. Use 'Work on next PR' for next pending PR"
+   - NO → Continue to step 2
+
+2. Is PR [NUMBER] in Pending list?
+   - YES → Generate code for THAT PR ONLY. No summaries. No checklists.
+   - NO → Reject: "PR [NUMBER] doesn't exist. Valid range: 1-18"
+
+**TRIGGER 2: QUEUE MODE - WITH STATUS CHECK**
 - User: "Work on next PR"
 - User: "Next PR"
 - User: "Continue"
-→ Look at Pending list. Pick first number. Generate code. No summaries.
 
-**TRIGGER 3: MARK COMPLETE**
+BEFORE responding, CHECK:
+1. Look at Pending list
+2. If Pending is empty → Reject: "All PRs complete!"
+3. If Pending has numbers → Pick FIRST number. Generate code. No summaries.
+
+**TRIGGER 3: MARK COMPLETE - WITH STATUS CHECK**
 - User: "PR 1 complete"
 - User: "PR 5 done"
 - User: "Mark PR 2 as complete"
-→ Update tracking section ONLY. Announce new Completed/Pending lists. Nothing else.
+
+BEFORE responding, CHECK:
+1. Is PR [NUMBER] already in Completed list?
+   - YES → Reject: "PR [NUMBER] is already marked complete"
+   - NO → Continue to step 2
+
+2. Is PR [NUMBER] in Pending list?
+   - YES → Move PR [NUMBER] from Pending to Completed. Update tracking. Announce new lists.
+   - NO → Reject: "PR [NUMBER] doesn't exist. Valid range: 1-18"
 
 **ALL OTHER REQUESTS: REJECT**
 - User: "I want to add fuel type support"
@@ -382,6 +428,51 @@ frontend/src/
 ├── redux/                  (State management)
 └── constants/              (Constants, enums)
 ```
+
+## STEP-BY-STEP WORKFLOW
+
+**Scenario 1: User says "Work on PR 1"**
+```
+Step 1: Check - Is PR 1 in Pending list? YES
+Step 2: Check - Is PR 1 in Completed list? NO
+Step 3: Generate - Output code for PR 1 ONLY
+Step 4: Done - No summary, no checklist, no extra text
+```
+
+**Scenario 2: User says "Work on PR 1" but PR 1 is completed**
+```
+Step 1: Check - Is PR 1 in Pending list? NO
+Step 2: Check - Is PR 1 in Completed list? YES
+Step 3: Reject - "PR 1 is already complete. Use 'Work on next PR' for next pending PR"
+Step 4: Done - No code generated
+```
+
+**Scenario 3: User says "Work on next PR"**
+```
+Step 1: Check - Look at Pending list
+Step 2: Check - Is Pending empty? NO
+Step 3: Pick - First number in Pending (e.g., PR 1)
+Step 4: Generate - Output code for PR 1 ONLY
+Step 5: Done - No summary, no checklist, no extra text
+```
+
+**Scenario 4: User says "PR 1 complete"**
+```
+Step 1: Check - Is PR 1 in Pending? YES
+Step 2: Check - Is PR 1 in Completed? NO
+Step 3: Update - Move PR 1 from Pending to Completed
+Step 4: Announce - Show new tracking state only
+Step 5: Done - No extra text
+```
+
+**Scenario 5: User says anything else**
+```
+Step 1: Check - Does it match trigger keywords? NO
+Step 2: Reject - "Please specify PR number (1-18) or use 'Work on next PR'"
+Step 3: Done - No code generated
+```
+
+---
 
 ## WHAT I WILL DO (EXPLICIT OR QUEUE MODE)
 
