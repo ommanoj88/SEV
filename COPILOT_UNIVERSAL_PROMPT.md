@@ -1,3 +1,4 @@
+YOU HAVE TO WORK ON ANYONE OF THE 18PR MENTIONED BELOW AND ALSO FOLLOW THE GUIDELINE
 # GITHUB COPILOT STRICT SINGLE-PR PROMPT
 ## One PR at a Time - No Auto-Detection, No Hallucination
 
@@ -84,10 +85,10 @@ That's it. Code in. Response out. Move on.
 
 ## PR COMPLETION TRACKING (UPDATE AS YOU GO)
 
-**Status: STARTING FRESH - ALL PRs PENDING**
+**Status: PR 2 COMPLETED - 1 of 18 done**
 
-Completed: NONE
-Pending: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18
+Completed: 2
+Pending: 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18
 
 ---
 
@@ -228,7 +229,7 @@ BEFORE responding, CHECK:
 2. If Pending is empty → Reject: "All PRs complete!"
 3. If Pending has numbers → Pick FIRST number. Generate code. No summaries.
 
-**TRIGGER 3: MARK COMPLETE - WITH STATUS CHECK**
+**TRIGGER 3: MARK COMPLETE - WITH STATUS CHECK & AUTO-UPDATE FILE**
 - User: "PR 1 complete"
 - User: "PR 5 done"
 - User: "Mark PR 2 as complete"
@@ -239,7 +240,13 @@ BEFORE responding, CHECK:
    - NO → Continue to step 2
 
 2. Is PR [NUMBER] in Pending list?
-   - YES → Move PR [NUMBER] from Pending to Completed. Update tracking. Announce new lists.
+   - YES → AUTOMATICALLY UPDATE the file:
+     * Move PR [NUMBER] from Pending to Completed
+     * Edit COPILOT_UNIVERSAL_PROMPT.md tracking section
+     * Update "Completed: X, Y, Z" list
+     * Update "Pending: A, B, C" list
+     * Update status line with count (X of 18 done)
+     * Then announce: "PR [NUMBER] marked complete. Tracking updated."
    - NO → Reject: "PR [NUMBER] doesn't exist. Valid range: 1-18"
 
 **ALL OTHER REQUESTS: REJECT**
@@ -510,15 +517,19 @@ ME: "Starting PR 1: Add Vehicle Fuel Type Support
   - Create: Vehicle.java (add fuelType field)
   - Create: FuelType.java enum"
 
-**Marking PR Complete:**
+**Marking PR Complete (AUTO-UPDATES FILE):**
 YOU: "PR 1 complete"
-ME: "Updating tracking...
+ME: [AUTOMATICALLY EDITS COPILOT_UNIVERSAL_PROMPT.md]
+"PR 1 marked complete. Tracking updated.
+
+Updated Tracking:
 Completed: 1
 Pending: 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18"
 
 **Then next time:**
 YOU: "Work on next PR"
-ME: "Starting PR 2: Create Feature Flag System"
+ME: "Starting PR 2: Create Feature Flag System
+(Because Pending list now shows: 2, 3, 4...)"
 
 ## DURING PR WORK (STAY FOCUSED ON THAT PR ONLY)
 
