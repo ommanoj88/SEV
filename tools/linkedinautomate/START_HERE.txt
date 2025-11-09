@@ -1,0 +1,144 @@
+================================================================================
+LINKEDIN AUTOMATION - START HERE
+================================================================================
+
+STEP 1: GET ChromeDriver
+================================================================================
+
+1. Open Google Chrome
+2. Click menu (three dots) ⋮ → About Google Chrome
+3. Note the VERSION number (e.g., 131.0.6778.204)
+
+4. Go to: https://chromedriver.chromium.org/
+5. Download ChromeDriver matching your version
+6. Extract chromedriver.exe to THIS FOLDER:
+   c:\Users\omman\Desktop\SEV\tools\linkedinautomate\
+
+
+STEP 2: SEND CONNECTION REQUESTS (Script 1)
+================================================================================
+
+Double-click: run.bat
+
+This will:
+  • Install Selenium (if needed)
+  • Start Chrome browser automatically
+  • Log in to LinkedIn
+  • Search for fleet managers at 800+ target companies
+  • Send connection requests with personalized notes
+  • Track all sent requests in connection_requests_sent.txt
+
+EXPECTED OUTPUT:
+================================================================================
+
+LinkedIn Automation - Running Script 1
+=======================================
+
+Installing Selenium...
+
+Starting LinkedIn automation...
+
+============================================================================
+LinkedIn Connection Request Automation - EV Fleet Platform
+============================================================================
+
+📊 Weekly quota: 0/100 (Remaining: 100)
+✓ Loaded 0 previously sent requests
+
+✓ Logged in to LinkedIn
+
+🔍 Searching: Zomato + Fleet Manager
+  ✓ Sent request to John Doe (Fleet Manager at Zomato)
+  ✓ Sent request to Jane Smith (Operations Head at Zomato)
+  ...
+
+============================================================================
+✓ Session complete: 18 connection requests sent
+✓ Total requests sent (all time): 18
+✓ Weekly quota: 18/100
+============================================================================
+
+
+TRACKING FILES CREATED:
+================================================================================
+
+After running, these files will be created:
+  • connection_requests_sent.txt - All requests (prevents duplicates)
+  • accepted_connections.txt - Confirmed acceptances
+  • messages_sent.txt - All messages (from script2.py)
+
+
+WHAT HAPPENS NEXT:
+================================================================================
+
+1. Chrome browser opens
+2. May ask for 2FA (have phone ready)
+3. Searches for fleet managers on LinkedIn
+4. Sends personalized connection requests
+5. Browser closes after ~5-10 minutes
+
+LinkedIn may ask: "Are you sure you want to connect?"
+→ Click "Send" to confirm
+
+
+TROUBLESHOOTING:
+================================================================================
+
+ERROR: "can't find chromedriver"
+→ Download chromedriver.exe and put in THIS folder
+→ https://chromedriver.chromium.org/
+
+ERROR: "ModuleNotFoundError: No module named 'selenium'"
+→ Selenium will install automatically when you run run.bat
+
+ERROR: "Chrome version mismatch"
+→ Download matching ChromeDriver from https://chromedriver.chromium.org/
+
+ERROR: "Login failed"
+→ Check credentials in script1.py (should be ommanoj88@gmail.com)
+→ Check if LinkedIn is asking for 2FA
+
+ERROR: "No new connections to message" (when running script2.py)
+→ Wait 3-7 days for people to accept your connection requests
+→ Check that connection_requests_sent.txt has data from script1.py
+→ People must accept your request to appear in your connections list
+
+
+AFTER 3-7 DAYS:
+================================================================================
+
+Once people accept your requests, run:
+  • run_script2.bat - Sends follow-up messages to new connections
+
+This will:
+  • Log in to LinkedIn
+  • Check all your connections
+  • Find people who accepted your requests
+  • Send them personalized follow-up messages
+  • Track sent messages in messages_sent.txt
+  • Skip people who already received messages
+
+
+WEEKLY SCHEDULE:
+================================================================================
+
+PHASE 1 (Days 1-5): Send Connection Requests
+  • Double-click: run.bat (each run = ~100 requests, respects weekly limit)
+  • Repeat until you reach 100+ new connection requests for the week
+
+PHASE 2 (Days 3-7): After Connections Are Accepted
+  • Double-click: run_script2.bat (sends follow-up messages)
+  • Repeat every few days as more people accept requests
+
+
+QUESTIONS?
+================================================================================
+
+Check these files:
+  • README.md - Full documentation
+  • IMPROVEMENTS_SUMMARY.md - What was fixed in these scripts
+  • QUICKSTART.md - 5-minute guide
+
+
+READY? Double-click: run.bat
+================================================================================

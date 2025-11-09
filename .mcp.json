@@ -1,0 +1,129 @@
+{
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "description": "Code reviews, PR management, issue tracking, GitHub integrations"
+    },
+    "sentry": {
+      "type": "http",
+      "url": "https://mcp.sentry.dev/mcp",
+      "description": "Monitor errors, debug production issues, error tracking"
+    },
+    "vercel": {
+      "type": "http",
+      "url": "https://mcp.vercel.com/",
+      "description": "Manage projects, deployments, analyze deployment logs"
+    },
+    "netlify": {
+      "type": "http",
+      "url": "https://netlify-mcp.netlify.app/mcp",
+      "description": "Create, deploy, and manage websites on Netlify"
+    },
+    "stripe": {
+      "type": "http",
+      "url": "https://mcp.stripe.com",
+      "description": "Payment processing, subscription management, financial transactions"
+    },
+    "paypal": {
+      "type": "http",
+      "url": "https://mcp.paypal.com/mcp",
+      "description": "Integrate PayPal commerce capabilities, payment processing"
+    },
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp",
+      "description": "Read docs, update pages, manage tasks"
+    },
+    "linear": {
+      "type": "http",
+      "url": "https://mcp.linear.app/mcp",
+      "description": "Integrate with Linear's issue tracking and project management"
+    },
+    "asana": {
+      "type": "sse",
+      "url": "https://mcp.asana.com/sse",
+      "description": "Interact with your Asana workspace to keep projects on track"
+    },
+    "atlassian": {
+      "type": "sse",
+      "url": "https://mcp.atlassian.com/v1/sse",
+      "description": "Manage your Jira tickets and Confluence docs"
+    },
+    "figma": {
+      "type": "http",
+      "url": "https://mcp.figma.com/mcp",
+      "description": "Generate better code by bringing in full Figma context"
+    },
+    "cloudflare": {
+      "type": "http",
+      "url": "https://mcp.cloudflare.com/mcp",
+      "description": "Build applications, analyze traffic, monitor performance, manage security"
+    },
+    "hubspot": {
+      "type": "http",
+      "url": "https://mcp.hubspot.com/anthropic",
+      "description": "Access and manage HubSpot CRM data"
+    },
+    "intercom": {
+      "type": "http",
+      "url": "https://mcp.intercom.com/mcp",
+      "description": "Access real-time customer conversations, tickets, and user data"
+    },
+    "socket": {
+      "type": "http",
+      "url": "https://mcp.socket.dev/",
+      "description": "Security analysis for dependencies, vulnerability detection"
+    },
+    "jam": {
+      "type": "http",
+      "url": "https://mcp.jam.dev/mcp",
+      "description": "Debug faster with AI agents that can access Jam recordings"
+    },
+    "huggingface": {
+      "type": "http",
+      "url": "https://huggingface.co/mcp",
+      "description": "Access Hugging Face Hub information and Gradio AI Applications"
+    },
+    "monday": {
+      "type": "http",
+      "url": "https://mcp.monday.com/mcp",
+      "description": "Manage monday.com boards by creating items, updating columns"
+    },
+    "stytch": {
+      "type": "http",
+      "url": "http://mcp.stytch.dev/mcp",
+      "description": "Configure and manage Stytch authentication services"
+    },
+    "plaid": {
+      "type": "sse",
+      "url": "https://api.dashboard.plaid.com/mcp/sse",
+      "description": "Analyze and optimize Plaid integrations, banking data, financial accounts"
+    },
+    "square": {
+      "type": "sse",
+      "url": "https://mcp.squareup.com/sse",
+      "description": "Use an agent to build on Square APIs - payments, inventory, orders"
+    },
+    "canva": {
+      "type": "http",
+      "url": "https://mcp.canva.com/mcp",
+      "description": "Browse, summarize, autofill, and generate new Canva designs"
+    },
+    "cloudinary": {
+      "type": "http",
+      "url": "https://mcp.cloudinary.com/mcp",
+      "description": "Upload, manage, transform, and analyze media assets"
+    },
+    "box": {
+      "type": "http",
+      "url": "https://mcp.box.com/",
+      "description": "Ask questions about your enterprise content, get insights"
+    },
+    "workato": {
+      "type": "http",
+      "url": "https://mcp.workato.com/",
+      "description": "Access any application, workflows or data via Workato"
+    }
+  }
+}
