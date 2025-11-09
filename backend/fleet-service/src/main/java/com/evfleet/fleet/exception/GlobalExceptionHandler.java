@@ -41,6 +41,26 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Handle FeatureNotAvailableException
+     */
+    @ExceptionHandler(FeatureNotAvailableException.class)
+    public ResponseEntity<ErrorResponse> handleFeatureNotAvailableException(
+            FeatureNotAvailableException ex,
+            WebRequest request) {
+        log.error("Feature not available: {}", ex.getMessage());
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.FORBIDDEN.value(),
+                "Feature Not Available",
+                ex.getMessage(),
+                request.getDescription(false).replace("uri=", "")
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
+    /**
      * Handle IllegalArgumentException
      */
     @ExceptionHandler(IllegalArgumentException.class)
