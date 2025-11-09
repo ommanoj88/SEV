@@ -4,7 +4,9 @@
       "Bash(dir:*)",
       "Bash(python script2.py:*)",
       "Bash(timeout 300 python:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
