@@ -1,0 +1,38 @@
+# Test Configuration for Fleet Service
+spring:
+  application:
+    name: fleet-service-test
+  
+  # Use H2 in-memory database for tests
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  
+  # H2 Console (for debugging tests if needed)
+  h2:
+    console:
+      enabled: false
+  
+  # JPA Configuration
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: false
+  
+  # Flyway configuration for tests
+  flyway:
+    enabled: false  # Disable Flyway for unit tests, use create-drop instead
+
+# Logging
+logging:
+  level:
+    com.evfleet.fleet: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
