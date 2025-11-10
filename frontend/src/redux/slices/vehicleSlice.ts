@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { Vehicle, Trip, VehicleFormData, VehicleFilters, VehicleStatus, VehicleType } from '../../types';
+import { Vehicle, Trip, VehicleFormData, VehicleFilters, VehicleStatus, VehicleType, FuelType } from '../../types';
 import vehicleService from '../../services/vehicleService';
 import tripService from '../../services/tripService';
 import { RootState } from '../store';
@@ -23,6 +23,7 @@ const MOCK_VEHICLES: Vehicle[] = [
     model: 'Model 3',
     year: 2023,
     type: VehicleType.TWO_WHEELER,
+    fuelType: FuelType.EV,
     status: VehicleStatus.ACTIVE,
     licensePlate: 'TS-001',
     color: 'White',
@@ -48,6 +49,7 @@ const MOCK_VEHICLES: Vehicle[] = [
     model: 'Nexon EV',
     year: 2023,
     type: VehicleType.THREE_WHEELER,
+    fuelType: FuelType.EV,
     status: VehicleStatus.CHARGING,
     licensePlate: 'TS-002',
     color: 'Blue',
@@ -73,6 +75,7 @@ const MOCK_VEHICLES: Vehicle[] = [
     model: 'ZS EV',
     year: 2022,
     type: VehicleType.LCV,
+    fuelType: FuelType.EV,
     status: VehicleStatus.INACTIVE,
     licensePlate: 'TS-003',
     color: 'Red',

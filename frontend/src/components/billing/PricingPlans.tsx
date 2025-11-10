@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Grid, Card, CardContent, Typography, Button, Box, List, ListItem, 
   ListItemIcon, ListItemText, CircularProgress, Alert, Chip,
   FormControl, InputLabel, Select, MenuItem, TextField
 } from '@mui/material';
 import { CheckCircle, Star } from '@mui/icons-material';
-import { PRICING_TIERS, PricingTierEnum, BillingCycle, BILLING_CYCLE_LABELS, formatPrice } from '../../constants/pricingTiers';
+import { PRICING_TIERS, BillingCycle, BILLING_CYCLE_LABELS, formatPrice } from '../../constants/pricingTiers';
 import billingService from '../../services/billingService';
 
 const PricingPlans: React.FC = () => {
@@ -15,16 +15,6 @@ const PricingPlans: React.FC = () => {
   const [selectedBillingCycle, setSelectedBillingCycle] = useState<BillingCycle>(BillingCycle.MONTHLY);
   const [vehicleCount, setVehicleCount] = useState<number>(10);
   const [calculations, setCalculations] = useState<Record<string, any>>({});
-
-  useEffect(() => {
-    fetchPricingTiers();
-  }, []);
-
-  useEffect(() => {
-    if (tiers.length > 0) {
-      calculateAllPrices();
-    }
-  }, [selectedBillingCycle, vehicleCount, tiers]);
 
   const fetchPricingTiers = async () => {
     try {
@@ -42,7 +32,7 @@ const PricingPlans: React.FC = () => {
     }
   };
 
-  const calculateAllPrices = async () => {
+  const calculateAllPrices = useCallback(async () => {
     const newCalculations: Record<string, any> = {};
     
     for (const tier of tiers) {
@@ -80,7 +70,18 @@ const PricingPlans: React.FC = () => {
     }
     
     setCalculations(newCalculations);
-  };
+  }, [tiers, vehicleCount, selectedBillingCycle]);
+
+  useEffect(() => {
+    fetchPricingTiers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (tiers.length > 0) {
+      calculateAllPrices();
+    }
+  }, [tiers, calculateAllPrices]);
 
   const handleChoosePlan = (tierName: string) => {
     console.log(`Selected plan: ${tierName}`);

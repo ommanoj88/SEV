@@ -20,8 +20,6 @@ import {
   Tooltip, 
   Legend, 
   ResponsiveContainer,
-  LineChart,
-  Line,
   PieChart,
   Pie,
   Cell,
@@ -32,7 +30,7 @@ import { useTheme } from '@mui/material/styles';
 import { useAppSelector } from '../../redux/hooks';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import EcoIcon from '@mui/icons-material/Eco';
+import NatureIcon from '@mui/icons-material/Nature';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import LocalGasStationIcon from '@mui/icons-material/LocalGasStation';
@@ -203,7 +201,7 @@ const TCOAnalysis: React.FC = () => {
           <Card elevation={3}>
             <CardContent>
               <Stack direction="row" alignItems="center" spacing={1} mb={1}>
-                <EcoIcon sx={{ color: theme.palette.success.main }} />
+                <NatureIcon sx={{ color: theme.palette.success.main }} />
                 <Typography variant="overline" color="text.secondary" fontWeight="bold">
                   CO₂ Savings
                 </Typography>
