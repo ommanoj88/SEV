@@ -105,6 +105,16 @@ export const tripService = {
   }): Promise<Trip> => {
     return apiClient.patch(`/v1/fleet/trips/${tripId}/metrics`, metrics);
   },
+
+  /**
+   * Get company cost summary
+   */
+  getCompanyCostSummary: async (companyId: number, params?: {
+    startTime?: string;
+    endTime?: string;
+  }): Promise<any> => {
+    return apiClient.get(`/v1/fleet/trips/company/${companyId}/cost-summary`, params);
+  },
 };
 
 export default tripService;

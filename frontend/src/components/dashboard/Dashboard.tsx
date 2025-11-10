@@ -9,6 +9,9 @@ import FleetSummaryCard from './FleetSummaryCard';
 import BatterySummaryCard from './BatterySummaryCard';
 import AlertsCard from './AlertsCard';
 import UtilizationChart from './UtilizationChart';
+import FleetCompositionCard from './FleetCompositionCard';
+import CostBreakdownCard from './CostBreakdownCard';
+import MaintenanceAlertsCard from './MaintenanceAlertsCard';
 import LoadingSpinner from '@components/common/LoadingSpinner';
 
 const Dashboard: React.FC = () => {
@@ -55,6 +58,21 @@ const Dashboard: React.FC = () => {
         {/* Fleet Summary */}
         <Grid item xs={12}>
           <FleetSummaryCard analytics={metrics} />
+        </Grid>
+
+        {/* Fleet Composition - NEW PR 16 */}
+        <Grid item xs={12} md={6} lg={4}>
+          <FleetCompositionCard />
+        </Grid>
+
+        {/* Cost Breakdown - NEW PR 16 */}
+        <Grid item xs={12} md={6} lg={4}>
+          <CostBreakdownCard />
+        </Grid>
+
+        {/* Maintenance Alerts - NEW PR 16 */}
+        <Grid item xs={12} md={12} lg={4}>
+          <MaintenanceAlertsCard />
         </Grid>
 
         {/* Battery Summary */}

@@ -92,6 +92,27 @@ export const vehicleService = {
       currentBatterySoc,
     });
   },
+
+  /**
+   * Get fleet composition by fuel type
+   */
+  getFleetComposition: async (companyId: number): Promise<any> => {
+    return apiClient.get(`/v1/vehicles/company/${companyId}/fleet-composition`);
+  },
+
+  /**
+   * Get low battery vehicles for a company
+   */
+  getLowBatteryVehiclesByCompany: async (companyId: number, threshold: number = 20): Promise<Vehicle[]> => {
+    return apiClient.get(`/v1/vehicles/company/${companyId}/low-battery-vehicles`, { threshold });
+  },
+
+  /**
+   * Get low fuel vehicles for a company
+   */
+  getLowFuelVehicles: async (companyId: number, threshold: number = 20): Promise<Vehicle[]> => {
+    return apiClient.get(`/v1/vehicles/company/${companyId}/low-fuel-vehicles`, { threshold });
+  },
 };
 
 export default vehicleService;
