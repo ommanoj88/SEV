@@ -2,9 +2,13 @@ package com.evfleet.billing.controller;
 
 import com.evfleet.billing.dto.BillingAddressDto;
 import com.evfleet.billing.dto.PaymentProcessRequest;
+import com.evfleet.billing.dto.PaymentRequestDTO;
+import com.evfleet.billing.dto.InvoiceDTO;
 import com.evfleet.billing.dto.SubscriptionUpdateRequest;
 import com.evfleet.billing.entity.*;
 import com.evfleet.billing.service.BillingService;
+import com.evfleet.billing.service.InvoiceGenerationService;
+import com.evfleet.billing.service.PaymentProcessingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,6 +29,8 @@ import java.util.Optional;
 public class BillingController {
 
     private final BillingService billingService;
+    private final InvoiceGenerationService invoiceGenerationService;
+    private final PaymentProcessingService paymentProcessingService;
     
     // TODO: Extract company ID from authentication context in production
     // For demo purposes, using a default company ID
@@ -172,5 +178,87 @@ public class BillingController {
     public ResponseEntity<Void> deletePaymentMethod(@PathVariable String id) {
         billingService.deletePaymentMethod(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // ========== PR 18: INVOICE GENERATION & PAYMENT PROCESSING ==========
+
+    /**
+     * Finalize invoice and prepare for payment.
+     * Moves invoice from DRAFT to FINALIZED status.
+     */
+    @PostMapping("/invoices/{invoiceId}/finalize")
+    @Operation(summary = "Finalize invoice", description = "Finalizes an invoice for payment processing")
+    public ResponseEntity<String> finalizeInvoice(@PathVariable String invoiceId) {
+        invoiceGenerationService.finalizeInvoice(invoiceId);
+        return ResponseEntity.ok("Invoice finalized successfully");
+    }
+
+    /**
+     * Get invoice details with full breakdown by tier.
+     */
+    @GetMapping("/invoices/{invoiceId}/details")
+    @Operation(summary = "Get invoice details", description = "Retrieves complete invoice details including tier breakdown")
+    public ResponseEntity<InvoiceDTO> getInvoiceDetails(@PathVariable String invoiceId) {
+        InvoiceDTO invoiceDTO = invoiceGenerationService.getInvoiceDetails(invoiceId);
+        return ResponseEntity.ok(invoiceDTO);
+    }
+
+    /**
+     * Process payment for an invoice using PaymentRequestDTO.
+     * Supports multiple payment methods: CREDIT_CARD, DEBIT_CARD, BANK_TRANSFER, UPI
+     */
+    @PostMapping("/invoices/{invoiceId}/pay")
+    @Operation(summary = "Process payment", description = "Processes payment for an invoice")
+    public ResponseEntity<Payment> processPayment(
+            @PathVariable String invoiceId,
+            @Valid @RequestBody PaymentRequestDTO request) {
+        Payment payment = paymentProcessingService.processPayment(
+                invoiceId,
+                request.getAmount(),
+                request.getPaymentMethod()
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(payment);
+    }
+
+    /**
+     * Retry failed payment for an invoice.
+     */
+    @PostMapping("/invoices/{invoiceId}/retry-payment")
+    @Operation(summary = "Retry payment", description = "Retries payment for a failed invoice")
+    public ResponseEntity<Payment> retryPayment(
+            @PathVariable String invoiceId,
+            @RequestParam String paymentMethod) {
+        Payment payment = paymentProcessingService.retryPayment(invoiceId, paymentMethod);
+        return ResponseEntity.ok(payment);
+    }
+
+    /**
+     * Get payment history for an invoice.
+     */
+    @GetMapping("/invoices/{invoiceId}/payment-history")
+    @Operation(summary = "Get payment history", description = "Retrieves all payment transactions for an invoice")
+    public ResponseEntity<List<Payment>> getPaymentHistory(@PathVariable String invoiceId) {
+        List<Payment> payments = paymentProcessingService.getPaymentHistory(invoiceId);
+        return ResponseEntity.ok(payments);
+    }
+
+    /**
+     * Verify payment status for an invoice.
+     */
+    @GetMapping("/invoices/{invoiceId}/payment-status")
+    @Operation(summary = "Verify payment status", description = "Checks if payment was successfully processed")
+    public ResponseEntity<Boolean> verifyPaymentStatus(@PathVariable String invoiceId) {
+        boolean isPaid = paymentProcessingService.verifyPaymentStatus(invoiceId);
+        return ResponseEntity.ok(isPaid);
+    }
+
+    /**
+     * Handle overdue invoices and apply late fees.
+     */
+    @PostMapping("/invoices/{invoiceId}/handle-overdue")
+    @Operation(summary = "Handle overdue invoice", description = "Applies late fees to overdue invoices (>30 days)")
+    public ResponseEntity<String> handleOverdueInvoice(@PathVariable String invoiceId) {
+        paymentProcessingService.handleOverdueInvoice(invoiceId);
+        return ResponseEntity.ok("Overdue invoice processed");
     }
 }

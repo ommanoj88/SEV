@@ -162,6 +162,117 @@ export const billingService = {
   deletePaymentMethod: async (paymentMethodId: number): Promise<void> => {
     return apiClient.delete(`/v1/billing/payment-methods/${paymentMethodId}`);
   },
+
+  // ========== PR 18: INVOICE GENERATION & PAYMENT PROCESSING ==========
+
+  /**
+   * Finalize invoice and prepare for payment
+   */
+  finalizeInvoice: async (invoiceId: string): Promise<string> => {
+    return apiClient.post(`/v1/billing/invoices/${invoiceId}/finalize`, {});
+  },
+
+  /**
+   * Get invoice details with full breakdown by tier
+   */
+  getInvoiceDetails: async (invoiceId: string): Promise<any> => {
+    return apiClient.get(`/v1/billing/invoices/${invoiceId}/details`);
+  },
+
+  /**
+   * Process payment for an invoice
+   * Supports: CREDIT_CARD, DEBIT_CARD, BANK_TRANSFER, UPI
+   */
+  processInvoicePayment: async (invoiceId: string, data: {
+    amount: number;
+    paymentMethod: string;
+    transactionReference?: string;
+    remarks?: string;
+  }): Promise<Payment> => {
+    return apiClient.post(`/v1/billing/invoices/${invoiceId}/pay`, data);
+  },
+
+  /**
+   * Retry failed payment for an invoice
+   */
+  retryInvoicePayment: async (invoiceId: string, paymentMethod: string): Promise<Payment> => {
+    return apiClient.post(`/v1/billing/invoices/${invoiceId}/retry-payment`, { paymentMethod });
+  },
+
+  /**
+   * Get payment history for an invoice
+   */
+  getInvoicePaymentHistory: async (invoiceId: string): Promise<Payment[]> => {
+    return apiClient.get(`/v1/billing/invoices/${invoiceId}/payment-history`);
+  },
+
+  /**
+   * Verify payment status for an invoice
+   */
+  verifyInvoicePaymentStatus: async (invoiceId: string): Promise<boolean> => {
+    return apiClient.get(`/v1/billing/invoices/${invoiceId}/payment-status`);
+  },
+
+  /**
+   * Handle overdue invoice (apply late fees for > 30 days)
+   */
+  handleOverdueInvoice: async (invoiceId: string): Promise<string> => {
+    return apiClient.post(`/v1/billing/invoices/${invoiceId}/handle-overdue`, {});
+  },
+
+  // ========== PR 18: MULTI-FUEL SURCHARGE CALCULATIONS ==========
+
+  /**
+   * Calculate EV surcharge
+   * Rate: ₹15/kWh above 50 kWh/month free tier
+   */
+  calculateEVSurcharge: (energyConsumedKwh: number): number => {
+    const freeEnergyTier = 50;
+    const ratePerKwh = 15;
+
+    if (energyConsumedKwh <= freeEnergyTier) {
+      return 0;
+    }
+
+    return (energyConsumedKwh - freeEnergyTier) * ratePerKwh;
+  },
+
+  /**
+   * Calculate ICE surcharge
+   * Rate: ₹10/liter above 100 liters/month free tier
+   */
+  calculateICESurcharge: (fuelConsumedLiters: number): number => {
+    const freeFuelTier = 100;
+    const ratePerLiter = 10;
+
+    if (fuelConsumedLiters <= freeFuelTier) {
+      return 0;
+    }
+
+    return (fuelConsumedLiters - freeFuelTier) * ratePerLiter;
+  },
+
+  /**
+   * Calculate HYBRID surcharge
+   * Combines EV + ICE surcharges with 10% discount
+   */
+  calculateHybridSurcharge: (energyConsumedKwh: number, fuelConsumedLiters: number): number => {
+    const evSurcharge = billingService.calculateEVSurcharge(energyConsumedKwh);
+    const iceSurcharge = billingService.calculateICESurcharge(fuelConsumedLiters);
+    const totalSurcharge = evSurcharge + iceSurcharge;
+
+    // 10% discount for hybrid vehicles (more efficient)
+    return totalSurcharge * 0.9;
+  },
+
+  /**
+   * Calculate monthly charge for vehicles in a pricing tier
+   * Includes base subscription + usage surcharges
+   */
+  calculateTierCharge: (monthlyPrice: number, vehicleCount: number, usageSurcharge: number): number => {
+    const baseCharge = monthlyPrice * vehicleCount;
+    return baseCharge + usageSurcharge;
+  },
 };
 
 export default billingService;

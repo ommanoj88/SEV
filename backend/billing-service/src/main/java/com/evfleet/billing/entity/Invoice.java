@@ -50,9 +50,19 @@ public class Invoice {
     @Column(name = "status", length = 50)
     private String status;
 
+    @Column(name = "vehicle_count")
+    private Integer vehicleCount;
+
+    @Column(name = "invoice_month", length = 7)
+    private String invoiceMonth;
+
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "items", columnDefinition = "jsonb")
     private Map<String, Object> items;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "charges_by_tier", columnDefinition = "jsonb")
+    private Map<String, Object> chargesByTier;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

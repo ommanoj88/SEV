@@ -37,8 +37,14 @@ public class Payment {
     @Column(name = "payment_date")
     private LocalDateTime paymentDate;
 
+    @Column(name = "processed_at")
+    private LocalDateTime processedAt;
+
     @Column(name = "status", length = 50)
     private String status;
+
+    @Column(name = "failure_reason", length = 500)
+    private String failureReason;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "gateway_response", columnDefinition = "jsonb")
