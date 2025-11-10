@@ -55,4 +55,71 @@ public interface ChargingSessionRepository extends JpaRepository<ChargingSession
     @Query("SELECT COUNT(s) FROM ChargingSession s WHERE s.stationId = :stationId " +
            "AND s.status = 'COMPLETED'")
     Long countCompletedSessionsByStation(@Param("stationId") Long stationId);
+
+    // Analytics queries for PR-10
+    
+    @Query("SELECT s FROM ChargingSession s WHERE s.stationId = :stationId " +
+           "AND s.startTime BETWEEN :startDate AND :endDate")
+    List<ChargingSession> findByStationIdAndDateRange(
+        @Param("stationId") Long stationId,
+        @Param("startDate") LocalDateTime startDate,
+        @Param("endDate") LocalDateTime endDate
+    );
+
+    @Query("SELECT COUNT(s) FROM ChargingSession s WHERE s.stationId = :stationId " +
+           "AND s.status IN ('INITIATED', 'CHARGING')")
+    Long countActiveSessionsByStation(@Param("stationId") Long stationId);
+
+    @Query("SELECT COALESCE(SUM(s.energyConsumed), 0) FROM ChargingSession s " +
+           "WHERE s.stationId = :stationId AND s.status = 'COMPLETED' " +
+           "AND s.startTime BETWEEN :startDate AND :endDate")
+    BigDecimal getTotalEnergyByStation(
+        @Param("stationId") Long stationId,
+        @Param("startDate") LocalDateTime startDate,
+        @Param("endDate") LocalDateTime endDate
+    );
+
+    @Query("SELECT COALESCE(SUM(s.cost), 0) FROM ChargingSession s " +
+           "WHERE s.stationId = :stationId AND s.status = 'COMPLETED' " +
+           "AND s.startTime BETWEEN :startDate AND :endDate")
+    BigDecimal getTotalCostByStation(
+        @Param("stationId") Long stationId,
+        @Param("startDate") LocalDateTime startDate,
+        @Param("endDate") LocalDateTime endDate
+    );
+
+    @Query("SELECT COALESCE(AVG(s.durationMinutes), 0) FROM ChargingSession s " +
+           "WHERE s.stationId = :stationId AND s.status = 'COMPLETED' " +
+           "AND s.startTime BETWEEN :startDate AND :endDate")
+    Double getAverageDurationByStation(
+        @Param("stationId") Long stationId,
+        @Param("startDate") LocalDateTime startDate,
+        @Param("endDate") LocalDateTime endDate
+    );
+
+    @Query("SELECT COUNT(s) FROM ChargingSession s WHERE s.status IN ('INITIATED', 'CHARGING')")
+    Long countAllActiveSessions();
+
+    @Query("SELECT s FROM ChargingSession s WHERE s.status = 'COMPLETED' " +
+           "AND s.startTime BETWEEN :startDate AND :endDate")
+    List<ChargingSession> findCompletedSessionsInRange(
+        @Param("startDate") LocalDateTime startDate,
+        @Param("endDate") LocalDateTime endDate
+    );
+
+    @Query("SELECT COALESCE(SUM(s.cost), 0) FROM ChargingSession s " +
+           "WHERE s.status = 'COMPLETED' " +
+           "AND s.startTime BETWEEN :startDate AND :endDate")
+    BigDecimal getTotalRevenue(
+        @Param("startDate") LocalDateTime startDate,
+        @Param("endDate") LocalDateTime endDate
+    );
+
+    @Query("SELECT COALESCE(SUM(s.energyConsumed), 0) FROM ChargingSession s " +
+           "WHERE s.status = 'COMPLETED' " +
+           "AND s.startTime BETWEEN :startDate AND :endDate")
+    BigDecimal getTotalEnergyCharged(
+        @Param("startDate") LocalDateTime startDate,
+        @Param("endDate") LocalDateTime endDate
+    );
 }
