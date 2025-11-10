@@ -85,4 +85,52 @@ public interface VehicleService {
      * Get vehicle by vehicle number
      */
     VehicleResponse getVehicleByNumber(String vehicleNumber);
+
+    // ===== PR 4: Multi-fuel Query Methods =====
+
+    /**
+     * Get vehicles by fuel type
+     * @param fuelType The fuel type to filter by (ICE, EV, HYBRID)
+     * @return List of vehicles with the specified fuel type
+     * @since 2.0.0 (PR 4: Multi-fuel support)
+     */
+    List<VehicleResponse> getVehiclesByFuelType(com.evfleet.fleet.model.FuelType fuelType);
+
+    /**
+     * Get vehicles by company and fuel type
+     * @param companyId The company ID
+     * @param fuelType The fuel type to filter by
+     * @return List of vehicles for the company with specified fuel type
+     * @since 2.0.0 (PR 4: Multi-fuel support)
+     */
+    List<VehicleResponse> getVehiclesByCompanyAndFuelType(Long companyId, com.evfleet.fleet.model.FuelType fuelType);
+
+    /**
+     * Get fleet composition by fuel type for a company
+     * Returns the percentage and count of each fuel type in the fleet
+     * @param companyId The company ID
+     * @return Map containing fleet composition statistics
+     * @since 2.0.0 (PR 4: Multi-fuel support)
+     */
+    java.util.Map<String, Object> getFleetComposition(Long companyId);
+
+    /**
+     * Get EV/HYBRID vehicles with low battery
+     * Only returns vehicles that support battery charging (EV and HYBRID)
+     * @param companyId The company ID
+     * @param threshold Battery threshold percentage (default 20%)
+     * @return List of EV/HYBRID vehicles with battery below threshold
+     * @since 2.0.0 (PR 4: Multi-fuel support)
+     */
+    List<VehicleResponse> getLowBatteryVehicles(Long companyId, Double threshold);
+
+    /**
+     * Get ICE/HYBRID vehicles with low fuel
+     * Only returns vehicles that use fuel (ICE and HYBRID)
+     * @param companyId The company ID
+     * @param thresholdPercentage Fuel level threshold as percentage of tank capacity (default 20%)
+     * @return List of ICE/HYBRID vehicles with fuel below threshold
+     * @since 2.0.0 (PR 4: Multi-fuel support)
+     */
+    List<VehicleResponse> getLowFuelVehicles(Long companyId, Double thresholdPercentage);
 }

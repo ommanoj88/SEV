@@ -41,6 +41,7 @@ public class VehicleServiceImpl implements VehicleService {
         mapRequestToEntity(request, vehicle);
         vehicle.setTotalDistance(0.0);
         vehicle.setTotalEnergyConsumed(0.0);
+        vehicle.setTotalFuelConsumed(0.0);
 
         Vehicle savedVehicle = vehicleRepository.save(vehicle);
         log.info("Vehicle created successfully with ID: {}", savedVehicle.getId());
@@ -240,15 +241,102 @@ public class VehicleServiceImpl implements VehicleService {
         return VehicleResponse.fromEntity(vehicle);
     }
 
+    // ===== PR 4: Multi-fuel Query Methods Implementation =====
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<VehicleResponse> getVehiclesByFuelType(com.evfleet.fleet.model.FuelType fuelType) {
+        log.debug("Fetching vehicles with fuel type: {}", fuelType);
+
+        return vehicleRepository.findByFuelType(fuelType).stream()
+                .map(VehicleResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<VehicleResponse> getVehiclesByCompanyAndFuelType(Long companyId, com.evfleet.fleet.model.FuelType fuelType) {
+        log.debug("Fetching vehicles for company ID: {} with fuel type: {}", companyId, fuelType);
+
+        return vehicleRepository.findByCompanyIdAndFuelType(companyId, fuelType).stream()
+                .map(VehicleResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public java.util.Map<String, Object> getFleetComposition(Long companyId) {
+        log.debug("Fetching fleet composition for company ID: {}", companyId);
+
+        List<Object[]> compositionData = vehicleRepository.getFleetCompositionByCompany(companyId);
+        
+        java.util.Map<String, Long> fuelTypeCounts = new java.util.HashMap<>();
+        long totalVehicles = 0;
+
+        // Process the query results
+        for (Object[] row : compositionData) {
+            com.evfleet.fleet.model.FuelType fuelType = (com.evfleet.fleet.model.FuelType) row[0];
+            Long count = ((Number) row[1]).longValue();
+            
+            if (fuelType != null) {
+                fuelTypeCounts.put(fuelType.name(), count);
+                totalVehicles += count;
+            }
+        }
+
+        // Calculate percentages
+        java.util.Map<String, Double> fuelTypePercentages = new java.util.HashMap<>();
+        if (totalVehicles > 0) {
+            for (java.util.Map.Entry<String, Long> entry : fuelTypeCounts.entrySet()) {
+                double percentage = (entry.getValue() * 100.0) / totalVehicles;
+                fuelTypePercentages.put(entry.getKey(), Math.round(percentage * 100.0) / 100.0);
+            }
+        }
+
+        // Build the response
+        java.util.Map<String, Object> composition = new java.util.HashMap<>();
+        composition.put("totalVehicles", totalVehicles);
+        composition.put("counts", fuelTypeCounts);
+        composition.put("percentages", fuelTypePercentages);
+
+        log.debug("Fleet composition for company ID {}: {} total vehicles", companyId, totalVehicles);
+        return composition;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<VehicleResponse> getLowBatteryVehicles(Long companyId, Double threshold) {
+        log.debug("Fetching EV/HYBRID vehicles with battery below: {}% for company ID: {}", threshold, companyId);
+
+        return vehicleRepository.findLowBatteryVehicles(companyId, threshold).stream()
+                .map(VehicleResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<VehicleResponse> getLowFuelVehicles(Long companyId, Double thresholdPercentage) {
+        log.debug("Fetching ICE/HYBRID vehicles with fuel below: {}% for company ID: {}", thresholdPercentage, companyId);
+
+        return vehicleRepository.findLowFuelVehicles(companyId, thresholdPercentage).stream()
+                .map(VehicleResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
+
     private void mapRequestToEntity(VehicleRequest request, Vehicle vehicle) {
         vehicle.setCompanyId(request.getCompanyId());
         vehicle.setVehicleNumber(request.getVehicleNumber());
         vehicle.setType(request.getType());
+        vehicle.setFuelType(request.getFuelType());
         vehicle.setMake(request.getMake());
         vehicle.setModel(request.getModel());
         vehicle.setYear(request.getYear());
         vehicle.setBatteryCapacity(request.getBatteryCapacity());
         vehicle.setStatus(request.getStatus());
+        vehicle.setDefaultChargerType(request.getDefaultChargerType());
+        vehicle.setFuelTankCapacity(request.getFuelTankCapacity());
+        vehicle.setFuelLevel(request.getFuelLevel());
+        vehicle.setEngineType(request.getEngineType());
         vehicle.setVin(request.getVin());
         vehicle.setLicensePlate(request.getLicensePlate());
         vehicle.setColor(request.getColor());

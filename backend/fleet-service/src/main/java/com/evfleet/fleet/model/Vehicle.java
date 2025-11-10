@@ -56,7 +56,7 @@ public class Vehicle {
     @Column(name = "model", nullable = false, length = 100)
     private String model;
 
-    @Column(name = "year", nullable = false)
+    @Column(name = "\"year\"", nullable = false)
     private Integer year;
 
     // ===== EV-SPECIFIC FIELDS =====

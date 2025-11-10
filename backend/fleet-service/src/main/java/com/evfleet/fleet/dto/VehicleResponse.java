@@ -21,12 +21,26 @@ public class VehicleResponse {
     private Long companyId;
     private String vehicleNumber;
     private Vehicle.VehicleType type;
+    
+    // PR 1: Multi-fuel support fields
+    private com.evfleet.fleet.model.FuelType fuelType;
+    
     private String make;
     private String model;
     private Integer year;
+    
+    // EV-specific fields
     private Double batteryCapacity;
     private Vehicle.VehicleStatus status;
     private Double currentBatterySoc;
+    private String defaultChargerType;
+    
+    // ICE-specific fields (PR 1: Multi-fuel support)
+    private Double fuelTankCapacity;
+    private Double fuelLevel;
+    private String engineType;
+    
+    // Common fields
     private Double latitude;
     private Double longitude;
     private LocalDateTime lastUpdated;
@@ -38,6 +52,7 @@ public class VehicleResponse {
     private Long currentDriverId;
     private Double totalDistance;
     private Double totalEnergyConsumed;
+    private Double totalFuelConsumed;
 
     public static VehicleResponse fromEntity(Vehicle vehicle) {
         return VehicleResponse.builder()
@@ -45,12 +60,17 @@ public class VehicleResponse {
                 .companyId(vehicle.getCompanyId())
                 .vehicleNumber(vehicle.getVehicleNumber())
                 .type(vehicle.getType())
+                .fuelType(vehicle.getFuelType())
                 .make(vehicle.getMake())
                 .model(vehicle.getModel())
                 .year(vehicle.getYear())
                 .batteryCapacity(vehicle.getBatteryCapacity())
                 .status(vehicle.getStatus())
                 .currentBatterySoc(vehicle.getCurrentBatterySoc())
+                .defaultChargerType(vehicle.getDefaultChargerType())
+                .fuelTankCapacity(vehicle.getFuelTankCapacity())
+                .fuelLevel(vehicle.getFuelLevel())
+                .engineType(vehicle.getEngineType())
                 .latitude(vehicle.getLatitude())
                 .longitude(vehicle.getLongitude())
                 .lastUpdated(vehicle.getLastUpdated())
@@ -62,6 +82,7 @@ public class VehicleResponse {
                 .currentDriverId(vehicle.getCurrentDriverId())
                 .totalDistance(vehicle.getTotalDistance())
                 .totalEnergyConsumed(vehicle.getTotalEnergyConsumed())
+                .totalFuelConsumed(vehicle.getTotalFuelConsumed())
                 .build();
     }
 }

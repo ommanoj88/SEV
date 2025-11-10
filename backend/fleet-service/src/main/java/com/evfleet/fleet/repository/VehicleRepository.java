@@ -81,4 +81,70 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
                                      @Param("maxLat") Double maxLat,
                                      @Param("minLng") Double minLng,
                                      @Param("maxLng") Double maxLng);
+
+    // ===== PR 4: Multi-fuel Queries =====
+
+    /**
+     * Find vehicles by fuel type
+     * @param fuelType The fuel type to filter by (ICE, EV, HYBRID)
+     * @return List of vehicles with the specified fuel type
+     * @since 2.0.0 (PR 4: Multi-fuel support)
+     */
+    List<Vehicle> findByFuelType(com.evfleet.fleet.model.FuelType fuelType);
+
+    /**
+     * Find vehicles by company and fuel type
+     * @param companyId The company ID
+     * @param fuelType The fuel type to filter by
+     * @return List of vehicles for the company with specified fuel type
+     * @since 2.0.0 (PR 4: Multi-fuel support)
+     */
+    List<Vehicle> findByCompanyIdAndFuelType(Long companyId, com.evfleet.fleet.model.FuelType fuelType);
+
+    /**
+     * Get fleet composition by fuel type for a company
+     * Returns count of vehicles by each fuel type
+     * @param companyId The company ID
+     * @return Map of fuel type counts (FuelType -> Count)
+     * @since 2.0.0 (PR 4: Multi-fuel support)
+     */
+    @Query("SELECT v.fuelType as fuelType, COUNT(v) as count FROM Vehicle v WHERE v.companyId = :companyId GROUP BY v.fuelType")
+    List<Object[]> getFleetCompositionByCompany(@Param("companyId") Long companyId);
+
+    /**
+     * Find EV/HYBRID vehicles with low battery
+     * Filters only vehicles that support battery (EV and HYBRID)
+     * @param companyId The company ID
+     * @param threshold Battery threshold percentage
+     * @return List of EV/HYBRID vehicles with battery below threshold
+     * @since 2.0.0 (PR 4: Multi-fuel support)
+     */
+    @Query("SELECT v FROM Vehicle v WHERE v.companyId = :companyId " +
+           "AND (v.fuelType = 'EV' OR v.fuelType = 'HYBRID') " +
+           "AND v.currentBatterySoc < :threshold")
+    List<Vehicle> findLowBatteryVehicles(@Param("companyId") Long companyId, @Param("threshold") Double threshold);
+
+    /**
+     * Find ICE/HYBRID vehicles with low fuel
+     * Filters only vehicles that support fuel (ICE and HYBRID)
+     * @param companyId The company ID
+     * @param thresholdPercentage Fuel level threshold as percentage of tank capacity
+     * @return List of ICE/HYBRID vehicles with fuel below threshold
+     * @since 2.0.0 (PR 4: Multi-fuel support)
+     */
+    @Query("SELECT v FROM Vehicle v WHERE v.companyId = :companyId " +
+           "AND (v.fuelType = 'ICE' OR v.fuelType = 'HYBRID') " +
+           "AND v.fuelTankCapacity IS NOT NULL " +
+           "AND v.fuelLevel IS NOT NULL " +
+           "AND (v.fuelLevel / v.fuelTankCapacity * 100) < :thresholdPercentage")
+    List<Vehicle> findLowFuelVehicles(@Param("companyId") Long companyId, @Param("thresholdPercentage") Double thresholdPercentage);
+
+    /**
+     * Count vehicles by fuel type for a company
+     * @param companyId The company ID
+     * @param fuelType The fuel type
+     * @return Count of vehicles with specified fuel type
+     * @since 2.0.0 (PR 4: Multi-fuel support)
+     */
+    long countByCompanyIdAndFuelType(Long companyId, com.evfleet.fleet.model.FuelType fuelType);
 }
