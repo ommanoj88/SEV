@@ -28,7 +28,10 @@ public class VehicleController {
     private final VehicleService vehicleService;
 
     @PostMapping
-    @Operation(summary = "Create a new vehicle", description = "Add a new vehicle to the fleet")
+    @Operation(summary = "Create a new vehicle", 
+               description = "Add a new vehicle to the fleet. Validates fuel-type-specific requirements: " +
+                           "EV/HYBRID vehicles require batteryCapacity, ICE/HYBRID vehicles require fuelTankCapacity. " +
+                           "Response includes available features based on fuel type.")
     public ResponseEntity<VehicleResponse> createVehicle(@Valid @RequestBody VehicleRequest request) {
         log.info("REST request to create vehicle: {}", request.getVehicleNumber());
         VehicleResponse response = vehicleService.createVehicle(request);
@@ -36,7 +39,10 @@ public class VehicleController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update a vehicle", description = "Update an existing vehicle's information")
+    @Operation(summary = "Update a vehicle", 
+               description = "Update an existing vehicle's information. Validates fuel-type-specific requirements: " +
+                           "EV/HYBRID vehicles require batteryCapacity, ICE/HYBRID vehicles require fuelTankCapacity. " +
+                           "Response includes available features based on fuel type.")
     public ResponseEntity<VehicleResponse> updateVehicle(
             @PathVariable Long id,
             @Valid @RequestBody VehicleRequest request) {
