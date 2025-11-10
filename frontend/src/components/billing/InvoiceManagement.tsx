@@ -32,6 +32,7 @@ import {
   GetApp as DownloadIcon,
   Payment as PaymentIcon,
   CheckCircle as FinalizeIcon,
+  CheckCircle,
   Refresh as RefreshIcon,
   WarningAmber as OverdueIcon,
 } from '@mui/icons-material';
