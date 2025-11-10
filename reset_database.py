@@ -340,28 +340,14 @@ def main():
         print_error(f"Failed during database reset: {e}")
         sys.exit(1)
     
-    # Build auth service
-    if not build_auth_service():
-        print_error("Build failed. Please fix the errors and try again.")
-        sys.exit(1)
-    
-    # Run migrations
-    if not run_migrations():
-        print_error("Migration failed. Please fix the errors and try again.")
-        sys.exit(1)
-    
-    # Verify setup
-    if not verify_tables():
-        print_error("Verification failed. Please check the database.")
-        sys.exit(1)
-    
     print_header("Database Reset Complete!")
-    print("\n✓ All databases have been reset and initialized successfully.")
+    print("\n✓ All databases have been dropped and recreated successfully.")
+    print("\n⚠️  Note: Database tables are EMPTY. They will be created when services start.")
     print("\nNext steps:")
-    print("  1. Start your microservices")
-    print("  2. Register a new user through Firebase")
-    print("  3. The user will be synced to the backend database automatically")
-    print("\nNote: Firebase authentication must sync with backend database for access.")
+    print("  1. Start your application with: python run_app_fixed.py start")
+    print("  2. Flyway will automatically run migrations and create tables")
+    print("  3. Services will seed initial data as needed")
+    print("\n💡 TIP: Migrations will run automatically when Docker services start!")
     print("\n" + "=" * 80 + "\n")
 
 if __name__ == '__main__':
