@@ -4,8 +4,11 @@ import com.evfleet.maintenance.dto.MaintenanceRecordResponse;
 import com.evfleet.maintenance.entity.BatteryHealth;
 import com.evfleet.maintenance.entity.MaintenanceSchedule;
 import com.evfleet.maintenance.entity.ServiceHistory;
+import com.evfleet.maintenance.model.MaintenanceType;
 import com.evfleet.maintenance.service.MaintenanceService;
+import com.evfleet.maintenance.service.MaintenanceScheduleBuilder;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,7 @@ import java.util.Optional;
 public class MaintenanceController {
 
     private final MaintenanceService maintenanceService;
+    private final MaintenanceScheduleBuilder maintenanceScheduleBuilder;
 
     // ========== MAINTENANCE RECORDS (Combined view) ==========
     
@@ -153,5 +157,47 @@ public class MaintenanceController {
     public ResponseEntity<List<MaintenanceSchedule>> getServiceReminders() {
         List<MaintenanceSchedule> reminders = maintenanceService.getServiceReminders();
         return ResponseEntity.ok(reminders);
+    }
+    
+    // ========== MAINTENANCE SCHEDULE GENERATION (PR 11: ICE Maintenance Support) ==========
+    
+    @PostMapping("/schedules/generate")
+    @Operation(
+        summary = "Generate maintenance schedules for a vehicle",
+        description = "Generates all applicable maintenance schedules based on vehicle fuel type (ICE, EV, or HYBRID)"
+    )
+    public ResponseEntity<List<MaintenanceSchedule>> generateMaintenanceSchedules(
+            @Parameter(description = "Vehicle ID", required = true)
+            @RequestParam String vehicleId,
+            @Parameter(description = "Fuel type (ICE, EV, HYBRID)", required = true)
+            @RequestParam String fuelType,
+            @Parameter(description = "Current vehicle mileage in kilometers", required = false)
+            @RequestParam(required = false) Integer currentMileage) {
+        
+        List<MaintenanceSchedule> schedules = maintenanceScheduleBuilder.generateSchedulesForVehicle(
+                vehicleId, fuelType, currentMileage);
+        return ResponseEntity.ok(schedules);
+    }
+    
+    @GetMapping("/types/applicable")
+    @Operation(
+        summary = "Get applicable maintenance types for fuel type",
+        description = "Returns all maintenance types applicable to a specific fuel type"
+    )
+    public ResponseEntity<List<MaintenanceType>> getApplicableMaintenanceTypes(
+            @Parameter(description = "Fuel type (ICE, EV, HYBRID)", required = true)
+            @RequestParam String fuelType) {
+        
+        List<MaintenanceType> types = maintenanceScheduleBuilder.getApplicableMaintenanceTypes(fuelType);
+        return ResponseEntity.ok(types);
+    }
+    
+    @GetMapping("/types")
+    @Operation(
+        summary = "Get all maintenance types",
+        description = "Returns all available maintenance types with their details"
+    )
+    public ResponseEntity<MaintenanceType[]> getAllMaintenanceTypes() {
+        return ResponseEntity.ok(MaintenanceType.values());
     }
 }
