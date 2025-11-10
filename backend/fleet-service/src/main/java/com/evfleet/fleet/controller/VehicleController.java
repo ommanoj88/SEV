@@ -1,8 +1,10 @@
 package com.evfleet.fleet.controller;
 
+import com.evfleet.fleet.dto.AvailableFeaturesDTO;
 import com.evfleet.fleet.dto.VehicleRequest;
 import com.evfleet.fleet.dto.VehicleResponse;
 import com.evfleet.fleet.model.Vehicle;
+import com.evfleet.fleet.service.FeatureAvailabilityService;
 import com.evfleet.fleet.service.VehicleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,6 +28,7 @@ import java.util.List;
 public class VehicleController {
 
     private final VehicleService vehicleService;
+    private final FeatureAvailabilityService featureAvailabilityService;
 
     @PostMapping
     @Operation(summary = "Create a new vehicle", 
@@ -255,5 +258,25 @@ public class VehicleController {
         log.info("REST request to get ICE/HYBRID vehicles with fuel below {}% for company ID: {}", threshold, companyId);
         List<VehicleResponse> response = vehicleService.getLowFuelVehicles(companyId, threshold);
         return ResponseEntity.ok(response);
+    }
+
+    // ===== PR 8: Feature Availability Endpoint =====
+
+    @GetMapping("/{id}/available-features")
+    @Operation(summary = "Get available features for a vehicle",
+               description = "Returns a list of features available for a vehicle based on its fuel type. " +
+                           "EV vehicles support battery tracking, charging management, and energy analytics. " +
+                           "ICE vehicles support fuel consumption tracking, fuel station discovery, and engine diagnostics. " +
+                           "HYBRID vehicles support all features from both EV and ICE.")
+    public ResponseEntity<AvailableFeaturesDTO> getAvailableFeatures(@PathVariable Long id) {
+        log.info("REST request to get available features for vehicle ID: {}", id);
+        VehicleResponse vehicleResponse = vehicleService.getVehicleById(id);
+        
+        // Create a minimal Vehicle object with fuel type for feature lookup
+        Vehicle vehicle = new Vehicle();
+        vehicle.setFuelType(vehicleResponse.getFuelType());
+        
+        AvailableFeaturesDTO features = featureAvailabilityService.buildAvailableFeatures(vehicle);
+        return ResponseEntity.ok(features);
     }
 }
