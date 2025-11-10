@@ -1,18 +1,23 @@
 package com.evfleet.fleet.controller;
 
+import com.evfleet.fleet.dto.TripCostAnalysisDTO;
 import com.evfleet.fleet.dto.TripRequest;
 import com.evfleet.fleet.dto.TripResponse;
+import com.evfleet.fleet.service.MultiFleetAnalyticsService;
 import com.evfleet.fleet.service.TripService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * REST Controller for Trip operations
@@ -25,6 +30,7 @@ import java.util.List;
 public class TripController {
 
     private final TripService tripService;
+    private final MultiFleetAnalyticsService multiFleetAnalyticsService;
 
     @PostMapping
     @Operation(summary = "Start a new trip", description = "Initiate a new trip for a vehicle")
@@ -157,6 +163,69 @@ public class TripController {
         // Note: This should be implemented in the service layer
         // For now, returning the trip as-is
         TripResponse response = tripService.getTripById(id);
+        return ResponseEntity.ok(response);
+    }
+
+    // ===== COST ANALYSIS ENDPOINTS (PR 7: Multi-Fuel Trip Analytics) =====
+
+    @GetMapping("/{id}/cost-analysis")
+    @Operation(
+        summary = "Get trip cost analysis",
+        description = "Get detailed cost analysis for a specific trip including energy/fuel costs, efficiency metrics, and carbon footprint. " +
+                      "Automatically calculates based on vehicle fuel type (EV, ICE, or HYBRID)."
+    )
+    public ResponseEntity<TripCostAnalysisDTO> getTripCostAnalysis(@PathVariable Long id) {
+        log.info("REST request to get cost analysis for trip ID: {}", id);
+        TripCostAnalysisDTO response = multiFleetAnalyticsService.getTripCostAnalysis(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/vehicle/{vehicleId}/cost-analysis")
+    @Operation(
+        summary = "Get trip cost analysis by vehicle",
+        description = "Get cost analysis for all trips of a specific vehicle within an optional time range"
+    )
+    public ResponseEntity<List<TripCostAnalysisDTO>> getTripCostAnalysisByVehicle(
+            @PathVariable Long vehicleId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
+        log.info("REST request to get cost analysis for vehicle ID: {} (period: {} to {})", 
+                 vehicleId, startTime, endTime);
+        List<TripCostAnalysisDTO> response = multiFleetAnalyticsService.getTripCostAnalysisByVehicle(
+            vehicleId, startTime, endTime);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/company/{companyId}/cost-summary")
+    @Operation(
+        summary = "Get company cost summary",
+        description = "Get aggregated cost summary for all trips in a company within a time range. " +
+                      "Includes breakdown by fuel type (EV, ICE, HYBRID) and total carbon footprint."
+    )
+    public ResponseEntity<Map<String, Object>> getCompanyCostSummary(
+            @PathVariable Long companyId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
+        log.info("REST request to get cost summary for company ID: {} (period: {} to {})", 
+                 companyId, startTime, endTime);
+        Map<String, Object> response = multiFleetAnalyticsService.getCompanyCostSummary(
+            companyId, startTime, endTime);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/company/{companyId}/fuel-type-comparison")
+    @Operation(
+        summary = "Compare costs between fuel types",
+        description = "Compare costs and efficiency between EV and ICE vehicles in the fleet. " +
+                      "Shows average cost per trip and potential savings."
+    )
+    public ResponseEntity<Map<String, Object>> compareFuelTypeCosts(
+            @PathVariable Long companyId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
+        log.info("REST request to compare fuel type costs for company ID: {}", companyId);
+        Map<String, Object> response = multiFleetAnalyticsService.compareFuelTypeCosts(
+            companyId, startTime, endTime);
         return ResponseEntity.ok(response);
     }
 }
