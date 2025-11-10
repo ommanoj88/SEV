@@ -64,8 +64,8 @@ class ICECostCalculatorTest {
     void testCalculateFuelCost_withFuelConsumptionRecords() {
         // Given: Fuel consumption records showing 8 liters consumed
         FuelConsumption consumption = new FuelConsumption();
-        consumption.setQuantity(8.0);
-        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetween(
+        consumption.setFuelConsumedLiters(8.0);
+        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetweenOrderByTimestampDesc(
                 eq(1L), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(Collections.singletonList(consumption));
 
@@ -82,11 +82,11 @@ class ICECostCalculatorTest {
     void testCalculateFuelCost_withMultipleFuelConsumptionRecords() {
         // Given: Multiple fuel consumption records totaling 10 liters
         FuelConsumption consumption1 = new FuelConsumption();
-        consumption1.setQuantity(5.0);
+        consumption1.setFuelConsumedLiters(5.0);
         FuelConsumption consumption2 = new FuelConsumption();
-        consumption2.setQuantity(5.0);
+        consumption2.setFuelConsumedLiters(5.0);
         
-        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetween(
+        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetweenOrderByTimestampDesc(
                 eq(1L), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(Arrays.asList(consumption1, consumption2));
 
@@ -102,7 +102,7 @@ class ICECostCalculatorTest {
     @Test
     void testCalculateFuelCost_withEstimatedConsumption() {
         // Given: No fuel consumption records, fallback to estimation
-        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetween(
+        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetweenOrderByTimestampDesc(
                 eq(1L), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(Collections.emptyList());
 
@@ -120,8 +120,8 @@ class ICECostCalculatorTest {
         // Given: Petrol vehicle
         iceVehicle.setEngineType("PETROL");
         FuelConsumption consumption = new FuelConsumption();
-        consumption.setQuantity(8.0);
-        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetween(
+        consumption.setFuelConsumedLiters(8.0);
+        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetweenOrderByTimestampDesc(
                 eq(1L), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(Collections.singletonList(consumption));
 
@@ -139,8 +139,8 @@ class ICECostCalculatorTest {
         // Given: CNG vehicle
         iceVehicle.setEngineType("CNG");
         FuelConsumption consumption = new FuelConsumption();
-        consumption.setQuantity(6.0); // 6 kg
-        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetween(
+        consumption.setFuelConsumedLiters(6.0); // 6 kg
+        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetweenOrderByTimestampDesc(
                 eq(1L), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(Collections.singletonList(consumption));
 
@@ -157,8 +157,8 @@ class ICECostCalculatorTest {
     void testCalculateFuelCost_withCustomRate() {
         // Given: Custom fuel rate ₹100/liter
         FuelConsumption consumption = new FuelConsumption();
-        consumption.setQuantity(8.0);
-        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetween(
+        consumption.setFuelConsumedLiters(8.0);
+        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetweenOrderByTimestampDesc(
                 eq(1L), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(Collections.singletonList(consumption));
 
@@ -175,8 +175,8 @@ class ICECostCalculatorTest {
     void testCalculateFuelEfficiency() {
         // Given: 100 km distance, 8 liters consumed
         FuelConsumption consumption = new FuelConsumption();
-        consumption.setQuantity(8.0);
-        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetween(
+        consumption.setFuelConsumedLiters(8.0);
+        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetweenOrderByTimestampDesc(
                 eq(1L), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(Collections.singletonList(consumption));
 
@@ -205,8 +205,8 @@ class ICECostCalculatorTest {
     void testCalculateMileage() {
         // Given: 100 km distance, 8 liters consumed
         FuelConsumption consumption = new FuelConsumption();
-        consumption.setQuantity(8.0);
-        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetween(
+        consumption.setFuelConsumedLiters(8.0);
+        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetweenOrderByTimestampDesc(
                 eq(1L), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(Collections.singletonList(consumption));
 
@@ -223,8 +223,8 @@ class ICECostCalculatorTest {
     void testCalculateMileage_withHighEfficiency() {
         // Given: 100 km distance, 6 liters consumed (efficient)
         FuelConsumption consumption = new FuelConsumption();
-        consumption.setQuantity(6.0);
-        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetween(
+        consumption.setFuelConsumedLiters(6.0);
+        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetweenOrderByTimestampDesc(
                 eq(1L), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(Collections.singletonList(consumption));
 
@@ -241,8 +241,8 @@ class ICECostCalculatorTest {
     void testCalculateCarbonFootprint_diesel() {
         // Given: Diesel vehicle with 8 liters consumed
         FuelConsumption consumption = new FuelConsumption();
-        consumption.setQuantity(8.0);
-        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetween(
+        consumption.setFuelConsumedLiters(8.0);
+        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetweenOrderByTimestampDesc(
                 eq(1L), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(Collections.singletonList(consumption));
 
@@ -260,8 +260,8 @@ class ICECostCalculatorTest {
         // Given: Petrol vehicle with 8 liters consumed
         iceVehicle.setEngineType("PETROL");
         FuelConsumption consumption = new FuelConsumption();
-        consumption.setQuantity(8.0);
-        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetween(
+        consumption.setFuelConsumedLiters(8.0);
+        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetweenOrderByTimestampDesc(
                 eq(1L), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(Collections.singletonList(consumption));
 
@@ -279,8 +279,8 @@ class ICECostCalculatorTest {
         // Given: CNG vehicle with 6 kg consumed
         iceVehicle.setEngineType("CNG");
         FuelConsumption consumption = new FuelConsumption();
-        consumption.setQuantity(6.0);
-        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetween(
+        consumption.setFuelConsumedLiters(6.0);
+        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetweenOrderByTimestampDesc(
                 eq(1L), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(Collections.singletonList(consumption));
 
@@ -297,8 +297,8 @@ class ICECostCalculatorTest {
     void testCalculateCostPerKm() {
         // Given: 100 km distance, 8 liters consumed
         FuelConsumption consumption = new FuelConsumption();
-        consumption.setQuantity(8.0);
-        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetween(
+        consumption.setFuelConsumedLiters(8.0);
+        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetweenOrderByTimestampDesc(
                 eq(1L), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(Collections.singletonList(consumption));
 
@@ -392,8 +392,8 @@ class ICECostCalculatorTest {
         // Given: Diesel LCV - typical commercial vehicle
         trip.setDistance(150.0); // 150 km trip
         FuelConsumption consumption = new FuelConsumption();
-        consumption.setQuantity(12.0); // 12 liters (8 L/100km)
-        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetween(
+        consumption.setFuelConsumedLiters(12.0); // 12 liters (8 L/100km)
+        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetweenOrderByTimestampDesc(
                 eq(1L), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(Collections.singletonList(consumption));
 
@@ -418,8 +418,8 @@ class ICECostCalculatorTest {
         iceVehicle.setEngineType("PETROL");
         trip.setDistance(80.0); // 80 km city driving
         FuelConsumption consumption = new FuelConsumption();
-        consumption.setQuantity(8.0); // 8 liters (10 L/100km - city)
-        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetween(
+        consumption.setFuelConsumedLiters(8.0); // 8 liters (10 L/100km - city)
+        when(fuelConsumptionRepository.findByVehicleIdAndTimestampBetweenOrderByTimestampDesc(
                 eq(1L), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(Collections.singletonList(consumption));
 

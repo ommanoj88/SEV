@@ -217,7 +217,7 @@ public class ICECostCalculator {
     private double getFuelConsumedForTrip(Trip trip, Vehicle vehicle) {
         // Try to get from fuel consumption records
         List<FuelConsumption> consumptions = fuelConsumptionRepository
-                .findByVehicleIdAndTimestampBetween(
+                .findByVehicleIdAndTimestampBetweenOrderByTimestampDesc(
                         vehicle.getId(),
                         trip.getStartTime(),
                         trip.getEndTime() != null ? trip.getEndTime() : LocalDateTime.now()
@@ -225,7 +225,7 @@ public class ICECostCalculator {
         
         if (!consumptions.isEmpty()) {
             double totalConsumption = consumptions.stream()
-                    .mapToDouble(FuelConsumption::getQuantity)
+                    .mapToDouble(FuelConsumption::getFuelConsumedLiters)
                     .sum();
             log.debug("Found fuel consumption records for trip {}: {} liters", trip.getId(), totalConsumption);
             return totalConsumption;
