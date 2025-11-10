@@ -40,6 +40,42 @@ public class TelemetryResponse {
     private String errorCodes;
     private Integer signalStrength;
 
+    // ===== ICE-SPECIFIC FIELDS (for ICE and HYBRID vehicles) =====
+    /**
+     * Current fuel level in liters
+     * Relevant for: FuelType.ICE, FuelType.HYBRID
+     * @since 2.0.0 (Multi-fuel support)
+     */
+    private Double fuelLevel; // in liters
+
+    /**
+     * Engine RPM (Revolutions Per Minute)
+     * Relevant for: FuelType.ICE, FuelType.HYBRID
+     * @since 2.0.0 (Multi-fuel support)
+     */
+    private Integer engineRpm;
+
+    /**
+     * Engine temperature in Celsius
+     * Relevant for: FuelType.ICE, FuelType.HYBRID
+     * @since 2.0.0 (Multi-fuel support)
+     */
+    private Double engineTemperature; // in Celsius
+
+    /**
+     * Engine load percentage (0-100)
+     * Relevant for: FuelType.ICE, FuelType.HYBRID
+     * @since 2.0.0 (Multi-fuel support)
+     */
+    private Double engineLoad; // 0-100%
+
+    /**
+     * Total engine operating hours
+     * Relevant for: FuelType.ICE, FuelType.HYBRID
+     * @since 2.0.0 (Multi-fuel support)
+     */
+    private Double engineHours; // in hours
+
     public static TelemetryResponse fromEntity(TelemetryData telemetry) {
         return TelemetryResponse.builder()
                 .id(telemetry.getId())
@@ -64,6 +100,11 @@ public class TelemetryResponse {
                 .tripId(telemetry.getTripId())
                 .errorCodes(telemetry.getErrorCodes())
                 .signalStrength(telemetry.getSignalStrength())
+                .fuelLevel(telemetry.getFuelLevel())
+                .engineRpm(telemetry.getEngineRpm())
+                .engineTemperature(telemetry.getEngineTemperature())
+                .engineLoad(telemetry.getEngineLoad())
+                .engineHours(telemetry.getEngineHours())
                 .build();
     }
 }

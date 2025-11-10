@@ -29,7 +29,14 @@ public class TelemetryController {
     private final TelemetryService telemetryService;
 
     @PostMapping
-    @Operation(summary = "Submit telemetry data", description = "Submit real-time telemetry data from a vehicle")
+    @Operation(
+        summary = "Submit telemetry data",
+        description = "Submit real-time telemetry data from a vehicle. " +
+                      "Supports multi-fuel vehicles (EV, ICE, HYBRID). " +
+                      "EV vehicles: Provide battery metrics (batterySoc, batteryVoltage, etc.). " +
+                      "ICE vehicles: Provide engine metrics (fuelLevel, engineRpm, etc.). " +
+                      "HYBRID vehicles: Provide both battery and engine metrics."
+    )
     public ResponseEntity<TelemetryResponse> submitTelemetry(@Valid @RequestBody TelemetryRequest request) {
         log.debug("REST request to submit telemetry for vehicle ID: {}", request.getVehicleId());
         TelemetryResponse response = telemetryService.processTelemetryData(request);
@@ -37,7 +44,12 @@ public class TelemetryController {
     }
 
     @PostMapping("/batch")
-    @Operation(summary = "Submit batch telemetry data", description = "Submit multiple telemetry records in a batch")
+    @Operation(
+        summary = "Submit batch telemetry data",
+        description = "Submit multiple telemetry records in a batch. " +
+                      "Each record is validated based on its vehicle's fuel type. " +
+                      "Supports mixed batches of EV, ICE, and HYBRID vehicle telemetry."
+    )
     public ResponseEntity<List<TelemetryResponse>> submitTelemetryBatch(
             @Valid @RequestBody List<TelemetryRequest> requests) {
         log.debug("REST request to submit batch telemetry with {} records", requests.size());

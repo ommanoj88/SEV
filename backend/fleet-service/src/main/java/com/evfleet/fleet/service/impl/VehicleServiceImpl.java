@@ -378,4 +378,33 @@ public class VehicleServiceImpl implements VehicleService {
             vehicle.setCurrentBatterySoc(request.getCurrentBatterySoc());
         }
     }
+
+    /**
+     * Get vehicle entity by ID (for internal use)
+     * @since 2.0.0 (PR 6: Telemetry API support)
+     */
+    @Override
+    public Vehicle getVehicleEntityById(Long id) {
+        log.debug("Request to get Vehicle entity : {}", id);
+        return vehicleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with id: " + id));
+    }
+
+    /**
+     * Update vehicle fuel level
+     * @since 2.0.0 (PR 6: Telemetry API support)
+     */
+    @Override
+    @Transactional
+    public void updateFuelLevel(Long vehicleId, Double fuelLevel) {
+        log.debug("Request to update fuel level for vehicle: {}", vehicleId);
+        Vehicle vehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with id: " + vehicleId));
+        
+        vehicle.setFuelLevel(fuelLevel);
+        vehicle.setLastUpdated(LocalDateTime.now());
+        vehicleRepository.save(vehicle);
+        
+        log.debug("Fuel level updated for vehicle: {}", vehicleId);
+    }
 }
