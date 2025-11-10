@@ -7,7 +7,7 @@ services:
     container_name: ev-fleet-postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: Shobharain11@
       POSTGRES_DB: postgres
     ports:
       - "5432:5432"

@@ -6,7 +6,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/evfleet_fleet
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
+    password: ${DB_PASSWORD:Shobharain11@}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10

@@ -5,7 +5,7 @@
   datasource:
     url: jdbc:postgresql://localhost:5432/maintenance_db
     username: postgres
-    password: postgres
+    password: Shobharain11@
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 20
