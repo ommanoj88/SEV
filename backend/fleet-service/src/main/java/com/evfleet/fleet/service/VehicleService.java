@@ -133,4 +133,22 @@ public interface VehicleService {
      * @since 2.0.0 (PR 4: Multi-fuel support)
      */
     List<VehicleResponse> getLowFuelVehicles(Long companyId, Double thresholdPercentage);
+
+    /**
+     * Get vehicle entity by ID (for internal use)
+     * Returns the actual Vehicle entity instead of DTO
+     * @param id Vehicle ID
+     * @return Vehicle entity
+     * @since 2.0.0 (PR 6: Telemetry API support)
+     */
+    Vehicle getVehicleEntityById(Long id);
+
+    /**
+     * Update vehicle fuel level
+     * Updates the current fuel level for ICE and HYBRID vehicles
+     * @param vehicleId Vehicle ID
+     * @param fuelLevel New fuel level in liters
+     * @since 2.0.0 (PR 6: Telemetry API support)
+     */
+    void updateFuelLevel(Long vehicleId, Double fuelLevel);
 }

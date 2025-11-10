@@ -4,7 +4,9 @@ import com.evfleet.fleet.dto.TelemetryRequest;
 import com.evfleet.fleet.dto.TelemetryResponse;
 import com.evfleet.fleet.exception.ResourceNotFoundException;
 import com.evfleet.fleet.model.TelemetryData;
+import com.evfleet.fleet.model.Vehicle;
 import com.evfleet.fleet.repository.TelemetryRepository;
+import com.evfleet.fleet.validation.TelemetryValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +29,8 @@ public class TelemetryService {
 
     private final TelemetryRepository telemetryRepository;
     private final VehicleService vehicleService;
+    private final TelemetryValidator telemetryValidator;
+    private final TelemetryProcessingService telemetryProcessingService;
 
     /**
      * Process and store telemetry data
@@ -34,40 +38,38 @@ public class TelemetryService {
     public TelemetryResponse processTelemetryData(TelemetryRequest request) {
         log.debug("Processing telemetry data for vehicle ID: {}", request.getVehicleId());
 
-        TelemetryData telemetry = new TelemetryData();
-        telemetry.setVehicleId(request.getVehicleId());
-        telemetry.setLatitude(request.getLatitude());
-        telemetry.setLongitude(request.getLongitude());
-        telemetry.setSpeed(request.getSpeed());
-        telemetry.setBatterySoc(request.getBatterySoc());
-        telemetry.setBatteryVoltage(request.getBatteryVoltage());
-        telemetry.setBatteryCurrent(request.getBatteryCurrent());
-        telemetry.setBatteryTemperature(request.getBatteryTemperature());
-        telemetry.setOdometer(request.getOdometer());
-        telemetry.setTimestamp(request.getTimestamp());
-        telemetry.setHeading(request.getHeading());
-        telemetry.setAltitude(request.getAltitude());
-        telemetry.setPowerConsumption(request.getPowerConsumption());
-        telemetry.setRegenerativePower(request.getRegenerativePower());
-        telemetry.setMotorTemperature(request.getMotorTemperature());
-        telemetry.setControllerTemperature(request.getControllerTemperature());
-        telemetry.setIsCharging(request.getIsCharging());
-        telemetry.setIsIgnitionOn(request.getIsIgnitionOn());
-        telemetry.setTripId(request.getTripId());
-        telemetry.setErrorCodes(request.getErrorCodes());
-        telemetry.setSignalStrength(request.getSignalStrength());
+        // Fetch vehicle to get fuel type
+        Vehicle vehicle;
+        try {
+            vehicle = vehicleService.getVehicleEntityById(request.getVehicleId());
+        } catch (ResourceNotFoundException e) {
+            log.error("Vehicle not found while processing telemetry: {}", request.getVehicleId());
+            throw e;
+        }
+
+        // Validate telemetry data based on vehicle fuel type
+        telemetryValidator.validateTelemetryForVehicle(request, vehicle);
+
+        // Process telemetry data based on fuel type (routes EV vs ICE metrics)
+        TelemetryData telemetry = telemetryProcessingService.processTelemetryData(request, vehicle);
 
         TelemetryData savedTelemetry = telemetryRepository.save(telemetry);
 
-        // Update vehicle location and battery SOC
+        // Update vehicle location
         try {
             vehicleService.updateVehicleLocation(request.getVehicleId(), request.getLatitude(), request.getLongitude());
 
+            // Update battery SOC for EV and HYBRID vehicles
             if (request.getBatterySoc() != null) {
                 vehicleService.updateBatterySoc(request.getVehicleId(), request.getBatterySoc());
             }
+
+            // Update fuel level for ICE and HYBRID vehicles
+            if (request.getFuelLevel() != null) {
+                vehicleService.updateFuelLevel(request.getVehicleId(), request.getFuelLevel());
+            }
         } catch (ResourceNotFoundException e) {
-            log.error("Vehicle not found while processing telemetry: {}", request.getVehicleId());
+            log.error("Vehicle not found while updating location/fuel: {}", request.getVehicleId());
         }
 
         log.debug("Telemetry data processed for vehicle ID: {}", request.getVehicleId());
