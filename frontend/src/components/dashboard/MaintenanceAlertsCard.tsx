@@ -20,7 +20,7 @@ import {
   Schedule,
   ElectricCar,
   LocalGasStation,
-  HybridOutlined,
+  AllInclusive,
 } from '@mui/icons-material';
 import maintenanceService from '@services/maintenanceService';
 import vehicleService from '@services/vehicleService';
@@ -80,13 +80,13 @@ const MaintenanceAlertsCard: React.FC<MaintenanceAlertsCardProps> = ({ companyId
           
           return {
             id: schedule.id,
-            vehicleId: vehicle?.id || 0,
-            vehicleNumber: vehicle?.vehicleNumber || 'Unknown',
-            fuelType: vehicle?.fuelType || 'EV',
+            vehicleId: Number(vehicle?.id || 0),
+            vehicleNumber: vehicle?.licensePlate || 'Unknown',
+            fuelType: (vehicle?.fuelType || 'EV') as 'EV' | 'ICE' | 'HYBRID',
             maintenanceType: schedule.maintenanceType || 'GENERAL_SERVICE',
             dueDate: schedule.scheduledDate,
             status: isOverdue ? 'OVERDUE' : schedule.status || 'PENDING',
-            priority: isOverdue ? 'HIGH' : (scheduledDate <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) ? 'MEDIUM' : 'LOW'),
+            priority: (isOverdue ? 'HIGH' : (scheduledDate <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) ? 'MEDIUM' : 'LOW')) as 'HIGH' | 'MEDIUM' | 'LOW',
             description: schedule.description,
           };
         })
@@ -116,7 +116,7 @@ const MaintenanceAlertsCard: React.FC<MaintenanceAlertsCardProps> = ({ companyId
       case 'ICE':
         return <LocalGasStation sx={{ fontSize: 18, color: '#ff9800' }} />;
       case 'HYBRID':
-        return <HybridOutlined sx={{ fontSize: 18, color: '#2196f3' }} />;
+        return <AllInclusive sx={{ fontSize: 18, color: '#2196f3' }} />;
       default:
         return <ElectricCar sx={{ fontSize: 18 }} />;
     }

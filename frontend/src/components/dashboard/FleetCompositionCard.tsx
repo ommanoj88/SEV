@@ -8,7 +8,7 @@ import {
   Alert,
 } from '@mui/material';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { ElectricCar, LocalGasStation, HybridOutlined } from '@mui/icons-material';
+import { ElectricCar, LocalGasStation, AllInclusive } from '@mui/icons-material';
 import vehicleService from '@services/vehicleService';
 
 interface FleetCompositionData {
@@ -175,7 +175,7 @@ const FleetCompositionCard: React.FC<FleetCompositionCardProps> = ({ companyId =
           {composition.hybridCount > 0 && (
             <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
               <Box display="flex" alignItems="center">
-                <HybridOutlined sx={{ color: COLORS.HYBRID, mr: 1 }} />
+                <AllInclusive sx={{ color: COLORS.HYBRID, mr: 1 }} />
                 <Typography variant="body2">Hybrid Vehicles</Typography>
               </Box>
               <Box textAlign="right">
