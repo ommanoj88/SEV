@@ -226,27 +226,28 @@ def check_prerequisites() -> bool:
 
 
 def initialize_databases() -> bool:
-    """Initialize PostgreSQL databases if needed"""
+    """Initialize PostgreSQL databases if needed - SAFE VERSION"""
     print_header("Checking Database Initialization")
 
     print_info("Waiting for PostgreSQL to be ready...")
     time.sleep(10)  # Give PostgreSQL time to start
 
-    # Check if we can run reset_database.py
-    reset_script = 'reset_database.py'
-    if not os.path.exists(reset_script):
-        print_warning(f"Database initialization script not found: {reset_script}")
+    # Use init_database.py (SAFE - doesn't drop existing databases)
+    init_script = 'init_database.py'
+    if not os.path.exists(init_script):
+        print_warning(f"Database initialization script not found: {init_script}")
         print_info("Assuming databases are already initialized")
         return True
 
-    print_info("Running database initialization script...")
-    print_info("This will create all required databases and run migrations")
+    print_info("Running SAFE database initialization script...")
+    print_info("This will create databases ONLY if they don't exist")
+    print_warning("⚠️  Your existing data is SAFE - nothing will be dropped")
 
     try:
         result = subprocess.run(
-            [sys.executable, reset_script],
+            [sys.executable, init_script],
             check=False,
-            capture_output=True,
+            capture_output=False,  # Show output in real-time
             text=True
         )
 
@@ -255,9 +256,6 @@ def initialize_databases() -> bool:
             return True
         else:
             print_warning("Database initialization had some issues")
-            print_info("Output: " + result.stdout)
-            if result.stderr:
-                print_warning("Errors: " + result.stderr)
             print_info("Continuing anyway - databases may already be initialized")
             return True
     except Exception as e:
