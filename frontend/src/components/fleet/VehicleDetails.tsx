@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Paper,
@@ -8,6 +8,8 @@ import {
   Divider,
   Button,
   LinearProgress,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -15,19 +17,39 @@ import {
   BatteryFull as BatteryIcon,
   Speed as SpeedIcon,
   CalendarToday as CalendarIcon,
+  LocalGasStation as FuelIcon,
+  EvStation as ChargingIcon,
+  Build as MaintenanceIcon,
 } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@redux/hooks';
 import { fetchVehicle } from '@redux/slices/vehicleSlice';
 import { formatDate, formatNumber } from '@utils/formatters';
+import { FuelType } from '../../types/vehicle';
 import LoadingSpinner from '@components/common/LoadingSpinner';
 import TripHistory from './TripHistory';
+import FuelStatusPanel from './FuelStatusPanel';
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
+  return (
+    <div role="tabpanel" hidden={value !== index}>
+      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
+    </div>
+  );
+};
 
 const VehicleDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { selectedVehicle, loading } = useAppSelector((state) => state.vehicles);
+  const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
     if (id) {
@@ -41,6 +63,9 @@ const VehicleDetails: React.FC = () => {
 
   const vehicle = selectedVehicle;
   const batteryPercentage = vehicle.battery.stateOfCharge;
+  const showBattery = vehicle.fuelType === FuelType.EV || vehicle.fuelType === FuelType.HYBRID;
+  const showFuel = vehicle.fuelType === FuelType.ICE || vehicle.fuelType === FuelType.HYBRID;
+  const showCharging = vehicle.fuelType === FuelType.EV || vehicle.fuelType === FuelType.HYBRID;
 
   return (
     <Box>
@@ -93,6 +118,20 @@ const VehicleDetails: React.FC = () => {
               </Grid>
               <Grid item xs={6}>
                 <Typography variant="body2" color="text.secondary">
+                  Fuel Type
+                </Typography>
+                <Chip 
+                  label={vehicle.fuelType} 
+                  size="small" 
+                  color={
+                    vehicle.fuelType === FuelType.EV ? 'success' : 
+                    vehicle.fuelType === FuelType.ICE ? 'warning' : 
+                    'info'
+                  }
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body2" color="text.secondary">
                   Color
                 </Typography>
                 <Typography variant="body1" fontWeight="500">
@@ -117,69 +156,9 @@ const VehicleDetails: React.FC = () => {
           </Paper>
         </Grid>
 
-        {/* Battery & Range */}
+        {/* Fuel Status Panel */}
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Battery & Performance
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
-
-            <Box mb={3}>
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                <Typography variant="body2" color="text.secondary">
-                  Battery Level
-                </Typography>
-                <Typography variant="h6">
-                  {vehicle.battery.stateOfCharge.toFixed(1)}%
-                </Typography>
-              </Box>
-              <LinearProgress
-                variant="determinate"
-                value={batteryPercentage}
-                sx={{ height: 10, borderRadius: 5 }}
-                color={batteryPercentage >= 60 ? 'success' : batteryPercentage >= 30 ? 'warning' : 'error'}
-              />
-              <Typography variant="caption" color="text.secondary">
-                {batteryPercentage.toFixed(1)}% of {vehicle.battery.capacity} kWh
-              </Typography>
-            </Box>
-
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Typography variant="body2" color="text.secondary">
-                  Current Range
-                </Typography>
-                <Typography variant="h6">
-                  {vehicle.battery.range} km
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography variant="body2" color="text.secondary">
-                  Battery Health
-                </Typography>
-                <Typography variant="h6">
-                  {vehicle.battery.stateOfHealth}%
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography variant="body2" color="text.secondary">
-                  Odometer
-                </Typography>
-                <Typography variant="h6">
-                  {formatNumber(vehicle.odometer)} mi
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography variant="body2" color="text.secondary">
-                  Battery Temp
-                </Typography>
-                <Typography variant="h6">
-                  {vehicle.battery.temperature || 'N/A'}°C
-                </Typography>
-              </Grid>
-            </Grid>
-          </Paper>
+          <FuelStatusPanel vehicle={vehicle} />
         </Grid>
 
         {/* Location */}
@@ -211,11 +190,29 @@ const VehicleDetails: React.FC = () => {
         <Grid item xs={12} md={6}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
-              Maintenance
+              Maintenance & Performance
             </Typography>
             <Divider sx={{ mb: 2 }} />
 
             <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <Typography variant="body2" color="text.secondary">
+                  Odometer
+                </Typography>
+                <Typography variant="h6">
+                  {formatNumber(vehicle.odometer)} km
+                </Typography>
+              </Grid>
+              {showBattery && (
+                <Grid item xs={6}>
+                  <Typography variant="body2" color="text.secondary">
+                    Battery Health
+                  </Typography>
+                  <Typography variant="h6">
+                    {vehicle.battery.stateOfHealth}%
+                  </Typography>
+                </Grid>
+              )}
               <Grid item xs={12}>
                 <Typography variant="body2" color="text.secondary">
                   Last Service
@@ -245,14 +242,89 @@ const VehicleDetails: React.FC = () => {
           </Paper>
         </Grid>
 
-        {/* Trip History */}
+        {/* Tabbed Content - Charging/Fuel/Trips */}
         <Grid item xs={12}>
           <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Recent Trips
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
-            <TripHistory vehicleId={id || ''} />
+            <Tabs 
+              value={activeTab} 
+              onChange={(_, newValue) => setActiveTab(newValue)}
+              variant="scrollable"
+              scrollButtons="auto"
+            >
+              <Tab icon={<CalendarIcon />} label="Trip History" />
+              {showCharging && <Tab icon={<ChargingIcon />} label="Charging History" />}
+              {showFuel && <Tab icon={<FuelIcon />} label="Fuel History" />}
+              <Tab icon={<MaintenanceIcon />} label="Maintenance" />
+            </Tabs>
+
+            <TabPanel value={activeTab} index={0}>
+              <TripHistory vehicleId={id || ''} />
+            </TabPanel>
+
+            {showCharging && (
+              <TabPanel value={activeTab} index={1}>
+                <Box textAlign="center" py={4}>
+                  <ChargingIcon sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
+                  <Typography variant="h6" color="text.secondary" gutterBottom>
+                    Charging History
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    View charging sessions, station usage, and energy consumption
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    sx={{ mt: 2 }}
+                    onClick={() => navigate(`/charging?vehicleId=${id}`)}
+                  >
+                    View Charging History
+                  </Button>
+                </Box>
+              </TabPanel>
+            )}
+
+            {showFuel && (
+              <TabPanel value={activeTab} index={showCharging ? 2 : 1}>
+                <Box textAlign="center" py={4}>
+                  <FuelIcon sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
+                  <Typography variant="h6" color="text.secondary" gutterBottom>
+                    Fuel History
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    View fuel consumption, refueling history, and efficiency metrics
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    sx={{ mt: 2 }}
+                    onClick={() => navigate(`/fuel?vehicleId=${id}`)}
+                  >
+                    View Fuel History
+                  </Button>
+                </Box>
+              </TabPanel>
+            )}
+
+            <TabPanel value={activeTab} index={showCharging && showFuel ? 3 : showCharging || showFuel ? 2 : 1}>
+              <Box textAlign="center" py={4}>
+                <MaintenanceIcon sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
+                <Typography variant="h6" color="text.secondary" gutterBottom>
+                  Maintenance Records
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {vehicle.fuelType === FuelType.EV 
+                    ? 'View battery maintenance, software updates, and service history'
+                    : vehicle.fuelType === FuelType.ICE
+                    ? 'View oil changes, filter replacements, and engine maintenance'
+                    : 'View comprehensive maintenance for electric and combustion systems'}
+                </Typography>
+                <Button
+                  variant="outlined"
+                  sx={{ mt: 2 }}
+                  onClick={() => navigate(`/maintenance?vehicleId=${id}`)}
+                >
+                  View Full Maintenance History
+                </Button>
+              </Box>
+            </TabPanel>
           </Paper>
         </Grid>
       </Grid>
