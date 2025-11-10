@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# On Windows, run with: python init_database.py
 """
 Database Initialization Script for EV Fleet Management Platform
 This script will SAFELY:

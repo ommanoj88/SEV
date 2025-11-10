@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# On Windows, run with: python reset_database.py
 """
 Database Reset Script for EV Fleet Management Platform
 This script will:
