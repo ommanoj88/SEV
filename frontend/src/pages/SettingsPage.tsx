@@ -27,10 +27,12 @@ export const SettingsPage: React.FC = () => {
     pushNotifications: true,
     smsNotifications: false,
 
-    // Alert Settings
-    lowBatteryAlert: true,
-    maintenanceAlert: true,
+    // Alert Settings - Multi-Fuel Support
+    lowBatteryAlert: true, // EV & Hybrid
+    lowFuelAlert: true, // ICE & Hybrid
+    maintenanceAlert: true, // All vehicle types
     costAlert: false,
+    emissionsAlert: true, // ICE vehicles CO2 tracking
 
     // Privacy Settings
     shareAnalytics: true,
@@ -166,10 +168,23 @@ export const SettingsPage: React.FC = () => {
                     onChange={() => handleSettingChange('lowBatteryAlert')}
                   />
                 }
-                label="Low Battery Alerts"
+                label="Low Battery Alerts (EV/Hybrid)"
               />
               <Typography variant="body2" color="textSecondary" sx={{ ml: 4, mt: -1 }}>
-                Alert when vehicle battery is low
+                Alert when EV or Hybrid vehicle battery is low
+              </Typography>
+
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={settings.lowFuelAlert}
+                    onChange={() => handleSettingChange('lowFuelAlert')}
+                  />
+                }
+                label="Low Fuel Alerts (ICE/Hybrid)"
+              />
+              <Typography variant="body2" color="textSecondary" sx={{ ml: 4, mt: -1 }}>
+                Alert when ICE or Hybrid vehicle fuel tank is low
               </Typography>
 
               <FormControlLabel
@@ -182,7 +197,20 @@ export const SettingsPage: React.FC = () => {
                 label="Maintenance Alerts"
               />
               <Typography variant="body2" color="textSecondary" sx={{ ml: 4, mt: -1 }}>
-                Alert when maintenance is due
+                Alert when maintenance is due (oil change, filters, etc.)
+              </Typography>
+
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={settings.emissionsAlert}
+                    onChange={() => handleSettingChange('emissionsAlert')}
+                  />
+                }
+                label="Emissions Alerts (ICE)"
+              />
+              <Typography variant="body2" color="textSecondary" sx={{ ml: 4, mt: -1 }}>
+                Alert about high CO2 emissions from ICE vehicles
               </Typography>
 
               <FormControlLabel
@@ -195,7 +223,7 @@ export const SettingsPage: React.FC = () => {
                 label="Cost Alerts"
               />
               <Typography variant="body2" color="textSecondary" sx={{ ml: 4, mt: -1 }}>
-                Alert about fleet operating costs
+                Alert about fleet operating costs (fuel, electricity, maintenance)
               </Typography>
             </Stack>
           </CardContent>
