@@ -132,7 +132,7 @@ const Login: React.FC = () => {
               Welcome Back
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>
-              Sign in to your EV Fleet Management account
+              Sign in to your Smart Fleet Management account
             </Typography>
           </Box>
 

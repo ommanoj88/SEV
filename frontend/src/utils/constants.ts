@@ -19,8 +19,9 @@ export const DEFAULT_MAP_CENTER: [number, number] = [-122.4194, 37.7749]; // San
 export const DEFAULT_MAP_ZOOM = 12;
 
 // App Configuration
-export const APP_NAME = process.env.REACT_APP_NAME || 'EV Fleet Management';
+export const APP_NAME = process.env.REACT_APP_NAME || 'Smart Fleet Management';
 export const APP_VERSION = process.env.REACT_APP_VERSION || '1.0.0';
+export const APP_TAGLINE = 'Intelligent Multi-Fuel Fleet Management';
 
 // Pagination
 export const DEFAULT_PAGE_SIZE = 10;
@@ -51,16 +52,35 @@ export const VEHICLE_STATUS_COLORS = {
   IN_TRIP: '#9c27b0',
 };
 
-// Battery Thresholds
+// Battery Thresholds (EV & Hybrid)
 export const BATTERY_LOW_THRESHOLD = 20;
 export const BATTERY_CRITICAL_THRESHOLD = 10;
 export const BATTERY_OPTIMAL_MIN = 20;
 export const BATTERY_OPTIMAL_MAX = 80;
 
+// Fuel Thresholds (ICE & Hybrid)
+export const FUEL_LOW_THRESHOLD = 20; // percentage
+export const FUEL_CRITICAL_THRESHOLD = 10; // percentage
+
+// Fuel Types
+export const FUEL_TYPES = {
+  EV: 'EV',
+  ICE: 'ICE',
+  HYBRID: 'HYBRID',
+};
+
+// Fuel Type Colors
+export const FUEL_TYPE_COLORS = {
+  EV: '#4caf50', // Green (eco-friendly)
+  ICE: '#ff9800', // Orange (fuel-based)
+  HYBRID: '#2196f3', // Blue (efficient)
+};
+
 // Distance and Energy
 export const KM_TO_MILES = 0.621371;
 export const MILES_TO_KM = 1.60934;
-export const AVERAGE_ENERGY_CONSUMPTION = 0.2; // kWh per km
+export const AVERAGE_ENERGY_CONSUMPTION = 0.2; // kWh per km (EV)
+export const AVERAGE_FUEL_CONSUMPTION = 8.0; // liters per 100km (ICE)
 
 // Date Formats
 export const DATE_FORMAT = 'MMM dd, yyyy';
@@ -76,10 +96,10 @@ export const LICENSE_PLATE_REGEX = /^[A-Z0-9-]{2,10}$/i;
 
 // Local Storage Keys
 export const STORAGE_KEYS = {
-  AUTH_TOKEN: 'ev_fleet_auth_token',
-  USER_PREFERENCES: 'ev_fleet_user_preferences',
-  THEME_MODE: 'ev_fleet_theme_mode',
-  SIDEBAR_STATE: 'ev_fleet_sidebar_state',
+  AUTH_TOKEN: 'smart_fleet_auth_token',
+  USER_PREFERENCES: 'smart_fleet_user_preferences',
+  THEME_MODE: 'smart_fleet_theme_mode',
+  SIDEBAR_STATE: 'smart_fleet_sidebar_state',
 };
 
 // WebSocket Events

@@ -21,10 +21,10 @@ const Footer: React.FC = () => {
         <Grid container spacing={4}>
           <Grid item xs={12} sm={4}>
             <Typography variant="h6" color="text.primary" gutterBottom>
-              EV Fleet Management
+              Smart Fleet Management
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Comprehensive electric vehicle fleet management solution for modern businesses.
+              Intelligent multi-fuel fleet management for ICE, EV, and Hybrid vehicles.
             </Typography>
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -60,7 +60,7 @@ const Footer: React.FC = () => {
           <Typography variant="body2" color="text.secondary" align="center">
             {'Copyright © '}
             <Link color="inherit" href="/">
-              EV Fleet Management
+              Smart Fleet Management
             </Link>{' '}
             {currentYear}
             {'. All rights reserved.'}

@@ -71,10 +71,10 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
               backgroundClip: 'text',
             }}
           >
-            EV Fleet
+            Smart Fleet
           </Typography>
           <Typography variant="caption" color="text.secondary" fontWeight={600}>
-            Management Platform
+            Multi-Fuel Management
           </Typography>
         </Box>
       </Toolbar>

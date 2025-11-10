@@ -46,7 +46,7 @@ const Register: React.FC = () => {
             Create Account
           </Typography>
           <Typography variant="body2" align="center" color="text.secondary" paragraph>
-            Join EV Fleet Management today
+            Join Smart Fleet Management today
           </Typography>
 
           {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}

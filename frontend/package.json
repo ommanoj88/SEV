@@ -1,7 +1,7 @@
 {
-  "name": "ev-fleet-management-frontend",
+  "name": "smart-fleet-management-frontend",
   "version": "1.0.0",
-  "description": "EV Fleet Management Platform - React Frontend",
+  "description": "Smart Fleet Management Platform - Intelligent Multi-Fuel Fleet Management",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.1",
