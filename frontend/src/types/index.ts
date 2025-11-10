@@ -2,6 +2,7 @@
 export * from './vehicle';
 export * from './driver';
 export * from './charging';
+export * from './fuelStation';
 export * from './maintenance';
 export * from './analytics';
 export * from './auth';

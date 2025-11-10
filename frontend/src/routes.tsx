@@ -9,6 +9,7 @@ import ForgotPassword from './components/auth/ForgotPassword';
 import DashboardPage from './pages/DashboardPage';
 import FleetManagementPage from './pages/FleetManagementPage';
 import ChargingPage from './pages/ChargingPage';
+import StationDiscoveryPage from './pages/StationDiscoveryPage';
 import DriversPage from './pages/DriversPage';
 import MaintenancePage from './pages/MaintenancePage';
 import AnalyticsPage from './pages/AnalyticsPage';
@@ -57,6 +58,14 @@ const AppRoutes: React.FC = () => {
         element={
           <ProtectedRoute>
             <ChargingPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/stations"
+        element={
+          <ProtectedRoute>
+            <StationDiscoveryPage />
           </ProtectedRoute>
         }
       />
