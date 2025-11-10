@@ -1,11 +1,13 @@
 package com.evfleet.fleet.service;
 
+import com.evfleet.fleet.dto.AvailableFeaturesDTO;
 import com.evfleet.fleet.dto.VehicleResponse;
 import com.evfleet.fleet.event.EventPublisher;
 import com.evfleet.fleet.model.FuelType;
 import com.evfleet.fleet.model.Vehicle;
 import com.evfleet.fleet.repository.VehicleRepository;
 import com.evfleet.fleet.service.impl.VehicleServiceImpl;
+import com.evfleet.fleet.validation.FuelTypeValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +35,12 @@ class VehicleServiceTest {
 
     @Mock
     private EventPublisher eventPublisher;
+
+    @Mock
+    private FuelTypeValidator fuelTypeValidator;
+
+    @Mock
+    private FeatureAvailabilityService featureAvailabilityService;
 
     @InjectMocks
     private VehicleServiceImpl vehicleService;
@@ -94,6 +102,28 @@ class VehicleServiceTest {
         hybridVehicle.setFuelLevel(25.0);
         hybridVehicle.setCreatedAt(LocalDateTime.now());
         hybridVehicle.setUpdatedAt(LocalDateTime.now());
+
+        // PR 5: Setup lenient mock for FeatureAvailabilityService
+        // Mock to return a valid AvailableFeaturesDTO for any vehicle
+        lenient().when(featureAvailabilityService.buildAvailableFeatures(any(Vehicle.class)))
+                .thenAnswer(invocation -> {
+                    Vehicle v = invocation.getArgument(0);
+                    AvailableFeaturesDTO features = new AvailableFeaturesDTO();
+                    if (v.getFuelType() == FuelType.EV) {
+                        features.setBatteryTrackingAvailable(true);
+                        features.setChargingManagementAvailable(true);
+                        features.setFuelConsumptionAvailable(false);
+                    } else if (v.getFuelType() == FuelType.ICE) {
+                        features.setBatteryTrackingAvailable(false);
+                        features.setChargingManagementAvailable(false);
+                        features.setFuelConsumptionAvailable(true);
+                    } else if (v.getFuelType() == FuelType.HYBRID) {
+                        features.setBatteryTrackingAvailable(true);
+                        features.setChargingManagementAvailable(true);
+                        features.setFuelConsumptionAvailable(true);
+                    }
+                    return features;
+                });
     }
 
     @Test
