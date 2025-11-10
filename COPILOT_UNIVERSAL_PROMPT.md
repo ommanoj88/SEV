@@ -87,8 +87,8 @@ That's it. Code in. Response out. Move on.
 
 **Status: PR 1-17 COMPLETED - 17 of 18 done**
 
-Completed: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17
-Pending: 16, 18
+Completed: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17
+Pending: 18
 
 ---
 
