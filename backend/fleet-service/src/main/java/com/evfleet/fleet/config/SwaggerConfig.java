@@ -18,8 +18,9 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Fleet Management Service API")
-                        .description("REST API for EV Fleet Management - Vehicle Tracking, Telemetry, and Trip Management")
-                        .version("1.0.0")
+                        .description("REST API for Multi-Fuel Fleet Management - Vehicle Tracking, Telemetry, and Trip Management. " +
+                                "Supports EV, ICE, and Hybrid vehicles with fuel-type-specific features and validations.")
+                        .version("2.0.0")
                         .contact(new Contact()
                                 .name("EV Fleet Management Team")
                                 .email("support@evfleet.com"))

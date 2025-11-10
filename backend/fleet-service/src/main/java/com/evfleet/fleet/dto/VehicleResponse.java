@@ -53,6 +53,9 @@ public class VehicleResponse {
     private Double totalDistance;
     private Double totalEnergyConsumed;
     private Double totalFuelConsumed;
+    
+    // PR 5: Available features based on fuel type
+    private AvailableFeaturesDTO availableFeatures;
 
     public static VehicleResponse fromEntity(Vehicle vehicle) {
         return VehicleResponse.builder()

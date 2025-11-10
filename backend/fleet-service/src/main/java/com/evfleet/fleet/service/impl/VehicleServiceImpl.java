@@ -7,7 +7,9 @@ import com.evfleet.fleet.event.VehicleLocationEvent;
 import com.evfleet.fleet.exception.ResourceNotFoundException;
 import com.evfleet.fleet.model.Vehicle;
 import com.evfleet.fleet.repository.VehicleRepository;
+import com.evfleet.fleet.service.FeatureAvailabilityService;
 import com.evfleet.fleet.service.VehicleService;
+import com.evfleet.fleet.validation.FuelTypeValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,10 +30,15 @@ public class VehicleServiceImpl implements VehicleService {
 
     private final VehicleRepository vehicleRepository;
     private final EventPublisher eventPublisher;
+    private final FuelTypeValidator fuelTypeValidator;
+    private final FeatureAvailabilityService featureAvailabilityService;
 
     @Override
     public VehicleResponse createVehicle(VehicleRequest request) {
         log.info("Creating new vehicle with number: {}", request.getVehicleNumber());
+
+        // PR 5: Validate fuel type specific requirements
+        fuelTypeValidator.validateVehicleRequest(request);
 
         if (vehicleRepository.existsByVehicleNumber(request.getVehicleNumber())) {
             throw new IllegalArgumentException("Vehicle with number " + request.getVehicleNumber() + " already exists");
@@ -46,12 +53,16 @@ public class VehicleServiceImpl implements VehicleService {
         Vehicle savedVehicle = vehicleRepository.save(vehicle);
         log.info("Vehicle created successfully with ID: {}", savedVehicle.getId());
 
-        return VehicleResponse.fromEntity(savedVehicle);
+        // PR 5: Build response with available features
+        return buildVehicleResponseWithFeatures(savedVehicle);
     }
 
     @Override
     public VehicleResponse updateVehicle(Long id, VehicleRequest request) {
         log.info("Updating vehicle with ID: {}", id);
+
+        // PR 5: Validate fuel type specific requirements
+        fuelTypeValidator.validateVehicleRequest(request);
 
         Vehicle vehicle = vehicleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with ID: " + id));
@@ -67,7 +78,8 @@ public class VehicleServiceImpl implements VehicleService {
         Vehicle updatedVehicle = vehicleRepository.save(vehicle);
         log.info("Vehicle updated successfully with ID: {}", updatedVehicle.getId());
 
-        return VehicleResponse.fromEntity(updatedVehicle);
+        // PR 5: Build response with available features
+        return buildVehicleResponseWithFeatures(updatedVehicle);
     }
 
     @Override
@@ -89,7 +101,8 @@ public class VehicleServiceImpl implements VehicleService {
         Vehicle vehicle = vehicleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with ID: " + id));
 
-        return VehicleResponse.fromEntity(vehicle);
+        // PR 5: Include available features in response
+        return buildVehicleResponseWithFeatures(vehicle);
     }
 
     @Override
@@ -97,8 +110,9 @@ public class VehicleServiceImpl implements VehicleService {
     public List<VehicleResponse> getAllVehicles() {
         log.debug("Fetching all vehicles");
 
+        // PR 5: Include available features in responses
         return vehicleRepository.findAll().stream()
-                .map(VehicleResponse::fromEntity)
+                .map(this::buildVehicleResponseWithFeatures)
                 .collect(Collectors.toList());
     }
 
@@ -107,8 +121,9 @@ public class VehicleServiceImpl implements VehicleService {
     public List<VehicleResponse> getVehiclesByCompany(Long companyId) {
         log.debug("Fetching vehicles for company ID: {}", companyId);
 
+        // PR 5: Include available features in responses
         return vehicleRepository.findByCompanyId(companyId).stream()
-                .map(VehicleResponse::fromEntity)
+                .map(this::buildVehicleResponseWithFeatures)
                 .collect(Collectors.toList());
     }
 
@@ -117,8 +132,9 @@ public class VehicleServiceImpl implements VehicleService {
     public List<VehicleResponse> getVehiclesByCompanyAndStatus(Long companyId, Vehicle.VehicleStatus status) {
         log.debug("Fetching vehicles for company ID: {} with status: {}", companyId, status);
 
+        // PR 5: Include available features in responses
         return vehicleRepository.findByCompanyIdAndStatus(companyId, status).stream()
-                .map(VehicleResponse::fromEntity)
+                .map(this::buildVehicleResponseWithFeatures)
                 .collect(Collectors.toList());
     }
 
@@ -215,8 +231,9 @@ public class VehicleServiceImpl implements VehicleService {
     public List<VehicleResponse> getVehiclesWithLowBattery(Long companyId, Double threshold) {
         log.debug("Fetching vehicles with battery below: {}% for company ID: {}", threshold, companyId);
 
+        // PR 5: Include available features in responses
         return vehicleRepository.findVehiclesWithLowBattery(companyId, threshold).stream()
-                .map(VehicleResponse::fromEntity)
+                .map(this::buildVehicleResponseWithFeatures)
                 .collect(Collectors.toList());
     }
 
@@ -225,8 +242,9 @@ public class VehicleServiceImpl implements VehicleService {
     public List<VehicleResponse> getActiveVehicles(Long companyId) {
         log.debug("Fetching active vehicles for company ID: {}", companyId);
 
+        // PR 5: Include available features in responses
         return vehicleRepository.findActiveVehiclesByCompany(companyId).stream()
-                .map(VehicleResponse::fromEntity)
+                .map(this::buildVehicleResponseWithFeatures)
                 .collect(Collectors.toList());
     }
 
@@ -238,7 +256,8 @@ public class VehicleServiceImpl implements VehicleService {
         Vehicle vehicle = vehicleRepository.findByVehicleNumber(vehicleNumber)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found with number: " + vehicleNumber));
 
-        return VehicleResponse.fromEntity(vehicle);
+        // PR 5: Include available features in response
+        return buildVehicleResponseWithFeatures(vehicle);
     }
 
     // ===== PR 4: Multi-fuel Query Methods Implementation =====
@@ -248,8 +267,9 @@ public class VehicleServiceImpl implements VehicleService {
     public List<VehicleResponse> getVehiclesByFuelType(com.evfleet.fleet.model.FuelType fuelType) {
         log.debug("Fetching vehicles with fuel type: {}", fuelType);
 
+        // PR 5: Include available features in responses
         return vehicleRepository.findByFuelType(fuelType).stream()
-                .map(VehicleResponse::fromEntity)
+                .map(this::buildVehicleResponseWithFeatures)
                 .collect(Collectors.toList());
     }
 
@@ -258,8 +278,9 @@ public class VehicleServiceImpl implements VehicleService {
     public List<VehicleResponse> getVehiclesByCompanyAndFuelType(Long companyId, com.evfleet.fleet.model.FuelType fuelType) {
         log.debug("Fetching vehicles for company ID: {} with fuel type: {}", companyId, fuelType);
 
+        // PR 5: Include available features in responses
         return vehicleRepository.findByCompanyIdAndFuelType(companyId, fuelType).stream()
-                .map(VehicleResponse::fromEntity)
+                .map(this::buildVehicleResponseWithFeatures)
                 .collect(Collectors.toList());
     }
 
@@ -308,8 +329,9 @@ public class VehicleServiceImpl implements VehicleService {
     public List<VehicleResponse> getLowBatteryVehicles(Long companyId, Double threshold) {
         log.debug("Fetching EV/HYBRID vehicles with battery below: {}% for company ID: {}", threshold, companyId);
 
+        // PR 5: Include available features in responses
         return vehicleRepository.findLowBatteryVehicles(companyId, threshold).stream()
-                .map(VehicleResponse::fromEntity)
+                .map(this::buildVehicleResponseWithFeatures)
                 .collect(Collectors.toList());
     }
 
@@ -318,9 +340,20 @@ public class VehicleServiceImpl implements VehicleService {
     public List<VehicleResponse> getLowFuelVehicles(Long companyId, Double thresholdPercentage) {
         log.debug("Fetching ICE/HYBRID vehicles with fuel below: {}% for company ID: {}", thresholdPercentage, companyId);
 
+        // PR 5: Include available features in responses
         return vehicleRepository.findLowFuelVehicles(companyId, thresholdPercentage).stream()
-                .map(VehicleResponse::fromEntity)
+                .map(this::buildVehicleResponseWithFeatures)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Build VehicleResponse with available features based on fuel type
+     * PR 5: Include available features in response
+     */
+    private VehicleResponse buildVehicleResponseWithFeatures(Vehicle vehicle) {
+        VehicleResponse response = VehicleResponse.fromEntity(vehicle);
+        response.setAvailableFeatures(featureAvailabilityService.buildAvailableFeatures(vehicle));
+        return response;
     }
 
     private void mapRequestToEntity(VehicleRequest request, Vehicle vehicle) {
