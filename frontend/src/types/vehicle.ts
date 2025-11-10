@@ -12,6 +12,12 @@ export enum VehicleType {
   LCV = 'LCV',
 }
 
+export enum FuelType {
+  ICE = 'ICE',
+  EV = 'EV',
+  HYBRID = 'HYBRID',
+}
+
 export enum TripStatus {
   ONGOING = 'ONGOING',
   COMPLETED = 'COMPLETED',
@@ -45,6 +51,7 @@ export interface Vehicle {
   model: string;
   year: number;
   type: VehicleType;
+  fuelType: FuelType;
   status: VehicleStatus;
   licensePlate: string;
   color?: string;
@@ -56,6 +63,9 @@ export interface Vehicle {
   lastServiceDate?: string;
   nextServiceDate?: string;
   imageUrl?: string;
+  // ICE-specific fields
+  fuelTankCapacity?: number; // in liters
+  fuelLevel?: number; // in liters
   createdAt: string;
   updatedAt: string;
 }
@@ -100,10 +110,16 @@ export interface VehicleFormData {
   model: string;
   year: number;
   type: VehicleType;
+  fuelType: FuelType;
   licensePlate?: string;
   color?: string;
-  batteryCapacity: number;
-  status: VehicleStatus;
+  // EV/Hybrid fields
+  batteryCapacity?: number;
   currentBatterySoc?: number;
+  range?: number;
+  // ICE/Hybrid fields
+  fuelTankCapacity?: number;
+  fuelLevel?: number;
+  status: VehicleStatus;
   companyId: number;
 }

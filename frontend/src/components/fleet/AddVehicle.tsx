@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Paper,
@@ -7,6 +7,7 @@ import {
   TextField,
   Button,
   MenuItem,
+  Divider,
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -14,35 +15,72 @@ import * as yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '@redux/hooks';
 import { createVehicle } from '@redux/slices/vehicleSlice';
-import { VehicleType } from '../../types/vehicle';
+import { VehicleType, FuelType } from '../../types/vehicle';
 import { toast } from 'react-toastify';
+import FuelTypeSelector from './FuelTypeSelector';
 
-const schema = yup.object({
-  vin: yup.string().required('VIN is required').length(17, 'VIN must be 17 characters'),
-  make: yup.string().required('Make is required'),
-  model: yup.string().required('Model is required'),
-  year: yup.number().required('Year is required').min(2010).max(new Date().getFullYear() + 1),
-  type: yup.string().required('Type is required'),
-  licensePlate: yup.string().required('License plate is required'),
-  color: yup.string(),
-  batteryCapacity: yup.number().required('Battery capacity is required').min(10).max(200),
-  range: yup.number().required('Range is required').min(50).max(500),
-}).required();
+// Dynamic schema based on fuel type
+const getValidationSchema = (fuelType: FuelType) => {
+  const baseSchema = {
+    vin: yup.string().required('VIN is required').length(17, 'VIN must be 17 characters'),
+    make: yup.string().required('Make is required'),
+    model: yup.string().required('Model is required'),
+    year: yup.number().required('Year is required').min(2010).max(new Date().getFullYear() + 1),
+    type: yup.string().required('Type is required'),
+    licensePlate: yup.string().required('License plate is required'),
+    color: yup.string(),
+    fuelType: yup.string().required('Fuel type is required'),
+  };
 
-type FormData = yup.InferType<typeof schema>;
+  // Add conditional validation based on fuel type
+  if (fuelType === FuelType.EV || fuelType === FuelType.HYBRID) {
+    Object.assign(baseSchema, {
+      batteryCapacity: yup.number().required('Battery capacity is required for EV/Hybrid vehicles').min(10).max(200),
+      range: yup.number().required('Range is required for EV/Hybrid vehicles').min(50).max(500),
+    });
+  }
+
+  if (fuelType === FuelType.ICE || fuelType === FuelType.HYBRID) {
+    Object.assign(baseSchema, {
+      fuelTankCapacity: yup.number().required('Fuel tank capacity is required for ICE/Hybrid vehicles').min(10).max(200),
+    });
+  }
+
+  return yup.object(baseSchema).required();
+};
+
+type FormData = {
+  vin: string;
+  make: string;
+  model: string;
+  year: number;
+  type: string;
+  licensePlate: string;
+  color?: string;
+  fuelType: FuelType;
+  batteryCapacity?: number;
+  range?: number;
+  fuelTankCapacity?: number;
+};
 
 const AddVehicle: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const [selectedFuelType, setSelectedFuelType] = useState<FuelType>(FuelType.EV);
 
-  const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
-    resolver: yupResolver(schema) as any,
+  const { control, handleSubmit, formState: { errors, isSubmitting }, setValue, watch } = useForm<FormData>({
+    resolver: yupResolver(getValidationSchema(selectedFuelType)) as any,
     defaultValues: {
       year: new Date().getFullYear(),
+      fuelType: FuelType.EV,
       batteryCapacity: 75,
       range: 250,
+      fuelTankCapacity: 50,
     },
   });
+
+  // Watch fuel type changes
+  const fuelType = watch('fuelType');
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -54,6 +92,14 @@ const AddVehicle: React.FC = () => {
     }
   };
 
+  const handleFuelTypeChange = (newFuelType: FuelType) => {
+    setSelectedFuelType(newFuelType);
+    setValue('fuelType', newFuelType);
+  };
+
+  const showBatteryFields = fuelType === FuelType.EV || fuelType === FuelType.HYBRID;
+  const showFuelFields = fuelType === FuelType.ICE || fuelType === FuelType.HYBRID;
+
   return (
     <Box>
       <Typography variant="h5" gutterBottom>
@@ -63,6 +109,28 @@ const AddVehicle: React.FC = () => {
       <Paper sx={{ p: 3, mt: 3 }}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={3}>
+            {/* Fuel Type Selector */}
+            <Grid item xs={12}>
+              <Controller
+                name="fuelType"
+                control={control}
+                render={({ field }) => (
+                  <FuelTypeSelector
+                    value={field.value}
+                    onChange={handleFuelTypeChange}
+                    error={!!errors.fuelType}
+                    helperText={errors.fuelType?.message}
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h6" gutterBottom>
+                Basic Information
+              </Typography>
+            </Grid>
             <Grid item xs={12} md={6}>
               <Controller
                 name="vin"
@@ -182,39 +250,80 @@ const AddVehicle: React.FC = () => {
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
-              <Controller
-                name="batteryCapacity"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Battery Capacity (kWh)"
-                    type="number"
-                    fullWidth
-                    error={!!errors.batteryCapacity}
-                    helperText={errors.batteryCapacity?.message}
-                  />
-                )}
-              />
-            </Grid>
+            {/* Conditional EV/Hybrid Fields */}
+            {showBatteryFields && (
+              <>
+                <Grid item xs={12}>
+                  <Divider sx={{ my: 2 }} />
+                  <Typography variant="h6" gutterBottom>
+                    Battery Information
+                  </Typography>
+                </Grid>
 
-            <Grid item xs={12} md={6}>
-              <Controller
-                name="range"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Range (miles)"
-                    type="number"
-                    fullWidth
-                    error={!!errors.range}
-                    helperText={errors.range?.message}
+                <Grid item xs={12} md={6}>
+                  <Controller
+                    name="batteryCapacity"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Battery Capacity (kWh)"
+                        type="number"
+                        fullWidth
+                        error={!!errors.batteryCapacity}
+                        helperText={errors.batteryCapacity?.message}
+                      />
+                    )}
                   />
-                )}
-              />
-            </Grid>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                  <Controller
+                    name="range"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Range (miles)"
+                        type="number"
+                        fullWidth
+                        error={!!errors.range}
+                        helperText={errors.range?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+              </>
+            )}
+
+            {/* Conditional ICE/Hybrid Fields */}
+            {showFuelFields && (
+              <>
+                <Grid item xs={12}>
+                  <Divider sx={{ my: 2 }} />
+                  <Typography variant="h6" gutterBottom>
+                    Fuel Information
+                  </Typography>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                  <Controller
+                    name="fuelTankCapacity"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Fuel Tank Capacity (liters)"
+                        type="number"
+                        fullWidth
+                        error={!!errors.fuelTankCapacity}
+                        helperText={errors.fuelTankCapacity?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+              </>
+            )}
 
             <Grid item xs={12}>
               <Box display="flex" gap={2} justifyContent="flex-end">

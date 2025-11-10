@@ -14,7 +14,7 @@ import {
   Alert,
   CircularProgress,
 } from '@mui/material';
-import { Vehicle, VehicleFormData, VehicleType, VehicleStatus } from '../../types';
+import { Vehicle, VehicleFormData, VehicleType, VehicleStatus, FuelType } from '../../types';
 
 interface VehicleFormDialogProps {
   open: boolean;
@@ -40,6 +40,7 @@ const VehicleFormDialog: React.FC<VehicleFormDialogProps> = ({
     model: '',
     year: new Date().getFullYear(),
     type: VehicleType.TWO_WHEELER,
+    fuelType: FuelType.EV,
     licensePlate: '',
     color: '',
     batteryCapacity: 0,
@@ -60,6 +61,7 @@ const VehicleFormDialog: React.FC<VehicleFormDialogProps> = ({
         model: vehicle.model,
         year: vehicle.year,
         type: vehicle.type,
+        fuelType: vehicle.fuelType || FuelType.EV,
         licensePlate: vehicle.licensePlate || '',
         color: vehicle.color || '',
         batteryCapacity: vehicle.battery.capacity,
@@ -75,6 +77,7 @@ const VehicleFormDialog: React.FC<VehicleFormDialogProps> = ({
         model: '',
         year: new Date().getFullYear(),
         type: VehicleType.TWO_WHEELER,
+        fuelType: FuelType.EV,
         licensePlate: '',
         color: '',
         batteryCapacity: 0,
