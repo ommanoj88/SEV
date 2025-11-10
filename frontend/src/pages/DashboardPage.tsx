@@ -119,7 +119,7 @@ const DashboardPage: React.FC = () => {
           Fleet Overview
         </Typography>
         <Typography variant="body1" color="text.secondary" fontWeight={400}>
-          Real-time insights and performance metrics for your electric vehicle fleet
+          Real-time insights and performance metrics for your multi-fuel fleet (ICE, EV, Hybrid)
         </Typography>
       </Box>
 
@@ -134,10 +134,11 @@ const DashboardPage: React.FC = () => {
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <StatCard
-                title="Avg Battery Level"
+                title="Fleet Health"
                 value={formatPercentage(safeAnalytics.averageBatteryLevel)}
                 icon={<Battery80 sx={{ fontSize: 28 }} />}
                 color="#10B981"
+                subtitle="Avg battery/fuel level"
               />
             </Grid>
 
