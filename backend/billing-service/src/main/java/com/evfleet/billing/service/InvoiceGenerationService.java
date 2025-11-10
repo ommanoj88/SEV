@@ -77,7 +77,10 @@ public class InvoiceGenerationService {
             invoice.setTax(BigDecimal.ZERO);
             invoice.setDueDate(LocalDate.now().plusDays(15));
             invoice.setStatus("DRAFT");
-            invoice.setItems(chargesByTier);
+            // Convert Map<String, BigDecimal> to Map<String, Object>
+            Map<String, Object> chargesAsObjects = new HashMap<>();
+            chargesByTier.forEach((key, value) -> chargesAsObjects.put(key, value));
+            invoice.setChargesByTier(chargesAsObjects);
             invoice.setCreatedAt(LocalDateTime.now());
             invoice.setUpdatedAt(LocalDateTime.now());
 
