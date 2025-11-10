@@ -1,5 +1,6 @@
 package com.evfleet.charging.presentation.exception;
 
+import com.evfleet.charging.exception.NotAnEVVehicleException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +49,20 @@ public class GlobalExceptionHandler {
         error.put("timestamp", LocalDateTime.now());
         error.put("status", HttpStatus.BAD_REQUEST.value());
         error.put("message", ex.getMessage());
+
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(NotAnEVVehicleException.class)
+    public ResponseEntity<Map<String, Object>> handleNotAnEVVehicleException(NotAnEVVehicleException ex) {
+        log.warn("Vehicle charging validation failed: {}", ex.getMessage());
+        
+        Map<String, Object> error = new HashMap<>();
+        error.put("timestamp", LocalDateTime.now());
+        error.put("status", HttpStatus.BAD_REQUEST.value());
+        error.put("message", ex.getMessage());
+        error.put("vehicleId", ex.getVehicleId());
+        error.put("fuelType", ex.getFuelType());
 
         return ResponseEntity.badRequest().body(error);
     }

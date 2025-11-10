@@ -7,6 +7,7 @@ import com.evfleet.charging.entity.ChargingStation;
 import com.evfleet.charging.event.EventPublisher;
 import com.evfleet.charging.exception.ResourceNotFoundException;
 import com.evfleet.charging.repository.ChargingSessionRepository;
+import com.evfleet.charging.validation.VehicleTypeValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,11 +28,15 @@ public class ChargingSessionServiceImpl implements ChargingSessionService {
     private final ChargingSessionRepository sessionRepository;
     private final ChargingStationService stationService;
     private final EventPublisher eventPublisher;
+    private final VehicleTypeValidator vehicleTypeValidator;
 
     @Override
     @Transactional
     public ChargingSessionResponse startSession(ChargingSessionRequest request) {
         log.info("Starting charging session for vehicle: {}", request.getVehicleId());
+
+        // PR-9: Validate that vehicle can charge (only EV/HYBRID)
+        vehicleTypeValidator.validateVehicleCanCharge(request.getVehicleId());
 
         // Check for active session
         sessionRepository.findActiveSessionByVehicleId(request.getVehicleId())
