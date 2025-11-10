@@ -197,4 +197,57 @@ public class VehicleController {
         List<VehicleResponse> response = vehicleService.getActiveVehicles(companyId);
         return ResponseEntity.ok(response);
     }
+
+    // ===== PR 4: Multi-fuel Query Endpoints =====
+
+    @GetMapping("/fuel-type/{fuelType}")
+    @Operation(summary = "Get vehicles by fuel type", description = "Retrieve all vehicles with a specific fuel type (ICE, EV, or HYBRID)")
+    public ResponseEntity<List<VehicleResponse>> getVehiclesByFuelType(
+            @PathVariable com.evfleet.fleet.model.FuelType fuelType) {
+        log.info("REST request to get vehicles with fuel type: {}", fuelType);
+        List<VehicleResponse> response = vehicleService.getVehiclesByFuelType(fuelType);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/company/{companyId}/fuel-type/{fuelType}")
+    @Operation(summary = "Get vehicles by company and fuel type", 
+               description = "Retrieve vehicles for a specific company filtered by fuel type")
+    public ResponseEntity<List<VehicleResponse>> getVehiclesByCompanyAndFuelType(
+            @PathVariable Long companyId,
+            @PathVariable com.evfleet.fleet.model.FuelType fuelType) {
+        log.info("REST request to get vehicles for company ID: {} with fuel type: {}", companyId, fuelType);
+        List<VehicleResponse> response = vehicleService.getVehiclesByCompanyAndFuelType(companyId, fuelType);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/company/{companyId}/fleet-composition")
+    @Operation(summary = "Get fleet composition", 
+               description = "Get the distribution of vehicle fuel types in the fleet (counts and percentages)")
+    public ResponseEntity<java.util.Map<String, Object>> getFleetComposition(@PathVariable Long companyId) {
+        log.info("REST request to get fleet composition for company ID: {}", companyId);
+        java.util.Map<String, Object> composition = vehicleService.getFleetComposition(companyId);
+        return ResponseEntity.ok(composition);
+    }
+
+    @GetMapping("/company/{companyId}/low-battery-vehicles")
+    @Operation(summary = "Get low battery vehicles", 
+               description = "Retrieve EV/HYBRID vehicles with battery below threshold")
+    public ResponseEntity<List<VehicleResponse>> getLowBatteryVehicles(
+            @PathVariable Long companyId,
+            @RequestParam(defaultValue = "20") Double threshold) {
+        log.info("REST request to get EV/HYBRID vehicles with battery below {}% for company ID: {}", threshold, companyId);
+        List<VehicleResponse> response = vehicleService.getLowBatteryVehicles(companyId, threshold);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/company/{companyId}/low-fuel-vehicles")
+    @Operation(summary = "Get low fuel vehicles", 
+               description = "Retrieve ICE/HYBRID vehicles with fuel level below threshold percentage")
+    public ResponseEntity<List<VehicleResponse>> getLowFuelVehicles(
+            @PathVariable Long companyId,
+            @RequestParam(defaultValue = "20") Double threshold) {
+        log.info("REST request to get ICE/HYBRID vehicles with fuel below {}% for company ID: {}", threshold, companyId);
+        List<VehicleResponse> response = vehicleService.getLowFuelVehicles(companyId, threshold);
+        return ResponseEntity.ok(response);
+    }
 }

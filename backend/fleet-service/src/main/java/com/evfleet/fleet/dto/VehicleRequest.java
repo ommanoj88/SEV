@@ -24,6 +24,9 @@ public class VehicleRequest {
     @NotNull(message = "Vehicle type is required")
     private Vehicle.VehicleType type;
 
+    // PR 1: Multi-fuel support - fuel type field
+    private com.evfleet.fleet.model.FuelType fuelType;
+
     @NotBlank(message = "Make is required")
     @Size(max = 100, message = "Make must not exceed 100 characters")
     private String make;
@@ -37,13 +40,27 @@ public class VehicleRequest {
     @Max(value = 2100, message = "Year must not exceed 2100")
     private Integer year;
 
-    @NotNull(message = "Battery capacity is required")
+    // EV-specific fields (optional for ICE vehicles)
     @Positive(message = "Battery capacity must be positive")
     private Double batteryCapacity;
 
     @NotNull(message = "Status is required")
     private Vehicle.VehicleStatus status;
+    
+    @Size(max = 50, message = "Charger type must not exceed 50 characters")
+    private String defaultChargerType;
 
+    // ICE-specific fields (PR 1: Multi-fuel support - optional for EV vehicles)
+    @Positive(message = "Fuel tank capacity must be positive")
+    private Double fuelTankCapacity;
+
+    @PositiveOrZero(message = "Fuel level must be zero or positive")
+    private Double fuelLevel;
+
+    @Size(max = 50, message = "Engine type must not exceed 50 characters")
+    private String engineType;
+
+    // Common fields
     @Size(max = 17, message = "VIN must not exceed 17 characters")
     private String vin;
 
