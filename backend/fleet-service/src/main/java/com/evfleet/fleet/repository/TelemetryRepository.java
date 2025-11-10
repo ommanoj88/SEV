@@ -89,4 +89,92 @@ public interface TelemetryRepository extends JpaRepository<TelemetryData, Long> 
     List<TelemetryData> findLowBatteryTelemetry(@Param("vehicleId") Long vehicleId,
                                                  @Param("threshold") Double threshold,
                                                  Pageable pageable);
+
+    // ===== ICE-SPECIFIC TELEMETRY QUERIES =====
+    /**
+     * Find telemetry with low fuel level
+     * @since 2.0.0 (Multi-fuel support)
+     */
+    @Query("SELECT t FROM TelemetryData t WHERE t.vehicleId = :vehicleId " +
+           "AND t.fuelLevel IS NOT NULL AND t.fuelLevel < :threshold " +
+           "ORDER BY t.timestamp DESC")
+    List<TelemetryData> findLowFuelTelemetry(@Param("vehicleId") Long vehicleId,
+                                             @Param("threshold") Double threshold,
+                                             Pageable pageable);
+
+    /**
+     * Find telemetry with high engine temperature
+     * Used for engine overheating alerts
+     * @since 2.0.0 (Multi-fuel support)
+     */
+    @Query("SELECT t FROM TelemetryData t WHERE t.vehicleId = :vehicleId " +
+           "AND t.engineTemperature IS NOT NULL AND t.engineTemperature > :threshold " +
+           "ORDER BY t.timestamp DESC")
+    List<TelemetryData> findHighEngineTemperature(@Param("vehicleId") Long vehicleId,
+                                                   @Param("threshold") Double threshold,
+                                                   Pageable pageable);
+
+    /**
+     * Calculate average engine RPM for a trip
+     * @since 2.0.0 (Multi-fuel support)
+     */
+    @Query("SELECT AVG(t.engineRpm) FROM TelemetryData t WHERE t.tripId = :tripId " +
+           "AND t.engineRpm IS NOT NULL AND t.engineRpm > 0")
+    Double calculateAverageEngineRpmForTrip(@Param("tripId") Long tripId);
+
+    /**
+     * Calculate average engine load for a trip
+     * @since 2.0.0 (Multi-fuel support)
+     */
+    @Query("SELECT AVG(t.engineLoad) FROM TelemetryData t WHERE t.tripId = :tripId " +
+           "AND t.engineLoad IS NOT NULL")
+    Double calculateAverageEngineLoadForTrip(@Param("tripId") Long tripId);
+
+    /**
+     * Find latest telemetry with engine data for a vehicle
+     * @since 2.0.0 (Multi-fuel support)
+     */
+    @Query("SELECT t FROM TelemetryData t WHERE t.vehicleId = :vehicleId " +
+           "AND t.engineRpm IS NOT NULL " +
+           "ORDER BY t.timestamp DESC")
+    List<TelemetryData> findLatestEngineTelemetry(@Param("vehicleId") Long vehicleId,
+                                                   Pageable pageable);
+
+    /**
+     * Find telemetry with engine diagnostics issues
+     * @since 2.0.0 (Multi-fuel support)
+     */
+    @Query("SELECT t FROM TelemetryData t WHERE t.vehicleId = :vehicleId " +
+           "AND (t.engineTemperature > :tempThreshold OR t.engineLoad > :loadThreshold) " +
+           "ORDER BY t.timestamp DESC")
+    List<TelemetryData> findEngineDiagnosticIssues(@Param("vehicleId") Long vehicleId,
+                                                     @Param("tempThreshold") Double tempThreshold,
+                                                     @Param("loadThreshold") Double loadThreshold,
+                                                     Pageable pageable);
+
+    /**
+     * Get starting fuel level for a time period (earliest timestamp)
+     * @since 2.0.0 (Multi-fuel support)
+     */
+    @Query("SELECT t.fuelLevel FROM TelemetryData t " +
+           "WHERE t.vehicleId = :vehicleId " +
+           "AND t.timestamp >= :startTime " +
+           "AND t.fuelLevel IS NOT NULL " +
+           "ORDER BY t.timestamp ASC")
+    List<Double> findStartingFuelLevel(@Param("vehicleId") Long vehicleId,
+                                       @Param("startTime") LocalDateTime startTime,
+                                       Pageable pageable);
+
+    /**
+     * Get ending fuel level for a time period (latest timestamp)
+     * @since 2.0.0 (Multi-fuel support)
+     */
+    @Query("SELECT t.fuelLevel FROM TelemetryData t " +
+           "WHERE t.vehicleId = :vehicleId " +
+           "AND t.timestamp <= :endTime " +
+           "AND t.fuelLevel IS NOT NULL " +
+           "ORDER BY t.timestamp DESC")
+    List<Double> findEndingFuelLevel(@Param("vehicleId") Long vehicleId,
+                                     @Param("endTime") LocalDateTime endTime,
+                                     Pageable pageable);
 }
