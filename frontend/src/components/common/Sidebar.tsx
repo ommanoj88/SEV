@@ -22,6 +22,7 @@ import {
   Receipt as BillingIcon,
   Person as ProfileIcon,
   Settings as SettingsIcon,
+  PictureAsPdf as ReportIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -40,6 +41,7 @@ const menuItems = [
   { text: 'Maintenance', icon: <MaintenanceIcon />, path: '/maintenance' },
   { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
   { text: 'Billing', icon: <BillingIcon />, path: '/billing' },
+  { text: 'Reports', icon: <ReportIcon />, path: '/reports' },
 ];
 
 const bottomMenuItems = [

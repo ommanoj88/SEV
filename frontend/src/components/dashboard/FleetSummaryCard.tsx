@@ -1,23 +1,56 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, Typography, Box, Grid, alpha } from '@mui/material';
 import { DirectionsCar, LocalParking, EvStation, Build } from '@mui/icons-material';
 import { FleetAnalytics } from '../../types';
 import { VEHICLE_STATUS_COLORS } from '../../utils/constants';
+import VehicleDetailsModal from './VehicleDetailsModal';
+import { useAppDispatch } from '../../redux/hooks';
+import vehicleService from '../../services/vehicleService';
 
 interface FleetSummaryCardProps {
   analytics: FleetAnalytics | null;
 }
 
 const FleetSummaryCard: React.FC<FleetSummaryCardProps> = ({ analytics }) => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedVehicles, setSelectedVehicles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
   if (!analytics) return null;
 
   const statusItems = [
-    { label: 'Active', value: analytics.activeVehicles, icon: <DirectionsCar />, color: VEHICLE_STATUS_COLORS.ACTIVE },
-    { label: 'Inactive', value: analytics.inactiveVehicles, icon: <LocalParking />, color: VEHICLE_STATUS_COLORS.INACTIVE },
-    { label: 'Charging', value: analytics.chargingVehicles, icon: <EvStation />, color: VEHICLE_STATUS_COLORS.CHARGING },
-    { label: 'Maintenance', value: analytics.maintenanceVehicles, icon: <Build />, color: VEHICLE_STATUS_COLORS.MAINTENANCE },
-    { label: 'In Trip', value: analytics.inTripVehicles, icon: <DirectionsCar />, color: VEHICLE_STATUS_COLORS.IN_TRIP },
+    { label: 'Active', value: analytics.activeVehicles, icon: <DirectionsCar />, color: VEHICLE_STATUS_COLORS.ACTIVE, status: 'ACTIVE' },
+    { label: 'Inactive', value: analytics.inactiveVehicles, icon: <LocalParking />, color: VEHICLE_STATUS_COLORS.INACTIVE, status: 'INACTIVE' },
+    { label: 'Charging', value: analytics.chargingVehicles, icon: <EvStation />, color: VEHICLE_STATUS_COLORS.CHARGING, status: 'CHARGING' },
+    { label: 'Maintenance', value: analytics.maintenanceVehicles, icon: <Build />, color: VEHICLE_STATUS_COLORS.MAINTENANCE, status: 'IN_MAINTENANCE' },
+    { label: 'In Trip', value: analytics.inTripVehicles, icon: <DirectionsCar />, color: VEHICLE_STATUS_COLORS.IN_TRIP, status: 'IN_TRIP' },
   ];
+
+  const handleCategoryClick = async (category: string, status: string) => {
+    setSelectedCategory(category);
+    setModalOpen(true);
+    setLoading(true);
+
+    try {
+      // Fetch vehicles by status
+      const vehicles = await vehicleService.getAllVehicles();
+      // Filter by status
+      const filteredVehicles = vehicles.filter((v: any) => v.status === status);
+      setSelectedVehicles(filteredVehicles);
+    } catch (error) {
+      console.error('Error fetching vehicles:', error);
+      setSelectedVehicles([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedCategory('');
+    setSelectedVehicles([]);
+  };
 
   return (
     <Card 
@@ -64,11 +97,13 @@ const FleetSummaryCard: React.FC<FleetSummaryCardProps> = ({ analytics }) => {
           {statusItems.map((item, index) => (
             <Grid item xs={12} sm={6} md={4} lg={2} xl={2} key={item.label}>
               <Box 
+                onClick={() => handleCategoryClick(item.label, item.status)}
                 sx={{ 
                   p: 2, 
                   borderRadius: 2,
                   background: (theme) => theme.palette.background.paper,
                   border: (theme) => `1px solid ${alpha(item.color, 0.2)}`,
+                  cursor: 'pointer',
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
                     transform: 'translateY(-2px)',
@@ -114,6 +149,14 @@ const FleetSummaryCard: React.FC<FleetSummaryCardProps> = ({ analytics }) => {
           ))}
         </Grid>
       </CardContent>
+
+      <VehicleDetailsModal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        title={`${selectedCategory} Vehicles`}
+        vehicles={selectedVehicles}
+        loading={loading}
+      />
     </Card>
   );
 };

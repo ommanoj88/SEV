@@ -2,15 +2,22 @@ package com.evfleet.analytics.controller;
 
 import com.evfleet.analytics.dto.FleetSummaryResponse;
 import com.evfleet.analytics.dto.TCOAnalysisResponse;
+import com.evfleet.analytics.dto.VehicleReportRequest;
 import com.evfleet.analytics.entity.CostAnalytics;
 import com.evfleet.analytics.entity.UtilizationReport;
 import com.evfleet.analytics.service.AnalyticsService;
+import com.evfleet.analytics.service.VehicleReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -20,6 +27,7 @@ import java.util.List;
 public class AnalyticsController {
 
     private final AnalyticsService analyticsService;
+    private final VehicleReportService vehicleReportService;
 
     @GetMapping("/fleet")
     @Operation(summary = "Get fleet summary (all)", description = "Retrieve fleet summary for all companies")
@@ -125,5 +133,41 @@ public class AnalyticsController {
         // Note: Should be implemented in service layer
         // For now, returning empty response
         return ResponseEntity.ok(new byte[0]);
+    }
+
+    // ========================================
+    // VEHICLE REPORT ENDPOINTS
+    // ========================================
+
+    @PostMapping("/reports/vehicle")
+    @Operation(summary = "Generate vehicle report", 
+               description = "Generate a comprehensive vehicle report with genealogy and historical data")
+    public ResponseEntity<byte[]> generateVehicleReport(@RequestBody VehicleReportRequest request) {
+        byte[] reportData = vehicleReportService.generateVehicleReport(request);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", 
+                "vehicle_report_" + request.getVehicleId() + "_" + System.currentTimeMillis() + ".pdf");
+        
+        return new ResponseEntity<>(reportData, headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/reports/vehicle/{vehicleId}/genealogy")
+    @Operation(summary = "Generate vehicle genealogy report", 
+               description = "Generate a genealogy report focusing on complete event history")
+    public ResponseEntity<byte[]> generateGenealogyReport(
+            @PathVariable Long vehicleId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+        
+        byte[] reportData = vehicleReportService.generateGenealogyReport(vehicleId, startDate, endDate);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", 
+                "vehicle_genealogy_" + vehicleId + "_" + System.currentTimeMillis() + ".pdf");
+        
+        return new ResponseEntity<>(reportData, headers, HttpStatus.OK);
     }
 }

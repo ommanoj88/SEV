@@ -91,6 +91,55 @@ export const analyticsService = {
   exportReport: async (type: string, format: string, params?: any): Promise<Blob> => {
     return apiClient.post('/v1/analytics/export', { type, format, ...params });
   },
+
+  /**
+   * Generate vehicle report (v.report)
+   */
+  generateVehicleReport: async (request: {
+    vehicleId: number;
+    startDate: string;
+    endDate: string;
+    includeVehicleInfo?: boolean;
+    includeEventHistory?: boolean;
+    includeTripHistory?: boolean;
+    includeMaintenanceHistory?: boolean;
+    includeChargingHistory?: boolean;
+    includeAlertHistory?: boolean;
+    includePerformanceMetrics?: boolean;
+    includeCostAnalysis?: boolean;
+  }): Promise<Blob> => {
+    const response = await fetch('/api/v1/analytics/reports/vehicle', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to generate report');
+    }
+    return response.blob();
+  },
+
+  /**
+   * Generate vehicle genealogy report
+   */
+  generateGenealogyReport: async (
+    vehicleId: number,
+    startDate: string,
+    endDate: string
+  ): Promise<Blob> => {
+    const response = await fetch(
+      `/api/v1/analytics/reports/vehicle/${vehicleId}/genealogy?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`,
+      {
+        method: 'GET',
+      }
+    );
+    if (!response.ok) {
+      throw new Error('Failed to generate genealogy report');
+    }
+    return response.blob();
+  },
 };
 
 export default analyticsService;

@@ -14,6 +14,53 @@ This platform provides end-to-end visibility and control over commercial electri
 - Cost optimization and TCO analytics
 - Sustainability reporting and carbon footprint tracking
 - Multi-tenant architecture with role-based access control
+- **NEW**: Interactive dashboard with drill-down capabilities
+- **NEW**: Comprehensive vehicle event tracking and history
+- **NEW**: Vehicle genealogy reports (v.report) with PDF generation
+- **NEW**: Real-time vehicle state management
+
+---
+
+## Latest Enhancements
+
+### Dashboard Interactivity (New)
+- **Interactive Cards**: Click on dashboard cards to view detailed vehicle lists
+- **Drill-Down Views**: Access comprehensive vehicle information through modal dialogs
+- **Real-Time Updates**: Live status updates for fleet metrics
+
+### Vehicle Event Tracking (New)
+- **Event Sourcing**: Complete history of all vehicle events
+  - Trip events (started, ended, paused, resumed)
+  - Charging events (started, completed, failed)
+  - Maintenance events (scheduled, completed, cancelled)
+  - Alert events (raised, resolved, acknowledged)
+  - Status changes and system events
+- **Event History API**: Query events by type, severity, date range
+- **Real-Time Monitoring**: Track all vehicle activities in production
+
+### Vehicle Current State (New)
+- **State Snapshots**: Real-time state of each vehicle
+  - Location and movement data
+  - Battery/fuel levels and health
+  - Current activity (charging, maintenance, trip)
+  - Alert status and connection status
+- **Quick Access**: Optimized queries for current vehicle status
+- **Performance Metrics**: Efficiency scores and utilization tracking
+
+### Vehicle Report Generation - v.report (New)
+- **Comprehensive Reports**: Generate detailed PDF reports with:
+  - Vehicle information and specifications
+  - Complete event history (genealogy)
+  - Trip history and analytics
+  - Maintenance records
+  - Charging history (for EV/Hybrid)
+  - Alert history
+  - Performance metrics
+  - Cost analysis
+- **Genealogy Reports**: Focus on complete event timeline
+- **Customizable**: Select which sections to include
+- **Date Range**: Generate reports for specific time periods
+- **UI Interface**: User-friendly report generation page at `/reports`
 
 ---
 
