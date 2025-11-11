@@ -25,6 +25,8 @@ import {
   PictureAsPdf as ReportIcon,
   Description as DocumentIcon,
   AttachMoney as ExpenseIcon,
+  Route as RouteIcon,
+  PersonOutline as CustomerIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -43,6 +45,8 @@ const menuItems = [
   { text: 'Maintenance', icon: <MaintenanceIcon />, path: '/maintenance' },
   { text: 'Documents', icon: <DocumentIcon />, path: '/documents' },
   { text: 'Expenses', icon: <ExpenseIcon />, path: '/expenses' },
+  { text: 'Routes', icon: <RouteIcon />, path: '/routes' },
+  { text: 'Customers', icon: <CustomerIcon />, path: '/customers' },
   { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
   { text: 'Billing', icon: <BillingIcon />, path: '/billing' },
   { text: 'Reports', icon: <ReportIcon />, path: '/reports' },

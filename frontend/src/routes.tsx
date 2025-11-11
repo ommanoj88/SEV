@@ -19,6 +19,8 @@ import SettingsPage from './pages/SettingsPage';
 import VehicleReportPage from './pages/VehicleReportPage';
 import DocumentManagementPage from './pages/DocumentManagementPage';
 import ExpenseManagementPage from './pages/ExpenseManagementPage';
+import RouteOptimizationPage from './pages/RouteOptimizationPage';
+import CustomerManagementPage from './pages/CustomerManagementPage';
 
 // Component to redirect authenticated users away from auth pages
 const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -141,6 +143,22 @@ const AppRoutes: React.FC = () => {
         element={
           <ProtectedRoute>
             <ExpenseManagementPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/routes"
+        element={
+          <ProtectedRoute>
+            <RouteOptimizationPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/customers"
+        element={
+          <ProtectedRoute>
+            <CustomerManagementPage />
           </ProtectedRoute>
         }
       />
