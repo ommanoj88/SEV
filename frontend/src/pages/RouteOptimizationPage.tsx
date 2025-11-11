@@ -35,7 +35,6 @@ import {
   PlayArrow as StartIcon,
   CheckCircle as CompleteIcon,
   Cancel as CancelIcon,
-  Map as MapIcon,
   Route as RouteIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
@@ -121,10 +120,12 @@ const RouteOptimizationPage: React.FC = () => {
 
   useEffect(() => {
     fetchRoutes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     filterRoutes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routes, activeTab]);
 
   const fetchRoutes = async () => {
