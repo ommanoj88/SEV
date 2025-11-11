@@ -6,7 +6,6 @@ import {
   Typography,
   Button,
   Grid,
-  TextField,
   FormControlLabel,
   Checkbox,
   FormGroup,
@@ -54,7 +53,7 @@ const VehicleReportPage: React.FC = () => {
   const fetchVehicles = async () => {
     try {
       setLoadingVehicles(true);
-      const data = await vehicleService.getAllVehicles();
+      const data = await vehicleService.getVehicles();
       setVehicles(data);
     } catch (error) {
       console.error('Error fetching vehicles:', error);

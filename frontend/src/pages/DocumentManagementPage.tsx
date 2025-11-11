@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Button,
@@ -37,7 +37,6 @@ import {
   Delete as DeleteIcon,
   Visibility as VisibilityIcon,
   GetApp as DownloadIcon,
-  Edit as EditIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 
@@ -68,7 +67,6 @@ interface Document {
 const DocumentManagementPage: React.FC = () => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [filteredDocuments, setFilteredDocuments] = useState<Document[]>([]);
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -103,30 +101,7 @@ const DocumentManagementPage: React.FC = () => {
     { value: 'OTHER', label: 'Other Document' },
   ];
 
-  useEffect(() => {
-    fetchDocuments();
-  }, []);
-
-  useEffect(() => {
-    filterDocuments();
-  }, [documents, activeTab]);
-
-  const fetchDocuments = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/documents/action-required');
-      if (response.ok) {
-        const data = await response.json();
-        setDocuments(data);
-      }
-    } catch (err) {
-      setError('Failed to fetch documents');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filterDocuments = () => {
+  const filterDocuments = useCallback(() => {
     let filtered = documents;
     
     switch (activeTab) {
@@ -147,6 +122,26 @@ const DocumentManagementPage: React.FC = () => {
     }
     
     setFilteredDocuments(filtered);
+  }, [documents, activeTab]);
+
+  useEffect(() => {
+    fetchDocuments();
+  }, []);
+
+  useEffect(() => {
+    filterDocuments();
+  }, [documents, activeTab, filterDocuments]);
+
+  const fetchDocuments = async () => {
+    try {
+      const response = await fetch('/api/documents/action-required');
+      if (response.ok) {
+        const data = await response.json();
+        setDocuments(data);
+      }
+    } catch (err) {
+      setError('Failed to fetch documents');
+    }
   };
 
   const handleUploadDocument = async () => {

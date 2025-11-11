@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Button,
@@ -36,13 +36,10 @@ import {
   Cancel as RejectIcon,
   AttachMoney as MoneyIcon,
   TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon,
   Visibility as ViewIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
 interface Expense {
   id: number;
@@ -65,7 +62,6 @@ interface Expense {
 const ExpenseManagementPage: React.FC = () => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [filteredExpenses, setFilteredExpenses] = useState<Expense[]>([]);
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -116,17 +112,37 @@ const ExpenseManagementPage: React.FC = () => {
     'OTHER',
   ];
 
+  const filterExpenses = useCallback(() => {
+    let filtered = expenses;
+    
+    switch (activeTab) {
+      case 0: // All
+        filtered = expenses;
+        break;
+      case 1: // Pending
+        filtered = expenses.filter(exp => exp.status === 'PENDING_APPROVAL');
+        break;
+      case 2: // Approved
+        filtered = expenses.filter(exp => exp.status === 'APPROVED');
+        break;
+      case 3: // Rejected
+        filtered = expenses.filter(exp => exp.status === 'REJECTED');
+        break;
+    }
+    
+    setFilteredExpenses(filtered);
+  }, [expenses, activeTab]);
+
   useEffect(() => {
     fetchExpenses();
   }, []);
 
   useEffect(() => {
     filterExpenses();
-  }, [expenses, activeTab]);
+  }, [expenses, activeTab, filterExpenses]);
 
   const fetchExpenses = async () => {
     try {
-      setLoading(true);
       // Mock data for now
       const mockExpenses: Expense[] = [
         {
@@ -165,30 +181,7 @@ const ExpenseManagementPage: React.FC = () => {
       setExpenses(mockExpenses);
     } catch (err) {
       setError('Failed to fetch expenses');
-    } finally {
-      setLoading(false);
     }
-  };
-
-  const filterExpenses = () => {
-    let filtered = expenses;
-    
-    switch (activeTab) {
-      case 0: // All
-        filtered = expenses;
-        break;
-      case 1: // Pending
-        filtered = expenses.filter(exp => exp.status === 'PENDING_APPROVAL');
-        break;
-      case 2: // Approved
-        filtered = expenses.filter(exp => exp.status === 'APPROVED');
-        break;
-      case 3: // Rejected
-        filtered = expenses.filter(exp => exp.status === 'REJECTED');
-        break;
-    }
-    
-    setFilteredExpenses(filtered);
   };
 
   const handleAddExpense = async () => {
