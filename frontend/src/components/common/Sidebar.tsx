@@ -23,6 +23,8 @@ import {
   Person as ProfileIcon,
   Settings as SettingsIcon,
   PictureAsPdf as ReportIcon,
+  Description as DocumentIcon,
+  AttachMoney as ExpenseIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -39,6 +41,8 @@ const menuItems = [
   { text: 'Charging', icon: <ChargingIcon />, path: '/charging' },
   { text: 'Drivers', icon: <DriversIcon />, path: '/drivers' },
   { text: 'Maintenance', icon: <MaintenanceIcon />, path: '/maintenance' },
+  { text: 'Documents', icon: <DocumentIcon />, path: '/documents' },
+  { text: 'Expenses', icon: <ExpenseIcon />, path: '/expenses' },
   { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
   { text: 'Billing', icon: <BillingIcon />, path: '/billing' },
   { text: 'Reports', icon: <ReportIcon />, path: '/reports' },
