@@ -18,6 +18,10 @@ This platform provides end-to-end visibility and control over commercial electri
 - **NEW**: Comprehensive vehicle event tracking and history
 - **NEW**: Vehicle genealogy reports (v.report) with PDF generation
 - **NEW**: Real-time vehicle state management
+- **NEW**: Document management system with expiry tracking
+- **NEW**: Expense management with approval workflows
+- **NEW**: Route optimization with multi-stop planning
+- **NEW**: Customer management with feedback system
 
 ---
 
@@ -61,6 +65,31 @@ This platform provides end-to-end visibility and control over commercial electri
 - **Customizable**: Select which sections to include
 - **Date Range**: Generate reports for specific time periods
 - **UI Interface**: User-friendly report generation page at `/reports`
+
+### Route Optimization & Customer Management (New - November 2025)
+- **Route Planning**: Create and manage multi-stop delivery routes
+  - Origin and destination with GPS coordinates
+  - Multi-stop waypoint management with sequencing
+  - Optimization criteria (Distance, Time, Fuel, Cost)
+  - Traffic consideration and toll road options
+  - Time window constraints for deliveries
+  - Planned vs actual performance tracking
+  - Route execution controls (Start, Complete, Cancel)
+- **Customer Management**: Comprehensive customer relationship management
+  - Individual and Business customer types
+  - Complete contact and address information
+  - GSTIN and PAN support for business customers
+  - Credit limit and outstanding balance tracking
+  - Delivery success/failure statistics
+  - Service rating with 5-star system
+  - Customer feedback with categories
+  - Feedback response management
+- **Proof of Delivery (POD)**: Built-in POD support
+  - Signature capture path storage
+  - Photo upload capability
+  - Customer confirmation tracking
+  - Delivery notes and completion status
+- **UI Pages**: Full-featured web interfaces at `/routes` and `/customers`
 
 ---
 
@@ -511,6 +540,6 @@ For questions or support, contact the development team.
 
 ---
 
-**Version**: 1.0.0
-**Last Updated**: October 25, 2025
-**Status**: Active Development
+**Version**: 2.1.0
+**Last Updated**: November 11, 2025
+**Status**: Active Development - Route Optimization & Customer Management Complete
