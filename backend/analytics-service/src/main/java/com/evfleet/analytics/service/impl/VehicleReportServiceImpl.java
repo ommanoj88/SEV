@@ -29,7 +29,7 @@ import java.util.Map;
 @Slf4j
 public class VehicleReportServiceImpl implements VehicleReportService {
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
     private static final String FLEET_SERVICE_URL = "http://fleet-service/api/v1";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 

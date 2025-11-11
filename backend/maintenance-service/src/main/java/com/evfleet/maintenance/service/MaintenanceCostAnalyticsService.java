@@ -34,8 +34,8 @@ public class MaintenanceCostAnalyticsService {
     private final ServiceHistoryRepository serviceHistoryRepository;
     private final RestTemplate restTemplate;
     
-    // Fleet service URL - should be configured in application.yml
-    private static final String FLEET_SERVICE_URL = "http://localhost:8081/api/v1/vehicles";
+    // Fleet service URL - uses service discovery via Eureka
+    private static final String FLEET_SERVICE_URL = "http://fleet-service/api/v1/vehicles";
     
     /**
      * Get comprehensive cost summary for all vehicles in a date range
