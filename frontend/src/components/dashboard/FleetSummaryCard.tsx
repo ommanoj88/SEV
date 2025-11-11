@@ -4,7 +4,6 @@ import { DirectionsCar, LocalParking, EvStation, Build } from '@mui/icons-materi
 import { FleetAnalytics } from '../../types';
 import { VEHICLE_STATUS_COLORS } from '../../utils/constants';
 import VehicleDetailsModal from './VehicleDetailsModal';
-import { useAppDispatch } from '../../redux/hooks';
 import vehicleService from '../../services/vehicleService';
 
 interface FleetSummaryCardProps {
@@ -34,7 +33,7 @@ const FleetSummaryCard: React.FC<FleetSummaryCardProps> = ({ analytics }) => {
 
     try {
       // Fetch vehicles by status
-      const vehicles = await vehicleService.getAllVehicles();
+      const vehicles = await vehicleService.getVehicles();
       // Filter by status
       const filteredVehicles = vehicles.filter((v: any) => v.status === status);
       setSelectedVehicles(filteredVehicles);
