@@ -15,6 +15,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 /**
@@ -22,6 +23,7 @@ import reactor.core.publisher.Mono;
  * Validates Firebase tokens for all incoming requests
  */
 @Component
+@Slf4j
 public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     // Public endpoints that don't require authentication
@@ -55,12 +57,12 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         try {
             if (com.google.firebase.FirebaseApp.getApps().isEmpty()) {
                 // Firebase not initialized - allow requests in dev mode but log a warning
-                System.out.println("[AuthFilter] Firebase is not initialized - skipping token verification (dev mode)");
+                log.warn("[AuthFilter] Firebase is not initialized - skipping token verification (dev mode)");
                 return chain.filter(exchange);
             }
         } catch (Throwable t) {
             // Defensive: if any unexpected error occurs while checking Firebase, skip auth to avoid 500s
-            System.out.println("[AuthFilter] Error checking Firebase initialization, skipping auth: " + t.getMessage());
+            log.error("[AuthFilter] Error checking Firebase initialization, skipping auth: {}", t.getMessage());
             return chain.filter(exchange);
         }
 

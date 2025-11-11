@@ -38,9 +38,7 @@ import {
   Feedback as FeedbackIcon,
   Phone as PhoneIcon,
   Email as EmailIcon,
-  LocationOn as LocationIcon,
 } from '@mui/icons-material';
-import { format } from 'date-fns';
 import axios from 'axios';
 
 interface Customer {
@@ -122,10 +120,12 @@ const CustomerManagementPage: React.FC = () => {
   useEffect(() => {
     fetchCustomers();
     fetchFeedback();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     filterCustomers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customers, activeTab]);
 
   const fetchCustomers = async () => {
