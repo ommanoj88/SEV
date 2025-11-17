@@ -74,7 +74,7 @@ export const driverService = {
    * Assign driver to vehicle
    */
   assignToVehicle: async (driverId: number, vehicleId: number): Promise<any> => {
-    return apiClient.post(`/v1/drivers/${driverId}/assign-vehicle`, { vehicleId });
+    return apiClient.post(`/v1/drivers/${driverId}/assign?vehicleId=${vehicleId}`);
   },
 
   /**

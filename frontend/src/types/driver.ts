@@ -1,8 +1,9 @@
 export enum DriverStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
-  SUSPENDED = 'SUSPENDED',
+  ON_TRIP = 'ON_TRIP',
   ON_LEAVE = 'ON_LEAVE',
+  SUSPENDED = 'SUSPENDED',
   TERMINATED = 'TERMINATED',
 }
 
