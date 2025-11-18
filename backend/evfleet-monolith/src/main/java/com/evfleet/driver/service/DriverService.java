@@ -5,6 +5,8 @@ import com.evfleet.driver.dto.DriverRequest;
 import com.evfleet.driver.dto.DriverResponse;
 import com.evfleet.driver.model.Driver;
 import com.evfleet.driver.repository.DriverRepository;
+import com.evfleet.fleet.model.Vehicle;
+import com.evfleet.fleet.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 public class DriverService {
 
     private final DriverRepository driverRepository;
+    private final VehicleRepository vehicleRepository;
 
     public DriverResponse createDriver(Long companyId, DriverRequest request) {
         log.info("POST /api/v1/drivers - Creating driver for company: {}", companyId);
@@ -134,25 +137,54 @@ public class DriverService {
     public DriverResponse assignVehicle(Long driverId, Long vehicleId) {
         log.info("POST /api/v1/drivers/{}/assign - Assigning vehicle: {}", driverId, vehicleId);
 
+        // Find driver
         Driver driver = driverRepository.findById(driverId)
                 .orElseThrow(() -> new ResourceNotFoundException("Driver", "id", driverId));
 
+        // Find vehicle
+        Vehicle vehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle", "id", vehicleId));
+
+        // Update driver
         driver.setCurrentVehicleId(vehicleId);
         driver.setStatus(Driver.DriverStatus.ON_TRIP);
 
+        // Update vehicle - THIS IS THE FIX!
+        vehicle.setCurrentDriverId(driverId);
+        vehicle.setStatus(Vehicle.VehicleStatus.IN_TRIP);
+
+        // Save both entities
         Driver updated = driverRepository.save(driver);
-        log.info("Vehicle assigned to driver: {}", driverId);
+        vehicleRepository.save(vehicle);
+
+        log.info("Vehicle {} assigned to driver {} successfully", vehicleId, driverId);
         return DriverResponse.fromEntity(updated);
     }
 
     public DriverResponse unassignVehicle(Long driverId) {
         log.info("POST /api/v1/drivers/{}/unassign - Unassigning vehicle", driverId);
 
+        // Find driver
         Driver driver = driverRepository.findById(driverId)
                 .orElseThrow(() -> new ResourceNotFoundException("Driver", "id", driverId));
 
+        // Get the vehicle ID before clearing
+        Long vehicleId = driver.getCurrentVehicleId();
+
+        // Update driver
         driver.setCurrentVehicleId(null);
         driver.setStatus(Driver.DriverStatus.ACTIVE);
+
+        // Update vehicle if one was assigned
+        if (vehicleId != null) {
+            Vehicle vehicle = vehicleRepository.findById(vehicleId)
+                    .orElse(null);
+            if (vehicle != null) {
+                vehicle.setCurrentDriverId(null);
+                vehicle.setStatus(Vehicle.VehicleStatus.ACTIVE);
+                vehicleRepository.save(vehicle);
+            }
+        }
 
         Driver updated = driverRepository.save(driver);
         log.info("Vehicle unassigned from driver: {}", driverId);

@@ -58,6 +58,8 @@ export interface Vehicle {
   battery: BatteryInfo;
   location: Location;
   odometer: number; // in km
+  // Backend sends currentDriverId, frontend uses assignedDriverId
+  currentDriverId?: string | number;
   assignedDriverId?: string;
   assignedDriverName?: string;
   lastServiceDate?: string;
