@@ -81,10 +81,11 @@ const DriversPage: React.FC = () => {
   const [menuDriver, setMenuDriver] = useState<Driver | null>(null);
 
   useEffect(() => {
-    if (isAuthenticated && user?.companyId) {
+    // Wait for both authentication AND user object to be loaded
+    if (isAuthenticated && user && user.companyId) {
       dispatch(fetchAllDrivers({ companyId: user.companyId }));
     }
-  }, [dispatch, isAuthenticated, user?.companyId]);
+  }, [dispatch, isAuthenticated, user]);
 
   // Calculate KPIs
   const totalDrivers = drivers.length;

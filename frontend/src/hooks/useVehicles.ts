@@ -9,12 +9,17 @@ export const useVehicles = (filters?: VehicleFilters) => {
   const loading = useAppSelector(selectVehicleLoading);
 
   useEffect(() => {
-    dispatch(fetchVehicles(filters));
+    // Only fetch if companyId is available
+    if (filters?.companyId) {
+      dispatch(fetchVehicles(filters));
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, filters?.status, filters?.type, filters?.batteryMin, filters?.batteryMax, filters?.search, filters?.assignedDriver]);
+  }, [dispatch, filters?.companyId, filters?.status, filters?.type, filters?.batteryMin, filters?.batteryMax, filters?.search, filters?.assignedDriver]);
 
   const refetch = useCallback(() => {
-    dispatch(fetchVehicles(filters));
+    if (filters?.companyId) {
+      dispatch(fetchVehicles(filters));
+    }
   }, [dispatch, filters]);
 
   return { vehicles, loading, refetch };
