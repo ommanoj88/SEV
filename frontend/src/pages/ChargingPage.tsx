@@ -21,11 +21,6 @@ const ChargingPage: React.FC = () => {
     }
   }, [dispatch, isAuthenticated, user]);
 
-  // Wait for user to load before showing page
-  if (isAuthenticated && !user) {
-    return <LinearProgress />;
-  }
-
   if (loading) return <LinearProgress />;
 
   const activeSessions = sessions.filter(s => s.status === 'CHARGING');

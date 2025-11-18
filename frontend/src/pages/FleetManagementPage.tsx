@@ -157,11 +157,6 @@ const FleetManagementPage: React.FC = () => {
     }
   };
 
-  // Wait for user to load before showing page
-  if (isAuthenticated && !user) {
-    return <LinearProgress />;
-  }
-
   if (loading) {
     return <LinearProgress />;
   }

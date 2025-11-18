@@ -26,11 +26,6 @@ const DashboardPage: React.FC = () => {
     }
   }, [dispatch, isAuthenticated, user]);
 
-  // Wait for user to load before showing page
-  if (isAuthenticated && !user) {
-    return <LinearProgress />;
-  }
-
   // Show loading only while actively fetching (not on error)
   if ((analyticsLoading || notificationsLoading) && !analytics) {
     return <LinearProgress />;
