@@ -43,9 +43,9 @@ const App: React.FC = () => {
     );
   }
 
-  // Only show authenticated UI if both Firebase user and backend user exist
-  // Check for both null and undefined
-  const isFullyAuthenticated = isAuthenticated && user != null;
+  // Only show authenticated UI if authenticated
+  // Show layout even if user is still loading to prevent layout flash
+  const isFullyAuthenticated = isAuthenticated;
 
   return (
     <ErrorBoundary>
@@ -54,8 +54,8 @@ const App: React.FC = () => {
         <BrowserRouter>
           {isFullyAuthenticated ? (
             <Box sx={{ display: 'flex' }}>
-              <Header 
-                onMenuClick={handleSidebarToggle} 
+              <Header
+                onMenuClick={handleSidebarToggle}
                 onThemeToggle={handleThemeToggle}
                 themeMode={themeMode}
               />
