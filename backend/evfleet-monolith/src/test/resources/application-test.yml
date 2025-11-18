@@ -1,0 +1,54 @@
+spring:
+  datasource:
+    auth:
+      jdbc-url: jdbc:h2:mem:testdb_auth
+      driver-class-name: org.h2.Driver
+      username: sa
+      password:
+    fleet:
+      jdbc-url: jdbc:h2:mem:testdb_fleet
+      driver-class-name: org.h2.Driver
+      username: sa
+      password:
+    charging:
+      jdbc-url: jdbc:h2:mem:testdb_charging
+      driver-class-name: org.h2.Driver
+      username: sa
+      password:
+    maintenance:
+      jdbc-url: jdbc:h2:mem:testdb_maintenance
+      driver-class-name: org.h2.Driver
+      username: sa
+      password:
+    driver:
+      jdbc-url: jdbc:h2:mem:testdb_driver
+      driver-class-name: org.h2.Driver
+      username: sa
+      password:
+    analytics:
+      jdbc-url: jdbc:h2:mem:testdb_analytics
+      driver-class-name: org.h2.Driver
+      username: sa
+      password:
+    notification:
+      jdbc-url: jdbc:h2:mem:testdb_notification
+      driver-class-name: org.h2.Driver
+      username: sa
+      password:
+    billing:
+      jdbc-url: jdbc:h2:mem:testdb_billing
+      driver-class-name: org.h2.Driver
+      username: sa
+      password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+  flyway:
+    enabled: false
+
+logging:
+  level:
+    com.evfleet: DEBUG

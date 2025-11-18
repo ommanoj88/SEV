@@ -64,9 +64,9 @@ const VehicleFormDialog: React.FC<VehicleFormDialogProps> = ({
         fuelType: vehicle.fuelType || FuelType.EV,
         licensePlate: vehicle.licensePlate || '',
         color: vehicle.color || '',
-        batteryCapacity: vehicle.battery.capacity,
+        batteryCapacity: vehicle.battery?.capacity || 0,
         status: vehicle.status,
-        currentBatterySoc: vehicle.battery.stateOfCharge || 100,
+        currentBatterySoc: vehicle.battery?.stateOfCharge || 100,
         companyId: companyId,
       });
     } else {
@@ -119,8 +119,22 @@ const VehicleFormDialog: React.FC<VehicleFormDialogProps> = ({
       newErrors.type = 'Vehicle type is required';
     }
 
-    if (!formData.batteryCapacity || formData.batteryCapacity <= 0) {
-      newErrors.batteryCapacity = 'Battery capacity must be a positive number';
+    if (!formData.fuelType) {
+      newErrors.fuelType = 'Fuel type is required';
+    }
+
+    // Validate battery capacity for EV and HYBRID
+    if (formData.fuelType === FuelType.EV || formData.fuelType === FuelType.HYBRID) {
+      if (!formData.batteryCapacity || formData.batteryCapacity <= 0) {
+        newErrors.batteryCapacity = 'Battery capacity is required for EV/Hybrid vehicles';
+      }
+    }
+
+    // Validate fuel tank capacity for ICE and HYBRID
+    if (formData.fuelType === FuelType.ICE || formData.fuelType === FuelType.HYBRID) {
+      if (!formData.fuelTankCapacity || formData.fuelTankCapacity <= 0) {
+        newErrors.fuelTankCapacity = 'Fuel tank capacity is required for ICE/Hybrid vehicles';
+      }
     }
 
     if (!formData.status) {
@@ -287,21 +301,59 @@ const VehicleFormDialog: React.FC<VehicleFormDialogProps> = ({
             </FormControl>
           </Grid>
 
-          {/* Battery Capacity */}
+          {/* Fuel Type */}
           <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Battery Capacity (kWh)"
-              name="batteryCapacity"
-              type="number"
-              value={formData.batteryCapacity}
-              onChange={handleChange}
-              error={!!errors.batteryCapacity}
-              helperText={errors.batteryCapacity}
-              disabled={loading}
-              inputProps={{ step: 0.1, min: 0 }}
-            />
+            <FormControl fullWidth error={!!errors.fuelType} disabled={loading}>
+              <InputLabel>Fuel Type</InputLabel>
+              <Select
+                name="fuelType"
+                value={formData.fuelType}
+                onChange={handleSelectChange('fuelType')}
+                label="Fuel Type"
+              >
+                <MenuItem value={FuelType.EV}>Electric (EV)</MenuItem>
+                <MenuItem value={FuelType.ICE}>Petrol/Diesel (ICE)</MenuItem>
+                <MenuItem value={FuelType.HYBRID}>Hybrid (EV + ICE)</MenuItem>
+              </Select>
+              {errors.fuelType && <p style={{ color: '#d32f2f', fontSize: '0.75rem' }}>{errors.fuelType}</p>}
+            </FormControl>
           </Grid>
+
+          {/* Battery Capacity - Only for EV and HYBRID */}
+          {(formData.fuelType === FuelType.EV || formData.fuelType === FuelType.HYBRID) && (
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Battery Capacity (kWh)"
+                name="batteryCapacity"
+                type="number"
+                value={formData.batteryCapacity}
+                onChange={handleChange}
+                error={!!errors.batteryCapacity}
+                helperText={errors.batteryCapacity}
+                disabled={loading}
+                inputProps={{ step: 0.1, min: 0 }}
+              />
+            </Grid>
+          )}
+
+          {/* Fuel Tank Capacity - Only for ICE and HYBRID */}
+          {(formData.fuelType === FuelType.ICE || formData.fuelType === FuelType.HYBRID) && (
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Fuel Tank Capacity (L)"
+                name="fuelTankCapacity"
+                type="number"
+                value={formData.fuelTankCapacity || ''}
+                onChange={handleChange}
+                error={!!errors.fuelTankCapacity}
+                helperText={errors.fuelTankCapacity}
+                disabled={loading}
+                inputProps={{ step: 0.1, min: 0 }}
+              />
+            </Grid>
+          )}
 
           {/* Status */}
           <Grid item xs={12} sm={6}>
@@ -368,21 +420,41 @@ const VehicleFormDialog: React.FC<VehicleFormDialogProps> = ({
             />
           </Grid>
 
-          {/* Current Battery SOC */}
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Current Battery Level (%)"
-              name="currentBatterySoc"
-              type="number"
-              value={formData.currentBatterySoc}
-              onChange={handleChange}
-              error={!!errors.currentBatterySoc}
-              helperText={errors.currentBatterySoc}
-              disabled={loading}
-              inputProps={{ min: 0, max: 100 }}
-            />
-          </Grid>
+          {/* Current Battery SOC - Only for EV and HYBRID */}
+          {(formData.fuelType === FuelType.EV || formData.fuelType === FuelType.HYBRID) && (
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Current Battery Level (%)"
+                name="currentBatterySoc"
+                type="number"
+                value={formData.currentBatterySoc}
+                onChange={handleChange}
+                error={!!errors.currentBatterySoc}
+                helperText={errors.currentBatterySoc}
+                disabled={loading}
+                inputProps={{ min: 0, max: 100 }}
+              />
+            </Grid>
+          )}
+
+          {/* Current Fuel Level - Only for ICE and HYBRID */}
+          {(formData.fuelType === FuelType.ICE || formData.fuelType === FuelType.HYBRID) && (
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Current Fuel Level (L)"
+                name="fuelLevel"
+                type="number"
+                value={formData.fuelLevel || ''}
+                onChange={handleChange}
+                error={!!errors.fuelLevel}
+                helperText={errors.fuelLevel}
+                disabled={loading}
+                inputProps={{ step: 0.1, min: 0 }}
+              />
+            </Grid>
+          )}
         </Grid>
       </DialogContent>
       <DialogActions>

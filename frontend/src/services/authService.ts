@@ -1,10 +1,12 @@
-import { apiClient } from './api';
+import api, { apiClient } from './api';
 import { User, RegisterData, UpdateProfileData } from '../types';
 
 export const authService = {
   // Register new user
   register: async (data: RegisterData): Promise<{ user: User; token: string }> => {
-    return apiClient.post('/auth/register', data);
+    // Use raw api because /auth/register returns AuthResponse directly (not wrapped)
+    const response = await api.post('/auth/register', data);
+    return response.data;
   },
 
   // Get current user profile
@@ -19,7 +21,8 @@ export const authService = {
 
   // Sync Firebase user with backend
   syncUser: async (firebaseUser: any): Promise<User> => {
-    const response: any = await apiClient.post('/auth/sync', {
+    // Use raw api because /auth/sync returns AuthResponse directly (not wrapped)
+    const response = await api.post('/auth/sync', {
       firebaseUid: firebaseUser.uid,
       email: firebaseUser.email,
       name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
@@ -28,7 +31,7 @@ export const authService = {
       companyName: null,
     });
     // Backend returns AuthResponse { success, message, user }, extract user
-    return response.user || response;
+    return response.data.user;
   },
 };
 

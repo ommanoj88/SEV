@@ -43,6 +43,8 @@ import { Driver, DriverStatus } from '../types';
 import { toast } from 'react-toastify';
 import DriverLeaderboard from '../components/drivers/DriverLeaderboard';
 import AssignDriver from '../components/drivers/AssignDriver';
+import DriverFormDialog, { DriverFormData } from '../components/drivers/DriverFormDialog';
+import { driverService } from '../services/driverService';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -70,6 +72,8 @@ const DriversPage: React.FC = () => {
   const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   // Menu state
@@ -122,7 +126,9 @@ const DriversPage: React.FC = () => {
   const handleEdit = (driver?: Driver) => {
     const driverToEdit = driver || menuDriver;
     if (driverToEdit) {
-      toast.info('Edit driver functionality coming soon!');
+      setSelectedDriver(driverToEdit);
+      setEditDialogOpen(true);
+      setDetailDialogOpen(false);
     }
     handleMenuClose();
   };
@@ -148,6 +154,44 @@ const DriversPage: React.FC = () => {
       setSelectedDriver(null);
     } catch (error: any) {
       toast.error(error.message || 'Failed to delete driver');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleAddDriver = async (data: DriverFormData) => {
+    if (!user?.companyId) {
+      toast.error('Company ID not found');
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      await driverService.createDriver(user.companyId, data);
+      toast.success('Driver created successfully!');
+      setAddDialogOpen(false);
+      dispatch(fetchAllDrivers(undefined));
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to create driver');
+      throw error;
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleUpdateDriver = async (data: DriverFormData) => {
+    if (!selectedDriver?.id) return;
+
+    try {
+      setSubmitting(true);
+      await driverService.updateDriver(Number(selectedDriver.id), data);
+      toast.success('Driver updated successfully!');
+      setEditDialogOpen(false);
+      setSelectedDriver(null);
+      dispatch(fetchAllDrivers(undefined));
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to update driver');
+      throw error;
     } finally {
       setSubmitting(false);
     }
@@ -191,7 +235,7 @@ const DriversPage: React.FC = () => {
           <Button
             variant="contained"
             startIcon={<Add />}
-            onClick={() => toast.info('Add driver functionality coming soon!')}
+            onClick={() => setAddDialogOpen(true)}
             disabled={loading || !isAuthenticated}
           >
             Add Driver
@@ -295,7 +339,7 @@ const DriversPage: React.FC = () => {
               variant="contained"
               startIcon={<Add />}
               sx={{ mt: 2 }}
-              onClick={() => toast.info('Add driver functionality coming soon!')}
+              onClick={() => setAddDialogOpen(true)}
               disabled={!isAuthenticated}
             >
               Add Your First Driver
@@ -632,6 +676,28 @@ const DriversPage: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Add Driver Dialog */}
+      <DriverFormDialog
+        open={addDialogOpen}
+        onClose={() => setAddDialogOpen(false)}
+        onSubmit={handleAddDriver}
+        companyId={user?.companyId || 0}
+        loading={submitting}
+      />
+
+      {/* Edit Driver Dialog */}
+      <DriverFormDialog
+        open={editDialogOpen}
+        onClose={() => {
+          setEditDialogOpen(false);
+          setSelectedDriver(null);
+        }}
+        onSubmit={handleUpdateDriver}
+        driver={selectedDriver}
+        companyId={user?.companyId || 0}
+        loading={submitting}
+      />
     </Box>
   );
 };

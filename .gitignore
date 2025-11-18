@@ -103,3 +103,6 @@ temp/
 # Private
 private/
 secrets/
+
+# Archived files (old docs and tests)
+.archive/

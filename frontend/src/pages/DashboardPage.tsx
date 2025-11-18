@@ -12,7 +12,7 @@ import { FleetAnalytics } from '../types';
 const DashboardPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const analytics = useAppSelector(selectFleetAnalytics);
-  const alerts = useAppSelector(selectAlerts);
+  const alerts = useAppSelector(selectAlerts) || [];
   const { loading: analyticsLoading } = useAppSelector((state) => state.analytics);
   const { loading: notificationsLoading } = useAppSelector((state) => state.notifications);
 

@@ -146,33 +146,47 @@ api.interceptors.response.use(
 
 export default api;
 
+// API Response wrapper type from backend
+interface ApiResponse<T> {
+  timestamp: string;
+  success: boolean;
+  message: string;
+  data: T;
+  status: number;
+}
+
 // Helper functions for making requests
 export const apiClient = {
   get: async <T = any>(url: string, params?: any, options?: { silent404?: boolean }): Promise<T> => {
-    const response = await api.get<T>(url, { 
+    const response = await api.get<ApiResponse<T>>(url, {
       params,
       metadata: { silent404: options?.silent404 }
     });
-    return response.data;
+    // Unwrap the data property from the ApiResponse wrapper
+    return response.data.data;
   },
 
   post: async <T = any>(url: string, data?: any): Promise<T> => {
-    const response = await api.post<T>(url, data);
-    return response.data;
+    const response = await api.post<ApiResponse<T>>(url, data);
+    // Unwrap the data property from the ApiResponse wrapper
+    return response.data.data;
   },
 
   put: async <T = any>(url: string, data?: any): Promise<T> => {
-    const response = await api.put<T>(url, data);
-    return response.data;
+    const response = await api.put<ApiResponse<T>>(url, data);
+    // Unwrap the data property from the ApiResponse wrapper
+    return response.data.data;
   },
 
   patch: async <T = any>(url: string, data?: any): Promise<T> => {
-    const response = await api.patch<T>(url, data);
-    return response.data;
+    const response = await api.patch<ApiResponse<T>>(url, data);
+    // Unwrap the data property from the ApiResponse wrapper
+    return response.data.data;
   },
 
   delete: async <T = any>(url: string): Promise<T> => {
-    const response = await api.delete<T>(url);
-    return response.data;
+    const response = await api.delete<ApiResponse<T>>(url);
+    // Unwrap the data property from the ApiResponse wrapper
+    return response.data.data;
   },
 };

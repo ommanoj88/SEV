@@ -45,8 +45,8 @@ export const registerSchema = yup.object({
     .optional(),
   companyName: yup
     .string()
-    .transform((value) => (value === '' ? undefined : value))
-    .optional(),
+    .required('Company name is required')
+    .min(2, 'Company name must be at least 2 characters'),
   fleetSize: yup
     .number()
     .transform((value) => (isNaN(value) ? undefined : value))

@@ -95,6 +95,7 @@ export interface Trip {
 // This is kept here for backward compatibility but should use the geofence.ts definition
 
 export interface VehicleFilters {
+  companyId?: number;
   status?: VehicleStatus[];
   type?: VehicleType[];
   batteryMin?: number;

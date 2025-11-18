@@ -21,6 +21,7 @@ import DocumentManagementPage from './pages/DocumentManagementPage';
 import ExpenseManagementPage from './pages/ExpenseManagementPage';
 import RouteOptimizationPage from './pages/RouteOptimizationPage';
 import CustomerManagementPage from './pages/CustomerManagementPage';
+import CompanyOnboardingPage from './pages/CompanyOnboardingPage';
 
 // Component to redirect authenticated users away from auth pages
 const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -40,6 +41,16 @@ const AppRoutes: React.FC = () => {
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
       <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
       <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
+
+      {/* Company onboarding - for users who logged in via Google without company info */}
+      <Route
+        path="/onboarding/company"
+        element={
+          <ProtectedRoute>
+            <CompanyOnboardingPage />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Protected routes */}
       <Route

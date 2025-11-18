@@ -1,0 +1,208 @@
+spring:
+  application:
+    name: evfleet-monolith
+
+  profiles:
+    active: dev
+
+  main:
+    allow-bean-definition-overriding: true
+
+  # Disable Redis and RabbitMQ Autoconfiguration (optional services - not installed)
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+
+  # Multiple DataSource Configuration
+  datasource:
+    # Auth Database (Primary)
+    auth:
+      url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/evfleet_auth
+      username: ${DB_USER:postgres}
+      password: ${DB_PASSWORD:Shobharain11@}
+      driver-class-name: org.postgresql.Driver
+      hikari:
+        maximum-pool-size: 10
+        minimum-idle: 5
+        connection-timeout: 30000
+        idle-timeout: 600000
+        max-lifetime: 1800000
+
+    # Fleet Database
+    fleet:
+      url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/evfleet_fleet
+      username: ${DB_USER:postgres}
+      password: ${DB_PASSWORD:Shobharain11@}
+      driver-class-name: org.postgresql.Driver
+      hikari:
+        maximum-pool-size: 20
+        minimum-idle: 10
+
+    # Charging Database
+    charging:
+      url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/evfleet_charging
+      username: ${DB_USER:postgres}
+      password: ${DB_PASSWORD:Shobharain11@}
+      driver-class-name: org.postgresql.Driver
+      hikari:
+        maximum-pool-size: 15
+        minimum-idle: 5
+
+    # Maintenance Database
+    maintenance:
+      url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/evfleet_maintenance
+      username: ${DB_USER:postgres}
+      password: ${DB_PASSWORD:Shobharain11@}
+      driver-class-name: org.postgresql.Driver
+      hikari:
+        maximum-pool-size: 10
+        minimum-idle: 5
+
+    # Driver Database
+    driver:
+      url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/evfleet_driver
+      username: ${DB_USER:postgres}
+      password: ${DB_PASSWORD:Shobharain11@}
+      driver-class-name: org.postgresql.Driver
+      hikari:
+        maximum-pool-size: 10
+        minimum-idle: 5
+
+    # Analytics Database
+    analytics:
+      url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/evfleet_analytics
+      username: ${DB_USER:postgres}
+      password: ${DB_PASSWORD:Shobharain11@}
+      driver-class-name: org.postgresql.Driver
+      hikari:
+        maximum-pool-size: 15
+        minimum-idle: 5
+
+    # Notification Database
+    notification:
+      url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/evfleet_notification
+      username: ${DB_USER:postgres}
+      password: ${DB_PASSWORD:Shobharain11@}
+      driver-class-name: org.postgresql.Driver
+      hikari:
+        maximum-pool-size: 10
+        minimum-idle: 5
+
+    # Billing Database
+    billing:
+      url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/evfleet_billing
+      username: ${DB_USER:postgres}
+      password: ${DB_PASSWORD:Shobharain11@}
+      driver-class-name: org.postgresql.Driver
+      hikari:
+        maximum-pool-size: 10
+        minimum-idle: 5
+
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+
+  # Flyway Migration (temporarily disabled - using JPA auto-update)
+  flyway:
+    enabled: false
+    baseline-on-migrate: true
+    locations:
+      - classpath:db/migration/auth
+
+  # Redis Configuration
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 60000ms
+      lettuce:
+        pool:
+          max-active: 20
+          max-idle: 10
+          min-idle: 5
+          max-wait: -1ms
+
+  # RabbitMQ Configuration (Optional)
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:evfleet}
+    password: ${RABBITMQ_PASSWORD:evfleet123}
+
+  # Cache Configuration (using simple in-memory cache since Redis not installed)
+  cache:
+    type: simple  # Changed from 'redis' to 'simple' for in-memory caching
+    # redis:
+    #   time-to-live: 600000 # 10 minutes
+
+# Server Configuration
+server:
+  port: 8080
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+  http2:
+    enabled: true
+
+# Management/Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.evfleet: DEBUG
+    org.springframework.web: INFO
+    org.hibernate: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/evfleet-monolith.log
+
+# Springdoc OpenAPI
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
+# Firebase Configuration
+firebase:
+  config-file: ${FIREBASE_CONFIG_FILE:/app/firebase-service-account.json}
+
+# Application-specific properties
+evfleet:
+  cors:
+    allowed-origins: http://localhost:3000,http://localhost:8080
+  security:
+    jwt:
+      secret: ${JWT_SECRET:changeme-in-production}
+      expiration: 86400000 # 24 hours

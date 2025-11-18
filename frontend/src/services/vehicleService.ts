@@ -17,7 +17,7 @@ export const vehicleService = {
   /**
    * Get vehicle by ID
    */
-  getVehicle: async (id: number): Promise<Vehicle> => {
+  getVehicle: async (id: string | number): Promise<Vehicle> => {
     return apiClient.get(`/v1/vehicles/${id}`);
   },
 
@@ -59,14 +59,14 @@ export const vehicleService = {
   /**
    * Update vehicle
    */
-  updateVehicle: async (id: number, data: Partial<VehicleFormData>): Promise<Vehicle> => {
+  updateVehicle: async (id: string | number, data: Partial<VehicleFormData>): Promise<Vehicle> => {
     return apiClient.put(`/v1/vehicles/${id}`, data);
   },
 
   /**
    * Delete vehicle
    */
-  deleteVehicle: async (id: number): Promise<void> => {
+  deleteVehicle: async (id: string | number): Promise<void> => {
     return apiClient.delete(`/v1/vehicles/${id}`);
   },
 
@@ -74,7 +74,7 @@ export const vehicleService = {
    * Update vehicle location
    */
   updateVehicleLocation: async (
-    id: number,
+    id: string | number,
     latitude: number,
     longitude: number
   ): Promise<Vehicle> => {
@@ -87,7 +87,7 @@ export const vehicleService = {
   /**
    * Update vehicle battery level
    */
-  updateVehicleBattery: async (id: number, currentBatterySoc: number): Promise<Vehicle> => {
+  updateVehicleBattery: async (id: string | number, currentBatterySoc: number): Promise<Vehicle> => {
     return apiClient.patch(`/v1/vehicles/${id}/battery`, {
       currentBatterySoc,
     });

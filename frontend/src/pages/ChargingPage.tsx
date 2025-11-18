@@ -7,8 +7,8 @@ import { formatCurrency, formatEnergy } from '../utils/formatters';
 
 const ChargingPage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const stations = useAppSelector(selectStations);
-  const sessions = useAppSelector(selectSessions);
+  const stations = useAppSelector(selectStations) || [];
+  const sessions = useAppSelector(selectSessions) || [];
   const loading = useAppSelector(selectChargingLoading);
 
   useEffect(() => {

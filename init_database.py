@@ -43,19 +43,19 @@ def print_header(message):
 
 def print_step(message):
     """Print a step message"""
-    print(f"➤ {message}")
+    print(f"[STEP] {message}")
 
 def print_success(message):
     """Print a success message"""
-    print(f"✓ {message}")
+    print(f"[OK] {message}")
 
 def print_warning(message):
     """Print a warning message"""
-    print(f"⚠ {message}")
+    print(f"[WARN] {message}")
 
 def print_error(message):
     """Print an error message"""
-    print(f"✗ ERROR: {message}", file=sys.stderr)
+    print(f"[ERROR] {message}", file=sys.stderr)
 
 def run_psql_command(sql_command, database='postgres'):
     """Run a psql command"""
@@ -137,8 +137,8 @@ def main():
     """Main execution"""
     print_header("EV Fleet Management Platform - Database Initialization")
 
-    print_warning("⚠️  This script is SAFE - it will NOT drop existing databases")
-    print_warning("⚠️  Flyway will handle schema migrations automatically")
+    print_warning("This script is SAFE - it will NOT drop existing databases")
+    print_warning("Flyway will handle schema migrations automatically")
     print("")
 
     # Wait for PostgreSQL
@@ -155,7 +155,7 @@ def main():
     for db_name in DATABASES:
         if database_exists(db_name):
             existing_databases.append(db_name)
-            print_warning(f"✓ {db_name} - Already exists")
+            print_warning(f"{db_name} - Already exists")
         else:
             if create_database(db_name):
                 new_databases.append(db_name)
@@ -168,27 +168,27 @@ def main():
     if new_databases:
         print_success(f"NEW databases created: {len(new_databases)}")
         for db in new_databases:
-            print(f"  • {db}")
+            print(f"  - {db}")
 
     if existing_databases:
         print_warning(f"EXISTING databases skipped: {len(existing_databases)}")
         for db in existing_databases:
-            print(f"  • {db}")
+            print(f"  - {db}")
 
     print("")
 
     if all_success:
-        print_success("✅ Database initialization completed successfully!")
+        print_success("Database initialization completed successfully!")
         print("")
         print_step("Next steps:")
         print("  1. Start your application with: python run_app_fixed.py start")
         print("  2. Flyway will automatically run migrations when services start")
         print("  3. Your data is SAFE - no databases were dropped")
         print("")
-        print_warning("💡 TIP: To completely reset databases (DANGER!), use: python reset_database.py")
+        print_warning("TIP: To completely reset databases (DANGER!), use: python reset_database.py")
         return 0
     else:
-        print_error("❌ Some databases could not be created")
+        print_error("Some databases could not be created")
         return 1
 
 if __name__ == '__main__':

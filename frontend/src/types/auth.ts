@@ -13,6 +13,8 @@ export interface User {
   firstName: string;
   lastName: string;
   role: UserRole;
+  companyId?: number;
+  companyName?: string;
   fleetId?: string;
   fleetName?: string;
   phone?: string;

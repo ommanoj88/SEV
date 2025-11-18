@@ -1,0 +1,25 @@
+spring:
+  jpa:
+    show-sql: false
+
+logging:
+  level:
+    root: WARN
+    com.evfleet: INFO
+    org.springframework.web: WARN
+    org.hibernate: WARN
+  file:
+    name: /var/log/evfleet/evfleet-monolith.log
+    max-size: 100MB
+    max-history: 30
+
+management:
+  endpoint:
+    health:
+      show-details: when-authorized
+
+server:
+  compression:
+    enabled: true
+  http2:
+    enabled: true

@@ -1,0 +1,1 @@
+-- Notification module placeholder - migrations will be added as needed

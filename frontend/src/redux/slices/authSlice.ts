@@ -193,9 +193,11 @@ const authSlice = createSlice({
       .addCase(fetchCurrentUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
+        state.isAuthenticated = true; // Set authenticated when user is fetched
       })
       .addCase(fetchCurrentUser.rejected, (state) => {
         state.loading = false;
+        state.isAuthenticated = false; // Clear auth state on fetch failure
       })
       // Update profile
       .addCase(updateProfile.fulfilled, (state, action) => {

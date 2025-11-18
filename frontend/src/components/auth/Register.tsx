@@ -15,7 +15,7 @@ interface RegisterFormData {
   firstName: string;
   lastName: string;
   phone?: string;
-  companyName?: string;
+  companyName: string; // Now required
   fleetSize?: number;
 }
 
@@ -66,7 +66,7 @@ const Register: React.FC = () => {
                 <TextField fullWidth label="Phone (Optional)" {...register('phone')} error={!!errors.phone} helperText={errors.phone?.message} disabled={loading} />
               </Grid>
               <Grid item xs={12}>
-                <TextField fullWidth label="Company Name (Optional)" {...register('companyName')} disabled={loading} />
+                <TextField fullWidth label="Company Name" {...register('companyName')} error={!!errors.companyName} helperText={errors.companyName?.message} disabled={loading} required />
               </Grid>
               <Grid item xs={12}>
                 <TextField fullWidth label="Password" type="password" {...register('password')} error={!!errors.password} helperText={errors.password?.message} disabled={loading} />

@@ -46,7 +46,7 @@ const FuelStatusPanel: React.FC<FuelStatusPanelProps> = ({ vehicle, compact = fa
   if (compact) {
     return (
       <Box display="flex" alignItems="center" gap={2}>
-        {showBattery && (
+        {showBattery && vehicle.battery && (
           <Chip
             icon={<BatteryIcon />}
             label={`${vehicle.battery.stateOfCharge.toFixed(0)}%`}
@@ -86,7 +86,7 @@ const FuelStatusPanel: React.FC<FuelStatusPanelProps> = ({ vehicle, compact = fa
 
       <Grid container spacing={3}>
         {/* Battery Status - EV and HYBRID */}
-        {showBattery && (
+        {showBattery && vehicle.battery && (
           <Grid item xs={12} md={vehicle.fuelType === FuelType.HYBRID ? 6 : 12}>
             <Box>
               <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>

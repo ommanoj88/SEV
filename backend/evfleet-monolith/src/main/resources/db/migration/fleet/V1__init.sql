@@ -1,0 +1,2 @@
+-- Fleet module placeholder - migrations will be added as needed
+-- This file ensures Flyway can manage this database
