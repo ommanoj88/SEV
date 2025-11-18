@@ -39,10 +39,7 @@ public class VehicleController {
         List<VehicleResponse> vehicles;
 
         if (companyId != null) {
-            vehicles = vehicleService.getVehiclesByCompany(companyId)
-                .stream()
-                .map(VehicleResponse::from)
-                .collect(Collectors.toList());
+            vehicles = vehicleService.getVehiclesWithDriverNames(companyId);
         } else {
             // Return empty list for now - in production, would need pagination
             vehicles = List.of();
@@ -93,10 +90,7 @@ public class VehicleController {
     @Operation(summary = "Get vehicles by company")
     public ResponseEntity<List<VehicleResponse>> getVehiclesByCompany(@PathVariable Long companyId) {
         log.info("GET /api/v1/vehicles/company/{}", companyId);
-        List<VehicleResponse> vehicles = vehicleService.getVehiclesByCompany(companyId)
-            .stream()
-            .map(VehicleResponse::from)
-            .collect(Collectors.toList());
+        List<VehicleResponse> vehicles = vehicleService.getVehiclesWithDriverNames(companyId);
         return ResponseEntity.ok(vehicles);
     }
 

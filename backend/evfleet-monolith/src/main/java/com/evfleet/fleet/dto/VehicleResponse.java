@@ -36,6 +36,7 @@ public class VehicleResponse {
     private String licensePlate;
     private String color;
     private Long currentDriverId;
+    private String assignedDriverName;  // Driver's name for UI display
     private Double totalDistance;
     private Double totalEnergyConsumed;
     private Double totalFuelConsumed;
@@ -43,6 +44,10 @@ public class VehicleResponse {
     private LocalDateTime updatedAt;
 
     public static VehicleResponse from(Vehicle vehicle) {
+        return from(vehicle, null);
+    }
+
+    public static VehicleResponse from(Vehicle vehicle, String driverName) {
         return VehicleResponse.builder()
             .id(vehicle.getId())
             .companyId(vehicle.getCompanyId())
@@ -66,6 +71,7 @@ public class VehicleResponse {
             .licensePlate(vehicle.getLicensePlate())
             .color(vehicle.getColor())
             .currentDriverId(vehicle.getCurrentDriverId())
+            .assignedDriverName(driverName)  // Set the driver name if provided
             .totalDistance(vehicle.getTotalDistance())
             .totalEnergyConsumed(vehicle.getTotalEnergyConsumed())
             .totalFuelConsumed(vehicle.getTotalFuelConsumed())
