@@ -44,7 +44,8 @@ const App: React.FC = () => {
   }
 
   // Only show authenticated UI if both Firebase user and backend user exist
-  const isFullyAuthenticated = isAuthenticated && user !== null;
+  // Check for both null and undefined
+  const isFullyAuthenticated = isAuthenticated && user != null;
 
   return (
     <ErrorBoundary>

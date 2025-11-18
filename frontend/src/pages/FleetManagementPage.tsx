@@ -42,7 +42,11 @@ import vehicleService from '../services/vehicleService';
 const FleetManagementPage: React.FC = () => {
   const user = useAppSelector(selectUser);
   const isAuthenticated = useAppSelector((state: RootState) => state.auth.isAuthenticated);
-  const { vehicles, loading, refetch } = useVehicles({ companyId: user?.companyId });
+
+  // Only call useVehicles with companyId when user is loaded
+  const { vehicles, loading, refetch } = useVehicles(
+    user?.companyId ? { companyId: user.companyId } : undefined
+  );
 
   // Dialog states
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -152,6 +156,11 @@ const FleetManagementPage: React.FC = () => {
       setSubmitting(false);
     }
   };
+
+  // Wait for user to load before showing page
+  if (isAuthenticated && !user) {
+    return <LinearProgress />;
+  }
 
   if (loading) {
     return <LinearProgress />;

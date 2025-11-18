@@ -7,14 +7,24 @@ import { formatCurrency, formatEnergy } from '../utils/formatters';
 
 const ChargingPage: React.FC = () => {
   const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.auth.user);
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const stations = useAppSelector(selectStations) || [];
   const sessions = useAppSelector(selectSessions) || [];
   const loading = useAppSelector(selectChargingLoading);
 
   useEffect(() => {
-    dispatch(fetchAllStations(undefined));
-    dispatch(fetchAllSessions(undefined));
-  }, [dispatch]);
+    // Wait for user to be loaded before fetching data
+    if (isAuthenticated && user && user.companyId) {
+      dispatch(fetchAllStations(undefined));
+      dispatch(fetchAllSessions(undefined));
+    }
+  }, [dispatch, isAuthenticated, user]);
+
+  // Wait for user to load before showing page
+  if (isAuthenticated && !user) {
+    return <LinearProgress />;
+  }
 
   if (loading) return <LinearProgress />;
 

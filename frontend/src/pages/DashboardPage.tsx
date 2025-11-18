@@ -11,15 +11,25 @@ import { FleetAnalytics } from '../types';
 
 const DashboardPage: React.FC = () => {
   const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.auth.user);
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const analytics = useAppSelector(selectFleetAnalytics);
   const alerts = useAppSelector(selectAlerts) || [];
   const { loading: analyticsLoading } = useAppSelector((state) => state.analytics);
   const { loading: notificationsLoading } = useAppSelector((state) => state.notifications);
 
   useEffect(() => {
-    dispatch(fetchFleetSummary(undefined));
-    dispatch(fetchAlerts());
-  }, [dispatch]);
+    // Wait for user to be loaded before fetching data
+    if (isAuthenticated && user && user.companyId) {
+      dispatch(fetchFleetSummary(undefined));
+      dispatch(fetchAlerts());
+    }
+  }, [dispatch, isAuthenticated, user]);
+
+  // Wait for user to load before showing page
+  if (isAuthenticated && !user) {
+    return <LinearProgress />;
+  }
 
   // Show loading only while actively fetching (not on error)
   if ((analyticsLoading || notificationsLoading) && !analytics) {
