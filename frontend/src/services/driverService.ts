@@ -29,8 +29,9 @@ const mapDriverResponse = (backendDriver: any): Driver => {
 export const driverService = {
   /**
    * Get all drivers
+   * Backend requires companyId as a query parameter
    */
-  getAllDrivers: async (params?: any): Promise<Driver[]> => {
+  getAllDrivers: async (params?: { companyId?: number }): Promise<Driver[]> => {
     const drivers = await apiClient.get('/v1/drivers', params);
     return Array.isArray(drivers) ? drivers.map(mapDriverResponse) : [];
   },

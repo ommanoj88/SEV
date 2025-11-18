@@ -168,8 +168,8 @@ export const fetchDriversByStatus = createAsyncThunk(
 // CRUD Operations
 export const createDriver = createAsyncThunk(
   'drivers/create',
-  async (data: DriverFormData) => {
-    return await driverService.createDriver(data);
+  async ({ companyId, data }: { companyId: number; data: DriverFormData }) => {
+    return await driverService.createDriver(companyId, data);
   }
 );
 

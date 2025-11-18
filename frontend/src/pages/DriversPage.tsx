@@ -81,10 +81,10 @@ const DriversPage: React.FC = () => {
   const [menuDriver, setMenuDriver] = useState<Driver | null>(null);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      dispatch(fetchAllDrivers(undefined));
+    if (isAuthenticated && user?.companyId) {
+      dispatch(fetchAllDrivers({ companyId: user.companyId }));
     }
-  }, [dispatch, isAuthenticated]);
+  }, [dispatch, isAuthenticated, user?.companyId]);
 
   // Calculate KPIs
   const totalDrivers = drivers.length;
@@ -96,7 +96,9 @@ const DriversPage: React.FC = () => {
 
   // Handlers
   const handleRefresh = () => {
-    dispatch(fetchAllDrivers(undefined));
+    if (user?.companyId) {
+      dispatch(fetchAllDrivers({ companyId: user.companyId }));
+    }
   };
 
   const handleCardClick = (driver: Driver) => {
@@ -170,7 +172,7 @@ const DriversPage: React.FC = () => {
       await driverService.createDriver(user.companyId, data);
       toast.success('Driver created successfully!');
       setAddDialogOpen(false);
-      dispatch(fetchAllDrivers(undefined));
+      dispatch(fetchAllDrivers({ companyId: user.companyId }));
     } catch (error: any) {
       toast.error(error.message || 'Failed to create driver');
       throw error;
@@ -180,7 +182,7 @@ const DriversPage: React.FC = () => {
   };
 
   const handleUpdateDriver = async (data: DriverFormData) => {
-    if (!selectedDriver?.id) return;
+    if (!selectedDriver?.id || !user?.companyId) return;
 
     try {
       setSubmitting(true);
@@ -188,7 +190,7 @@ const DriversPage: React.FC = () => {
       toast.success('Driver updated successfully!');
       setEditDialogOpen(false);
       setSelectedDriver(null);
-      dispatch(fetchAllDrivers(undefined));
+      dispatch(fetchAllDrivers({ companyId: user.companyId }));
     } catch (error: any) {
       toast.error(error.message || 'Failed to update driver');
       throw error;
