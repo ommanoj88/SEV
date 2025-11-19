@@ -42,6 +42,20 @@ public class VehicleService {
             throw new IllegalArgumentException("Vehicle number already exists");
         }
 
+        // Check license plate uniqueness
+        if (vehicle.getLicensePlate() != null && !vehicle.getLicensePlate().trim().isEmpty()) {
+            if (vehicleRepository.existsByLicensePlate(vehicle.getLicensePlate())) {
+                throw new IllegalArgumentException("License plate already exists");
+            }
+        }
+
+        // Check VIN uniqueness
+        if (vehicle.getVin() != null && !vehicle.getVin().trim().isEmpty()) {
+            if (vehicleRepository.existsByVin(vehicle.getVin())) {
+                throw new IllegalArgumentException("VIN already exists");
+            }
+        }
+
         // Validate fuel-type specific fields
         validateVehicleFuelTypeFields(vehicle);
 
