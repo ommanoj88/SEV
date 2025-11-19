@@ -1,12 +1,14 @@
 package com.evfleet.fleet.service;
 
 import com.evfleet.fleet.model.Vehicle;
+import com.evfleet.fleet.model.FuelType;
 import com.evfleet.fleet.repository.VehicleRepository;
 import com.evfleet.fleet.dto.VehicleResponse;
 import com.evfleet.fleet.event.VehicleCreatedEvent;
 import com.evfleet.fleet.event.BatteryLowEvent;
 import com.evfleet.common.event.EventPublisher;
 import com.evfleet.common.exception.ResourceNotFoundException;
+import com.evfleet.common.exception.InvalidInputException;
 import com.evfleet.driver.model.Driver;
 import com.evfleet.driver.repository.DriverRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +42,9 @@ public class VehicleService {
             throw new IllegalArgumentException("Vehicle number already exists");
         }
 
+        // Validate fuel-type specific fields
+        validateVehicleFuelTypeFields(vehicle);
+
         Vehicle saved = vehicleRepository.save(vehicle);
         log.info("Vehicle created with ID: {}", saved.getId());
 
@@ -49,6 +54,101 @@ public class VehicleService {
         ));
 
         return saved;
+    }
+
+    /**
+     * Validates that vehicle has required fields based on fuel type
+     * @param vehicle Vehicle to validate
+     * @throws InvalidInputException if validation fails
+     */
+    private void validateVehicleFuelTypeFields(Vehicle vehicle) {
+        if (vehicle.getFuelType() == null) {
+            throw new InvalidInputException("fuelType", "must not be null");
+        }
+
+        switch (vehicle.getFuelType()) {
+            case EV:
+                validateEVFields(vehicle);
+                break;
+            case ICE:
+                validateICEFields(vehicle);
+                break;
+            case HYBRID:
+                validateHybridFields(vehicle);
+                break;
+        }
+    }
+
+    /**
+     * Validates EV-specific required fields
+     */
+    private void validateEVFields(Vehicle vehicle) {
+        if (vehicle.getBatteryCapacity() == null || vehicle.getBatteryCapacity() <= 0) {
+            throw new InvalidInputException("batteryCapacity", "must be greater than 0 for EV vehicles");
+        }
+        if (vehicle.getDefaultChargerType() == null || vehicle.getDefaultChargerType().trim().isEmpty()) {
+            throw new InvalidInputException("defaultChargerType", "is required for EV vehicles");
+        }
+        // Validate battery SOC if provided
+        if (vehicle.getCurrentBatterySoc() != null) {
+            validateBatterySoc(vehicle.getCurrentBatterySoc());
+        }
+    }
+
+    /**
+     * Validates ICE-specific required fields
+     */
+    private void validateICEFields(Vehicle vehicle) {
+        if (vehicle.getFuelTankCapacity() == null || vehicle.getFuelTankCapacity() <= 0) {
+            throw new InvalidInputException("fuelTankCapacity", "must be greater than 0 for ICE vehicles");
+        }
+        // Validate fuel level if provided
+        if (vehicle.getFuelLevel() != null) {
+            validateFuelLevel(vehicle.getFuelLevel(), vehicle.getFuelTankCapacity());
+        }
+    }
+
+    /**
+     * Validates HYBRID-specific required fields (both EV and ICE fields)
+     */
+    private void validateHybridFields(Vehicle vehicle) {
+        // Hybrid vehicles need both battery and fuel tank
+        if (vehicle.getBatteryCapacity() == null || vehicle.getBatteryCapacity() <= 0) {
+            throw new InvalidInputException("batteryCapacity", "must be greater than 0 for HYBRID vehicles");
+        }
+        if (vehicle.getFuelTankCapacity() == null || vehicle.getFuelTankCapacity() <= 0) {
+            throw new InvalidInputException("fuelTankCapacity", "must be greater than 0 for HYBRID vehicles");
+        }
+        // Validate battery SOC if provided
+        if (vehicle.getCurrentBatterySoc() != null) {
+            validateBatterySoc(vehicle.getCurrentBatterySoc());
+        }
+        // Validate fuel level if provided
+        if (vehicle.getFuelLevel() != null) {
+            validateFuelLevel(vehicle.getFuelLevel(), vehicle.getFuelTankCapacity());
+        }
+    }
+
+    /**
+     * Validates battery state of charge is within valid range (0-100)
+     */
+    private void validateBatterySoc(Double soc) {
+        if (soc < 0 || soc > 100) {
+            throw new InvalidInputException("currentBatterySoc", "must be between 0 and 100");
+        }
+    }
+
+    /**
+     * Validates fuel level does not exceed tank capacity
+     */
+    private void validateFuelLevel(Double fuelLevel, Double tankCapacity) {
+        if (fuelLevel < 0) {
+            throw new InvalidInputException("fuelLevel", "must be greater than or equal to 0");
+        }
+        if (fuelLevel > tankCapacity) {
+            throw new InvalidInputException("fuelLevel", 
+                String.format("cannot exceed fuel tank capacity (%.2f liters)", tankCapacity));
+        }
     }
 
     public Vehicle updateVehicleLocation(Long vehicleId, Double latitude, Double longitude) {
