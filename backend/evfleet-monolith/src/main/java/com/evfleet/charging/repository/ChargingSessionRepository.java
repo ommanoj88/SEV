@@ -31,4 +31,9 @@ public interface ChargingSessionRepository extends JpaRepository<ChargingSession
     @Query("SELECT s FROM ChargingSession s WHERE s.companyId = :companyId " +
             "AND s.startTime BETWEEN :startDate AND :endDate")
     List<ChargingSession> findByCompanyAndDateRange(Long companyId, LocalDateTime startDate, LocalDateTime endDate);
+    
+    // E5 Energy Analytics support
+    @Query("SELECT s FROM ChargingSession s WHERE s.vehicleId = :vehicleId " +
+            "AND s.startTime BETWEEN :startDate AND :endDate")
+    List<ChargingSession> findByVehicleIdAndStartTimeBetween(Long vehicleId, LocalDateTime startDate, LocalDateTime endDate);
 }
