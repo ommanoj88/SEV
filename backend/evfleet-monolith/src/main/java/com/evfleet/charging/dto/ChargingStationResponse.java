@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -21,7 +23,7 @@ public class ChargingStationResponse {
     private ChargingStation.StationStatus status;
     private String chargerType;
     private Double powerOutput;
-    private Double pricePerKwh;
+    private BigDecimal pricePerKwh;
     private String operatorName;
     private String phone;
 
