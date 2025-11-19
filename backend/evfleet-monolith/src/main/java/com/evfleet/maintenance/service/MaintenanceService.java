@@ -1,9 +1,12 @@
 package com.evfleet.maintenance.service;
 
 import com.evfleet.common.exception.ResourceNotFoundException;
+import com.evfleet.fleet.model.Vehicle;
 import com.evfleet.maintenance.dto.MaintenanceRecordRequest;
 import com.evfleet.maintenance.dto.MaintenanceRecordResponse;
+import com.evfleet.maintenance.model.MaintenancePolicy;
 import com.evfleet.maintenance.model.MaintenanceRecord;
+import com.evfleet.maintenance.repository.MaintenancePolicyRepository;
 import com.evfleet.maintenance.repository.MaintenanceRecordRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -28,6 +32,7 @@ import java.util.stream.Collectors;
 public class MaintenanceService {
 
     private final MaintenanceRecordRepository maintenanceRecordRepository;
+    private final MaintenancePolicyRepository maintenancePolicyRepository;
 
     public MaintenanceRecordResponse createMaintenanceRecord(Long companyId, MaintenanceRecordRequest request) {
         log.info("POST /api/v1/maintenance/records - Creating maintenance record for vehicle: {}", request.getVehicleId());
@@ -146,5 +151,67 @@ public class MaintenanceService {
 
         maintenanceRecordRepository.deleteById(id);
         log.info("Maintenance record deleted successfully: {}", id);
+    }
+
+    /**
+     * Check if vehicle requires maintenance based on mileage policies
+     * Called automatically after trip completion
+     */
+    public void checkAndCreateMaintenanceByMileage(Long vehicleId, Long companyId, Vehicle.VehicleType vehicleType, Double currentDistance) {
+        log.debug("Checking maintenance policies for vehicle: {} at distance: {} km", vehicleId, currentDistance);
+
+        // Get active policies for this vehicle type
+        List<MaintenancePolicy> policies = maintenancePolicyRepository
+                .findByCompanyIdAndVehicleTypeAndActiveTrue(companyId, vehicleType);
+
+        for (MaintenancePolicy policy : policies) {
+            if (policy.getMileageIntervalKm() == null || policy.getMileageIntervalKm() <= 0) {
+                continue;
+            }
+
+            // Find last completed maintenance of this type for this vehicle
+            Optional<MaintenanceRecord> lastMaintenance = maintenanceRecordRepository
+                    .findTopByVehicleIdAndTypeAndStatusOrderByCompletedDateDesc(
+                            vehicleId, 
+                            policy.getMaintenanceType(), 
+                            MaintenanceRecord.MaintenanceStatus.COMPLETED
+                    );
+
+            Double lastMaintenanceDistance = lastMaintenance
+                    .map(MaintenanceRecord::getVehicleDistanceKm)
+                    .orElse(0.0);
+
+            // Check if policy should trigger
+            if (policy.shouldTriggerByMileage(lastMaintenanceDistance, currentDistance)) {
+                // Check if maintenance is already scheduled
+                boolean alreadyScheduled = maintenanceRecordRepository
+                        .existsByVehicleIdAndTypeAndPolicyIdAndStatusIn(
+                                vehicleId,
+                                policy.getMaintenanceType(),
+                                policy.getId(),
+                                List.of(MaintenanceRecord.MaintenanceStatus.SCHEDULED, 
+                                       MaintenanceRecord.MaintenanceStatus.IN_PROGRESS)
+                        );
+
+                if (!alreadyScheduled) {
+                    // Create new scheduled maintenance record
+                    MaintenanceRecord newRecord = MaintenanceRecord.builder()
+                            .vehicleId(vehicleId)
+                            .companyId(companyId)
+                            .type(policy.getMaintenanceType())
+                            .scheduledDate(LocalDate.now().plusDays(7)) // Schedule for next week
+                            .status(MaintenanceRecord.MaintenanceStatus.SCHEDULED)
+                            .description(String.format("Auto-scheduled: %s - Vehicle reached %,.0f km", 
+                                    policy.getName(), currentDistance))
+                            .vehicleDistanceKm(currentDistance)
+                            .policyId(policy.getId())
+                            .build();
+
+                    maintenanceRecordRepository.save(newRecord);
+                    log.info("Auto-created maintenance record for vehicle {} - Type: {}, Policy: {}", 
+                            vehicleId, policy.getMaintenanceType(), policy.getName());
+                }
+            }
+        }
     }
 }
