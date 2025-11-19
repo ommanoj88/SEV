@@ -49,6 +49,16 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     boolean existsByVehicleNumber(String vehicleNumber);
 
     /**
+     * Check if license plate exists
+     */
+    boolean existsByLicensePlate(String licensePlate);
+
+    /**
+     * Check if VIN exists
+     */
+    boolean existsByVin(String vin);
+
+    /**
      * Find all active vehicles for a company
      */
     @Query("SELECT v FROM Vehicle v WHERE v.companyId = :companyId AND v.status = 'ACTIVE'")
