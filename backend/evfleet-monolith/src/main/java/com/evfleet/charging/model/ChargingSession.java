@@ -2,6 +2,9 @@ package com.evfleet.charging.model;
 
 import com.evfleet.common.entity.BaseEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -48,19 +51,25 @@ public class ChargingSession extends BaseEntity {
     @Column(name = "end_time")
     private LocalDateTime endTime;
 
-    @Column(name = "energy_consumed")
+    @PositiveOrZero(message = "Energy consumed must be zero or positive")
+    @Column(name = "energy_consumed", precision = 10, scale = 3)
     private BigDecimal energyConsumed; // in kWh
 
-    @Column(name = "cost")
+    @PositiveOrZero(message = "Cost must be zero or positive")
+    @Column(name = "cost", precision = 10, scale = 2)
     private BigDecimal cost; // in INR
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private SessionStatus status;
 
+    @DecimalMin(value = "0.0", message = "Initial SOC must be between 0 and 100")
+    @DecimalMax(value = "100.0", message = "Initial SOC must be between 0 and 100")
     @Column(name = "initial_soc")
     private Double initialSoc; // State of Charge at start
 
+    @DecimalMin(value = "0.0", message = "Final SOC must be between 0 and 100")
+    @DecimalMax(value = "100.0", message = "Final SOC must be between 0 and 100")
     @Column(name = "final_soc")
     private Double finalSoc; // State of Charge at end
 

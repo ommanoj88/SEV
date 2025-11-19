@@ -2,10 +2,15 @@ package com.evfleet.charging.model;
 
 import com.evfleet.common.entity.BaseEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 
 /**
  * Charging Station Entity
@@ -34,9 +39,15 @@ public class ChargingStation extends BaseEntity {
     @Column(nullable = false, length = 500)
     private String address;
 
+    @NotNull
+    @DecimalMin(value = "-90.0", message = "Latitude must be between -90 and 90")
+    @DecimalMax(value = "90.0", message = "Latitude must be between -90 and 90")
     @Column(nullable = false)
     private Double latitude;
 
+    @NotNull
+    @DecimalMin(value = "-180.0", message = "Longitude must be between -180 and 180")
+    @DecimalMax(value = "180.0", message = "Longitude must be between -180 and 180")
     @Column(nullable = false)
     private Double longitude;
 
@@ -56,8 +67,8 @@ public class ChargingStation extends BaseEntity {
     @Column(name = "power_output")
     private Double powerOutput; // in kW
 
-    @Column(name = "price_per_kwh")
-    private Double pricePerKwh;
+    @Column(name = "price_per_kwh", precision = 10, scale = 2)
+    private BigDecimal pricePerKwh;
 
     @Column(name = "operator_name", length = 100)
     private String operatorName;
