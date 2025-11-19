@@ -2,6 +2,8 @@ package com.evfleet.fleet.service;
 
 import com.evfleet.common.event.EventPublisher;
 import com.evfleet.common.exception.ResourceNotFoundException;
+import com.evfleet.driver.model.Driver;
+import com.evfleet.driver.repository.DriverRepository;
 import com.evfleet.fleet.event.TripCompletedEvent;
 import com.evfleet.fleet.event.TripStartedEvent;
 import com.evfleet.fleet.model.Trip;
@@ -31,7 +33,13 @@ public class TripService {
 
     private final TripRepository tripRepository;
     private final VehicleRepository vehicleRepository;
+    private final DriverRepository driverRepository;
     private final EventPublisher eventPublisher;
+
+    // Constants for validation
+    private static final double MAX_REASONABLE_SPEED_KMH = 200.0; // km/h
+    private static final double EARTH_RADIUS_KM = 6371.0; // Earth's radius in km
+    private static final double DISTANCE_TOLERANCE_FACTOR = 2.0; // Allow claimed distance up to 2x Haversine distance
 
     public Trip startTrip(Long vehicleId, Long driverId, Double startLat, Double startLon) {
         log.info("Starting trip for vehicle: {}", vehicleId);
@@ -45,6 +53,22 @@ public class TripService {
             .ifPresent(t -> {
                 throw new IllegalStateException("Vehicle already has an active trip");
             });
+
+        // Validate and check driver availability if driver is provided
+        if (driverId != null) {
+            Driver driver = driverRepository.findById(driverId)
+                .orElseThrow(() -> new ResourceNotFoundException("Driver", "id", driverId));
+
+            // Check if driver is already on a trip
+            if (driver.getStatus() == Driver.DriverStatus.ON_TRIP) {
+                throw new IllegalStateException("Driver is already assigned to another trip");
+            }
+
+            // Update driver status to ON_TRIP
+            driver.setStatus(Driver.DriverStatus.ON_TRIP);
+            driver.setCurrentVehicleId(vehicleId);
+            driverRepository.save(driver);
+        }
 
         // Create trip
         Trip trip = Trip.builder()
@@ -82,8 +106,47 @@ public class TripService {
             throw new IllegalStateException("Cannot complete trip that is not in progress");
         }
 
-        // Calculate duration
+        // Validate distance is not negative
+        if (distance < 0) {
+            throw new IllegalArgumentException("Distance cannot be negative");
+        }
+
+        // Calculate duration in seconds
         long duration = java.time.Duration.between(trip.getStartTime(), LocalDateTime.now()).getSeconds();
+
+        // Validate speed is reasonable (distance / duration should not exceed MAX_REASONABLE_SPEED_KMH)
+        if (duration > 0) {
+            double speedKmh = (distance / duration) * 3600; // Convert to km/h
+            if (speedKmh > MAX_REASONABLE_SPEED_KMH) {
+                throw new IllegalArgumentException(
+                    String.format("Impossible speed detected: %.2f km/h. Distance: %.2f km, Duration: %d sec. " +
+                        "Maximum allowed speed is %.2f km/h", 
+                        speedKmh, distance, duration, MAX_REASONABLE_SPEED_KMH)
+                );
+            }
+        }
+
+        // Validate geospatial consistency using Haversine formula
+        if (trip.getStartLatitude() != null && trip.getStartLongitude() != null) {
+            double haversineDistance = calculateHaversineDistance(
+                trip.getStartLatitude(), trip.getStartLongitude(),
+                endLat, endLon
+            );
+
+            // Check if claimed distance is suspiciously larger than straight-line distance
+            if (distance > haversineDistance * DISTANCE_TOLERANCE_FACTOR) {
+                log.warn("Suspicious distance for trip {}: Claimed {} km vs Haversine {} km", 
+                    tripId, distance, haversineDistance);
+            }
+
+            // Check if claimed distance is impossibly smaller than straight-line distance
+            if (distance < haversineDistance * 0.5) {
+                throw new IllegalArgumentException(
+                    String.format("Claimed distance (%.2f km) is impossibly smaller than straight-line distance (%.2f km)", 
+                        distance, haversineDistance)
+                );
+            }
+        }
 
         // Complete trip
         trip.complete(endLat, endLon, distance, duration);
@@ -108,6 +171,27 @@ public class TripService {
 
         vehicleRepository.save(vehicle);
 
+        // Update driver status if driver was assigned
+        if (trip.getDriverId() != null) {
+            driverRepository.findById(trip.getDriverId()).ifPresent(driver -> {
+                driver.setStatus(Driver.DriverStatus.ACTIVE);
+                driver.setCurrentVehicleId(null);
+                
+                // Update driver statistics
+                if (driver.getTotalTrips() == null) {
+                    driver.setTotalTrips(0);
+                }
+                driver.setTotalTrips(driver.getTotalTrips() + 1);
+                
+                if (driver.getTotalDistance() == null) {
+                    driver.setTotalDistance(0.0);
+                }
+                driver.setTotalDistance(driver.getTotalDistance() + distance);
+                
+                driverRepository.save(driver);
+            });
+        }
+
         // Publish event
         eventPublisher.publish(new TripCompletedEvent(
             this, tripId, trip.getVehicleId(), distance, duration, energyConsumed
@@ -115,6 +199,32 @@ public class TripService {
 
         log.info("Trip completed: {} - Distance: {} km, Duration: {} sec", tripId, distance, duration);
         return completed;
+    }
+
+    /**
+     * Calculate the Haversine distance between two points on Earth
+     * @param lat1 Start latitude
+     * @param lon1 Start longitude
+     * @param lat2 End latitude
+     * @param lon2 End longitude
+     * @return Distance in kilometers
+     */
+    private double calculateHaversineDistance(double lat1, double lon1, double lat2, double lon2) {
+        // Convert latitude and longitude from degrees to radians
+        double lat1Rad = Math.toRadians(lat1);
+        double lat2Rad = Math.toRadians(lat2);
+        double deltaLat = Math.toRadians(lat2 - lat1);
+        double deltaLon = Math.toRadians(lon2 - lon1);
+
+        // Haversine formula
+        double a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+                   Math.cos(lat1Rad) * Math.cos(lat2Rad) *
+                   Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+        
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        // Distance in kilometers
+        return EARTH_RADIUS_KM * c;
     }
 
     @Transactional(readOnly = true)

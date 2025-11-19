@@ -63,13 +63,22 @@ const TripManagementPage: React.FC = () => {
 
   const handleStartTrip = async (trip: Trip) => {
     if (!trip.vehicleId || !trip.driverId) return;
+    
+    // Validate that we have proper location data
+    if (!trip.startLocation || 
+        trip.startLocation.latitude === 0 && trip.startLocation.longitude === 0 ||
+        !trip.startLocation.latitude || !trip.startLocation.longitude) {
+      alert('Cannot start trip: Valid start location is required. Please ensure GPS/location data is available.');
+      return;
+    }
+    
     setActionLoading(true);
     try {
       dispatch(
         startTrip({
           vehicleId: Number(trip.vehicleId),
           driverId: Number(trip.driverId),
-          startLocation: trip.startLocation || { latitude: 0, longitude: 0 },
+          startLocation: trip.startLocation,
         }) as any
       );
     } finally {
@@ -79,13 +88,27 @@ const TripManagementPage: React.FC = () => {
 
   const handleEndTrip = async (trip: Trip) => {
     if (!trip.id) return;
+    
+    // Validate that we have proper location and distance data
+    if (!trip.endLocation || 
+        trip.endLocation.latitude === 0 && trip.endLocation.longitude === 0 ||
+        !trip.endLocation.latitude || !trip.endLocation.longitude) {
+      alert('Cannot end trip: Valid end location is required. Please ensure GPS/location data is available.');
+      return;
+    }
+    
+    if (!trip.distance || trip.distance <= 0) {
+      alert('Cannot end trip: Valid distance is required.');
+      return;
+    }
+    
     setActionLoading(true);
     try {
       dispatch(
         endTrip({
           tripId: Number(trip.id),
           data: {
-            endLocation: trip.endLocation || { latitude: 0, longitude: 0 },
+            endLocation: trip.endLocation,
             distance: trip.distance,
             energyConsumed: trip.energyConsumed,
           },
