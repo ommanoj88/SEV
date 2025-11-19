@@ -26,7 +26,6 @@ public interface MaintenanceRecordRepository extends JpaRepository<MaintenanceRe
            "AND m.status NOT IN ('COMPLETED', 'CANCELLED') " +
            "ORDER BY m.scheduledDate ASC")
     List<MaintenanceRecord> findUpcomingMaintenanceAlerts(Long companyId, LocalDate endDate);
-            Long companyId, MaintenanceRecord.MaintenanceStatus status, java.time.LocalDate date);
     
     Optional<MaintenanceRecord> findTopByVehicleIdAndTypeAndStatusOrderByCompletedDateDesc(
             Long vehicleId, MaintenanceRecord.MaintenanceType type, MaintenanceRecord.MaintenanceStatus status);
