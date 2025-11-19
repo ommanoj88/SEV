@@ -84,6 +84,9 @@ public class AnalyticsService {
                         .totalDistance(0.0)
                         .totalEnergyConsumed(BigDecimal.ZERO)
                         .totalCost(BigDecimal.ZERO)
+                        .maintenanceCost(BigDecimal.ZERO)
+                        .fuelCost(BigDecimal.ZERO)
+                        .energyCost(BigDecimal.ZERO)
                         .build());
 
         if (totalVehicles != null) {
@@ -107,6 +110,37 @@ public class AnalyticsService {
 
         FleetSummary saved = fleetSummaryRepository.save(summary);
         log.info("Fleet summary updated successfully");
+        return FleetSummaryResponse.fromEntity(saved);
+    }
+
+    /**
+     * Update maintenance cost in fleet summary
+     */
+    public FleetSummaryResponse updateMaintenanceCost(Long companyId, LocalDate date, BigDecimal maintenanceCost) {
+        log.info("Updating maintenance cost for company: {}, date: {}, cost: {}", companyId, date, maintenanceCost);
+
+        FleetSummary summary = fleetSummaryRepository.findByCompanyIdAndSummaryDate(companyId, date)
+                .orElse(FleetSummary.builder()
+                        .companyId(companyId)
+                        .summaryDate(date)
+                        .totalVehicles(0)
+                        .activeVehicles(0)
+                        .totalTrips(0)
+                        .totalDistance(0.0)
+                        .totalEnergyConsumed(BigDecimal.ZERO)
+                        .totalCost(BigDecimal.ZERO)
+                        .maintenanceCost(BigDecimal.ZERO)
+                        .fuelCost(BigDecimal.ZERO)
+                        .energyCost(BigDecimal.ZERO)
+                        .build());
+
+        if (maintenanceCost != null) {
+            summary.setMaintenanceCost(summary.getMaintenanceCost().add(maintenanceCost));
+            summary.setTotalCost(summary.getTotalCost().add(maintenanceCost));
+        }
+
+        FleetSummary saved = fleetSummaryRepository.save(summary);
+        log.info("Maintenance cost updated successfully");
         return FleetSummaryResponse.fromEntity(saved);
     }
 

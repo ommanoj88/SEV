@@ -1,19 +1,91 @@
-import React from 'react';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import React, { useEffect, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Paper, Typography } from '@mui/material';
+import { Paper, Typography, CircularProgress, Alert, Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import batteryHealthService, { BatteryHealthData } from '@services/batteryHealthService';
 
-const BatteryHealth: React.FC = () => {
+interface BatteryHealthProps {
+  vehicleId?: number;
+}
+
+const BatteryHealth: React.FC<BatteryHealthProps> = ({ vehicleId }) => {
   const theme = useTheme();
-  // TODO: Add batteryHealth to MaintenanceState when backend provides this data
-  const batteryHealth = { history: [] };
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [batteryHistory, setBatteryHistory] = useState<BatteryHealthData[]>([]);
+
+  useEffect(() => {
+    if (vehicleId) {
+      loadBatteryHealth();
+    }
+  }, [vehicleId]);
+
+  const loadBatteryHealth = async () => {
+    if (!vehicleId) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+      const history = await batteryHealthService.getBatteryHealthHistory(vehicleId);
+      setBatteryHistory(history);
+    } catch (err: any) {
+      console.error('Failed to load battery health:', err);
+      setError(err.message || 'Failed to load battery health data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const chartData = batteryHistory.map(entry => ({
+    date: new Date(entry.recordedAt).toLocaleDateString(),
+    healthPercentage: entry.soh,
+    cycleCount: entry.cycleCount,
+    temperature: entry.temperature,
+  }));
+
+  if (!vehicleId) {
+    return (
+      <Paper sx={{ p: 3 }}>
+        <Typography variant="h6" gutterBottom>Battery Health Trend</Typography>
+        <Alert severity="info">Please select a vehicle to view battery health data</Alert>
+      </Paper>
+    );
+  }
+
+  if (loading) {
+    return (
+      <Paper sx={{ p: 3 }}>
+        <Typography variant="h6" gutterBottom>Battery Health Trend</Typography>
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight={300}>
+          <CircularProgress />
+        </Box>
+      </Paper>
+    );
+  }
+
+  if (error) {
+    return (
+      <Paper sx={{ p: 3 }}>
+        <Typography variant="h6" gutterBottom>Battery Health Trend</Typography>
+        <Alert severity="error">{error}</Alert>
+      </Paper>
+    );
+  }
+
+  if (chartData.length === 0) {
+    return (
+      <Paper sx={{ p: 3 }}>
+        <Typography variant="h6" gutterBottom>Battery Health Trend</Typography>
+        <Alert severity="info">No battery health data available for this vehicle</Alert>
+      </Paper>
+    );
+  }
 
   return (
     <Paper sx={{ p: 3 }}>
       <Typography variant="h6" gutterBottom>Battery Health Trend</Typography>
       <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={batteryHealth?.history || []}>
+        <LineChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
           <YAxis label={{ value: 'Health %', angle: -90, position: 'insideLeft' }} />

@@ -45,4 +45,17 @@ public class FleetSummary extends BaseEntity {
 
     @Column(name = "total_cost")
     private BigDecimal totalCost;
+
+    // New fields for maintenance cost tracking
+    @Column(name = "maintenance_cost")
+    @Builder.Default
+    private BigDecimal maintenanceCost = BigDecimal.ZERO;
+
+    @Column(name = "fuel_cost")
+    @Builder.Default
+    private BigDecimal fuelCost = BigDecimal.ZERO;
+
+    @Column(name = "energy_cost")
+    @Builder.Default
+    private BigDecimal energyCost = BigDecimal.ZERO;
 }

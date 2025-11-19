@@ -129,6 +129,15 @@ export const maintenanceService = {
   getReminders: async (): Promise<ServiceReminder[]> => {
     return apiClient.get('/v1/maintenance/reminders');
   },
+
+  // ========== MAINTENANCE ALERTS ==========
+
+  /**
+   * Get maintenance alerts for a company
+   */
+  getMaintenanceAlerts: async (companyId: number, daysAhead: number = 30): Promise<any[]> => {
+    return apiClient.get('/v1/maintenance/alerts', { companyId, daysAhead });
+  },
 };
 
 export default maintenanceService;
