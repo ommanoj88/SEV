@@ -23,7 +23,6 @@ import {
   AllInclusive,
 } from '@mui/icons-material';
 import maintenanceService from '@services/maintenanceService';
-import vehicleService from '@services/vehicleService';
 
 interface MaintenanceAlert {
   id: string;
@@ -55,52 +54,23 @@ const MaintenanceAlertsCard: React.FC<MaintenanceAlertsCardProps> = ({ companyId
       setLoading(true);
       setError(null);
 
-      // Get all vehicles for the company
-      const vehicles = await vehicleService.getVehiclesByCompany(companyId);
+      // Use the new optimized backend endpoint
+      const alertsData = await maintenanceService.getMaintenanceAlerts(companyId, 30);
       
-      // Get all maintenance schedules
-      const allSchedules = await maintenanceService.getAllSchedules();
+      // Map the backend response to our frontend format
+      const formattedAlerts: MaintenanceAlert[] = alertsData.map((alert: any) => ({
+        id: alert.id.toString(),
+        vehicleId: alert.vehicleId,
+        vehicleNumber: alert.vehicleNumber,
+        fuelType: alert.fuelType || 'EV',
+        maintenanceType: alert.maintenanceType,
+        dueDate: alert.scheduledDate,
+        status: alert.status,
+        priority: alert.priority,
+        description: alert.description,
+      })).slice(0, 5); // Show top 5 alerts
       
-      // Filter for upcoming and overdue maintenance
-      const now = new Date();
-      const thirtyDaysFromNow = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-      
-      const upcomingAlerts: MaintenanceAlert[] = allSchedules
-        .filter((schedule: any) => {
-          const vehicle = vehicles.find((v: any) => v.id === Number(schedule.vehicleId));
-          if (!vehicle) return false;
-          
-          const scheduledDate = new Date(schedule.scheduledDate);
-          return scheduledDate <= thirtyDaysFromNow && schedule.status !== 'COMPLETED';
-        })
-        .map((schedule: any) => {
-          const vehicle = vehicles.find((v: any) => v.id === Number(schedule.vehicleId));
-          const scheduledDate = new Date(schedule.scheduledDate);
-          const isOverdue = scheduledDate < now;
-          
-          return {
-            id: schedule.id,
-            vehicleId: Number(vehicle?.id || 0),
-            vehicleNumber: vehicle?.licensePlate || 'Unknown',
-            fuelType: (vehicle?.fuelType || 'EV') as 'EV' | 'ICE' | 'HYBRID',
-            maintenanceType: schedule.maintenanceType || 'GENERAL_SERVICE',
-            dueDate: schedule.scheduledDate,
-            status: isOverdue ? 'OVERDUE' : schedule.status || 'PENDING',
-            priority: (isOverdue ? 'HIGH' : (scheduledDate <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) ? 'MEDIUM' : 'LOW')) as 'HIGH' | 'MEDIUM' | 'LOW',
-            description: schedule.description,
-          };
-        })
-        .sort((a, b) => {
-          // Sort by priority and then by due date
-          const priorityOrder = { HIGH: 0, MEDIUM: 1, LOW: 2 };
-          if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
-            return priorityOrder[a.priority] - priorityOrder[b.priority];
-          }
-          return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
-        })
-        .slice(0, 5); // Show top 5 alerts
-      
-      setAlerts(upcomingAlerts);
+      setAlerts(formattedAlerts);
     } catch (err: any) {
       console.error('Failed to load maintenance alerts:', err);
       setError(err.message || 'Failed to load maintenance alerts');
