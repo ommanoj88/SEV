@@ -31,4 +31,9 @@ public interface TripRepository extends JpaRepository<Trip, Long> {
     @Query("SELECT t FROM Trip t WHERE t.companyId = :companyId " +
            "AND t.startTime BETWEEN :startDate AND :endDate")
     List<Trip> findByCompanyAndDateRange(Long companyId, LocalDateTime startDate, LocalDateTime endDate);
+    
+    // E5 Energy Analytics and E6 PDF Generation support
+    @Query("SELECT t FROM Trip t WHERE t.vehicleId = :vehicleId " +
+           "AND t.startTime BETWEEN :startDate AND :endDate")
+    List<Trip> findByVehicleIdAndStartTimeBetween(Long vehicleId, LocalDateTime startDate, LocalDateTime endDate);
 }

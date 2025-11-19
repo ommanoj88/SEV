@@ -32,4 +32,9 @@ public interface MaintenanceRecordRepository extends JpaRepository<MaintenanceRe
     
     boolean existsByVehicleIdAndTypeAndPolicyIdAndStatusIn(
             Long vehicleId, MaintenanceRecord.MaintenanceType type, Long policyId, List<MaintenanceRecord.MaintenanceStatus> statuses);
+    
+    // E6 PDF Generation support
+    @Query("SELECT m FROM MaintenanceRecord m WHERE m.vehicleId = :vehicleId " +
+            "AND m.scheduledDate BETWEEN :startDate AND :endDate")
+    List<MaintenanceRecord> findByVehicleIdAndScheduledDateBetween(Long vehicleId, LocalDate startDate, LocalDate endDate);
 }
