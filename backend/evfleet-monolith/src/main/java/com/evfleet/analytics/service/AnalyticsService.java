@@ -462,11 +462,13 @@ public class AnalyticsService {
 
         BigDecimal totalCost = purchasePrice.add(depreciation).add(energyCosts).add(maintenanceCosts);
 
-        Double costPerKm = totalDistance > 0 ?
-                totalCost.divide(BigDecimal.valueOf(totalDistance), 4, RoundingMode.HALF_UP).doubleValue() : 0.0;
+        BigDecimal costPerKm = totalDistance > 0 ?
+                totalCost.divide(BigDecimal.valueOf(totalDistance), 4, RoundingMode.HALF_UP) : BigDecimal.ZERO;
 
-        Double costPerYear = ageMonths > 0 ?
-                totalCost.divide(BigDecimal.valueOf(ageMonths / 12.0), 2, RoundingMode.HALF_UP).doubleValue() : 0.0;
+        BigDecimal costPerYear = ageMonths > 0 ?
+                totalCost.divide(BigDecimal.valueOf(ageMonths / 12.0), 2, RoundingMode.HALF_UP) : BigDecimal.ZERO;
+
+        BigDecimal totalDistanceKm = BigDecimal.valueOf(totalDistance);
 
         return TCOAnalysisResponse.builder()
                 .vehicleId(vehicleId)
@@ -484,7 +486,7 @@ public class AnalyticsService {
                 .totalCost(totalCost)
                 .costPerKm(costPerKm)
                 .costPerYear(costPerYear)
-                .totalDistance(totalDistance)
+                .totalDistanceKm(totalDistanceKm)
                 .comparisonWithICE(null)  // TODO: Implement for EVs
                 .build();
     }

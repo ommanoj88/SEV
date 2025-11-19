@@ -11,9 +11,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
- * TCO Analysis Response DTO
-
-/**
  * Total Cost of Ownership Analysis Response
  *
  * @author SEV Platform Team
@@ -28,16 +25,9 @@ public class TCOAnalysisResponse {
     private Long id;
     private Long vehicleId;
     private String vehicleName;
-    private LocalDate analysisDate;
-    
-    // Cost breakdown
-    private BigDecimal purchasePrice;
-    private BigDecimal depreciation;
-    private BigDecimal energyCosts;
-    private Long vehicleId;
-    private String vehicleName;
     private String vehicleNumber;
     private FuelType fuelType;
+    private LocalDate analysisDate;
 
     // Acquisition costs
     private BigDecimal purchasePrice;
@@ -70,6 +60,7 @@ public class TCOAnalysisResponse {
         private BigDecimal maintenanceSavings;
         private BigDecimal totalSavings;
         private Integer paybackPeriod;  // in months
+        private Double savingsPercentage;
     }
 
     public static TCOAnalysisResponse fromEntity(TCOAnalysis tco) {
@@ -105,25 +96,5 @@ public class TCOAnalysisResponse {
                 .totalDistanceKm(tco.getTotalDistanceKm())
                 .comparisonWithICE(comparison)
                 .build();
-
-    // Totals and metrics
-    private BigDecimal totalCost;
-    private Double costPerKm;
-    private Double costPerYear;
-    private Double totalDistance;
-
-    // ICE comparison (for EVs)
-    private ICEComparison comparisonWithICE;
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ICEComparison {
-        private BigDecimal fuelSavings;
-        private BigDecimal maintenanceSavings;
-        private BigDecimal totalSavings;
-        private Integer paybackPeriodMonths;
-        private Double savingsPercentage;
     }
 }
