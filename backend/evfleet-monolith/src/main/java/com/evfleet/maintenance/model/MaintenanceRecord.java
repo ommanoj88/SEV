@@ -71,11 +71,29 @@ public class MaintenanceRecord extends BaseEntity {
     private String attachmentUrls;
 
     public enum MaintenanceType {
+        // Common types (applicable to all vehicle types)
         ROUTINE_SERVICE,
-        BATTERY_CHECK,
         TIRE_REPLACEMENT,
         BRAKE_SERVICE,
-        EMERGENCY_REPAIR
+        EMERGENCY_REPAIR,
+        
+        // ICE-specific types
+        OIL_CHANGE,
+        FILTER_REPLACEMENT,
+        EMISSION_TEST,
+        COOLANT_FLUSH,
+        TRANSMISSION_SERVICE,
+        ENGINE_DIAGNOSTICS,
+        
+        // EV-specific types
+        BATTERY_CHECK,
+        HV_SYSTEM_CHECK,
+        FIRMWARE_UPDATE,
+        CHARGING_PORT_INSPECTION,
+        THERMAL_MANAGEMENT_CHECK,
+        
+        // Hybrid-specific (can use both ICE and EV types)
+        HYBRID_SYSTEM_CHECK
     }
 
     public enum MaintenanceStatus {

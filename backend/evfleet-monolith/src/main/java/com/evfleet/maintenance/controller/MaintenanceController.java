@@ -115,4 +115,21 @@ public class MaintenanceController {
                 maintenanceService.getMaintenanceAlerts(companyId, daysAhead);
         return ResponseEntity.ok(ApiResponse.success("Maintenance alerts retrieved successfully", alerts));
     }
+
+    @GetMapping("/types")
+    @Operation(summary = "Get all maintenance types")
+    public ResponseEntity<ApiResponse<List<String>>> getMaintenanceTypes() {
+        log.info("GET /api/v1/maintenance/types");
+        List<String> types = maintenanceService.getAllMaintenanceTypes();
+        return ResponseEntity.ok(ApiResponse.success("Maintenance types retrieved successfully", types));
+    }
+
+    @GetMapping("/types/vehicle/{vehicleId}")
+    @Operation(summary = "Get valid maintenance types for a specific vehicle based on fuel type")
+    public ResponseEntity<ApiResponse<List<String>>> getMaintenanceTypesForVehicle(
+            @PathVariable Long vehicleId) {
+        log.info("GET /api/v1/maintenance/types/vehicle/{}", vehicleId);
+        List<String> types = maintenanceService.getValidMaintenanceTypesForVehicle(vehicleId);
+        return ResponseEntity.ok(ApiResponse.success("Valid maintenance types retrieved successfully", types));
+    }
 }

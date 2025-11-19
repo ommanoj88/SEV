@@ -55,6 +55,22 @@ public class Driver extends BaseEntity {
     @Column(name = "total_distance")
     private Double totalDistance;
 
+    // Performance metrics
+    @Column(name = "safety_score")
+    private Double safetyScore; // 0-100 scale
+
+    @Column(name = "fuel_efficiency")
+    private Double fuelEfficiency; // km/L or kWh/100km
+
+    @Column(name = "harsh_braking_events")
+    private Integer harshBrakingEvents;
+
+    @Column(name = "speeding_events")
+    private Integer speedingEvents;
+
+    @Column(name = "idling_time_minutes")
+    private Integer idlingTimeMinutes;
+
     public enum DriverStatus {
         ACTIVE,
         INACTIVE,

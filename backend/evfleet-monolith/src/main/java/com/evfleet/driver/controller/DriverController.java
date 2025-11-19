@@ -115,6 +115,15 @@ public class DriverController {
         return ResponseEntity.ok(ApiResponse.success("Vehicle unassigned from driver successfully", driver));
     }
 
+    @GetMapping("/leaderboard")
+    @Operation(summary = "Get driver leaderboard sorted by performance")
+    public ResponseEntity<ApiResponse<List<DriverResponse>>> getDriverLeaderboard(
+            @RequestParam Long companyId) {
+        log.info("GET /api/v1/drivers/leaderboard - companyId: {}", companyId);
+        List<DriverResponse> leaderboard = driverService.getDriverLeaderboard(companyId);
+        return ResponseEntity.ok(ApiResponse.success("Driver leaderboard retrieved successfully", leaderboard));
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete driver")
     public ResponseEntity<ApiResponse<Void>> deleteDriver(@PathVariable Long id) {

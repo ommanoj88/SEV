@@ -40,14 +40,16 @@ const AssignDriver: React.FC = () => {
           <Grid item xs={12} md={6}>
             <Controller name="driverId" control={control} defaultValue="" render={({ field }) => (
               <TextField {...field} select label="Driver" fullWidth required>
-                {drivers.map((d) => <MenuItem key={d.id} value={d.id}>{d.firstName} {d.lastName}</MenuItem>)}
+                {drivers
+                  .filter(d => d.status === 'ACTIVE' && !d.currentVehicleId)
+                  .map((d) => <MenuItem key={d.id} value={d.id}>{d.firstName} {d.lastName}</MenuItem>)}
               </TextField>
             )} />
           </Grid>
           <Grid item xs={12} md={6}>
             <Controller name="vehicleId" control={control} defaultValue="" render={({ field }) => (
               <TextField {...field} select label="Vehicle" fullWidth required>
-                {vehicles.filter(v => !v.assignedDriverId).map((v) => <MenuItem key={v.id} value={v.id}>{v.make} {v.model} - {v.licensePlate}</MenuItem>)}
+                {vehicles.filter(v => !v.assignedDriverId && !v.currentDriverId).map((v) => <MenuItem key={v.id} value={v.id}>{v.make} {v.model} - {v.licensePlate}</MenuItem>)}
               </TextField>
             )} />
           </Grid>
