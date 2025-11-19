@@ -39,77 +39,22 @@ public class TCOAnalysisResponse {
     private BigDecimal insuranceCosts;
     private BigDecimal taxesFees;
     private BigDecimal otherCosts;
+
+    // Totals and metrics
     private BigDecimal totalCost;
-    
-    // Metrics
     private BigDecimal costPerKm;
     private BigDecimal costPerYear;
     private Integer analysisPeriodYears;
     private BigDecimal totalDistanceKm;
-    
-    // ICE Comparison
+
+    // ICE comparison (for EVs)
     private ComparisonWithICE comparisonWithICE;
 
     @Data
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    @Builder
     public static class ComparisonWithICE {
-        private BigDecimal fuelSavings;
-        private BigDecimal maintenanceSavings;
-        private BigDecimal totalSavings;
-        private Integer paybackPeriod;  // in months
-        private Double savingsPercentage;
-    }
-
-    public static TCOAnalysisResponse fromEntity(TCOAnalysis tco) {
-        if (tco == null) {
-            return null;
-        }
-
-        ComparisonWithICE comparison = null;
-        if (tco.getIceTotalSavings() != null && tco.getIceTotalSavings().compareTo(BigDecimal.ZERO) > 0) {
-            comparison = ComparisonWithICE.builder()
-                    .fuelSavings(tco.getIceFuelSavings())
-                    .maintenanceSavings(tco.getIceMaintenanceSavings())
-                    .totalSavings(tco.getIceTotalSavings())
-                    .paybackPeriod(tco.getIcePaybackPeriodMonths())
-                    .build();
-        }
-
-        return TCOAnalysisResponse.builder()
-                .id(tco.getId())
-                .vehicleId(tco.getVehicleId())
-                .analysisDate(tco.getAnalysisDate())
-                .purchasePrice(tco.getPurchasePrice())
-                .depreciation(tco.getDepreciationValue())
-                .energyCosts(tco.getEnergyCosts())
-                .maintenanceCosts(tco.getMaintenanceCosts())
-                .insuranceCosts(tco.getInsuranceCosts())
-                .taxesFees(tco.getTaxesFees())
-                .otherCosts(tco.getOtherCosts())
-                .totalCost(tco.getTotalCost())
-                .costPerKm(tco.getCostPerKm())
-                .costPerYear(tco.getCostPerYear())
-                .analysisPeriodYears(tco.getAnalysisPeriodYears())
-                .totalDistanceKm(tco.getTotalDistanceKm())
-                .comparisonWithICE(comparison)
-                .build();
-
-    // Totals and metrics
-    private BigDecimal totalCost;
-    private Double costPerKm;
-    private Double costPerYear;
-    private Double totalDistance;
-
-    // ICE comparison (for EVs)
-    private ICEComparison comparisonWithICE;
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ICEComparison {
         private BigDecimal fuelSavings;
         private BigDecimal maintenanceSavings;
         private BigDecimal totalSavings;

@@ -329,7 +329,7 @@ public class TCOAnalysisService {
                     .fuelSavings(tco.getIceFuelSavings())
                     .maintenanceSavings(tco.getIceMaintenanceSavings())
                     .totalSavings(tco.getIceTotalSavings())
-                    .paybackPeriod(tco.getIcePaybackPeriodMonths())
+                    .paybackPeriodMonths(tco.getIcePaybackPeriodMonths())
                     .savingsPercentage(savingsPercentage)
                     .build();
         }
