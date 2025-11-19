@@ -165,15 +165,16 @@ The application uses a **Modular Monolith** architecture - a single deployable S
 **Features:**
 - Maintenance scheduling
 - Service history tracking
-- Battery health monitoring (EV-specific)
-- Preventive maintenance alerts
-- Cost analytics
+- Battery health monitoring (EV-specific) ✨ **NEW**
+- Preventive maintenance alerts with priority levels ✨ **NEW**
+- Cost analytics with breakdown
 - Multi-fuel maintenance support
+- Maintenance line items tracking
 
 **Database:** `evfleet_maintenance`
-**Tables:** maintenance_schedules, service_history, battery_health
-**Controller:** MaintenanceController
-**Endpoints:** 8+
+**Tables:** maintenance_schedules, service_history, battery_health (new), maintenance_line_items
+**Controllers:** MaintenanceController, BatteryHealthController ✨ **NEW**
+**Endpoints:** 15+
 
 **Maintenance Types:**
 - ROUTINE - Regular scheduled maintenance
@@ -183,6 +184,25 @@ The application uses a **Modular Monolith** architecture - a single deployable S
 - TIRE_ROTATION - Tire maintenance
 - OIL_CHANGE - ICE vehicle oil changes
 - BRAKE_SERVICE - Brake system maintenance
+
+**Battery Health Features (Nov 2025):** ✨ **NEW**
+- ✅ State of Health (SOH) tracking
+- ✅ Charge cycle counting
+- ✅ Temperature monitoring
+- ✅ Internal resistance measurement
+- ✅ Voltage deviation detection
+- ✅ Historical trend analysis
+- ✅ Low SOH vehicle identification
+
+**Maintenance Alerts Features (Nov 2025):** ✨ **NEW**
+- ✅ Prioritized alerts (HIGH/MEDIUM/LOW)
+  - HIGH: Overdue maintenance
+  - MEDIUM: Due within 7 days
+  - LOW: Due within 30 days
+- ✅ Days until due calculation
+- ✅ Vehicle details in alerts (license plate, fuel type)
+- ✅ Sorted by priority and scheduled date
+- ✅ JPQL query optimization for performance
 
 **External Dependencies:**
 - None (fully standalone)
@@ -215,7 +235,7 @@ The application uses a **Modular Monolith** architecture - a single deployable S
 **Features:**
 - Fleet summary dashboards
 - Utilization reports
-- Cost analytics
+- Cost analytics with breakdown (maintenance, fuel, energy)
 - TCO (Total Cost of Ownership) analysis
 - Energy consumption tracking
 - Vehicle reports (PDF generation)
@@ -229,8 +249,13 @@ The application uses a **Modular Monolith** architecture - a single deployable S
 **Report Types:**
 - Fleet summary (daily/monthly)
 - Vehicle genealogy reports
-- Cost breakdowns
+- Cost breakdowns (now includes maintenance_cost, fuel_cost, energy_cost columns)
 - Utilization metrics
+
+**Recent Enhancements (Nov 2025):**
+- ✅ Added cost breakdown columns to fleet_summaries table
+- ✅ Maintenance cost tracking integrated with analytics
+- ✅ Automatic cost aggregation when maintenance is completed
 
 **External Dependencies:**
 - None (fully standalone)
