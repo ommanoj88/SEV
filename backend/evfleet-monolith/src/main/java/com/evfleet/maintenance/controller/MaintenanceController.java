@@ -104,4 +104,15 @@ public class MaintenanceController {
         maintenanceService.deleteMaintenanceRecord(id);
         return ResponseEntity.ok(ApiResponse.success("Maintenance record deleted successfully", null));
     }
+
+    @GetMapping("/alerts")
+    @Operation(summary = "Get maintenance alerts")
+    public ResponseEntity<ApiResponse<List<com.evfleet.maintenance.dto.MaintenanceAlertResponse>>> getMaintenanceAlerts(
+            @RequestParam Long companyId,
+            @RequestParam(required = false, defaultValue = "30") Integer daysAhead) {
+        log.info("GET /api/v1/maintenance/alerts - companyId: {}, daysAhead: {}", companyId, daysAhead);
+        List<com.evfleet.maintenance.dto.MaintenanceAlertResponse> alerts = 
+                maintenanceService.getMaintenanceAlerts(companyId, daysAhead);
+        return ResponseEntity.ok(ApiResponse.success("Maintenance alerts retrieved successfully", alerts));
+    }
 }

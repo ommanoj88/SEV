@@ -31,6 +31,9 @@ public class FleetSummaryResponse {
     private Double totalDistance;
     private BigDecimal totalEnergyConsumed;
     private BigDecimal totalCost;
+    private BigDecimal maintenanceCost;
+    private BigDecimal fuelCost;
+    private BigDecimal energyCost;
     private Double avgDistancePerVehicle;
     private BigDecimal avgCostPerKm;
     private LocalDateTime createdAt;
@@ -61,6 +64,9 @@ public class FleetSummaryResponse {
                 .totalDistance(summary.getTotalDistance())
                 .totalEnergyConsumed(summary.getTotalEnergyConsumed())
                 .totalCost(summary.getTotalCost())
+                .maintenanceCost(summary.getMaintenanceCost())
+                .fuelCost(summary.getFuelCost())
+                .energyCost(summary.getEnergyCost())
                 .avgDistancePerVehicle(avgDistancePerVehicle)
                 .avgCostPerKm(avgCostPerKm)
                 .createdAt(summary.getCreatedAt())

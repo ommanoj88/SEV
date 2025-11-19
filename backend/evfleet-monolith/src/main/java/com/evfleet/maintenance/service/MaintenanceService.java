@@ -1,6 +1,9 @@
 package com.evfleet.maintenance.service;
 
 import com.evfleet.common.exception.ResourceNotFoundException;
+import com.evfleet.fleet.model.Vehicle;
+import com.evfleet.fleet.repository.VehicleRepository;
+import com.evfleet.maintenance.dto.MaintenanceAlertResponse;
 import com.evfleet.maintenance.dto.MaintenanceRecordRequest;
 import com.evfleet.maintenance.dto.MaintenanceRecordResponse;
 import com.evfleet.maintenance.model.MaintenanceRecord;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +32,8 @@ import java.util.stream.Collectors;
 public class MaintenanceService {
 
     private final MaintenanceRecordRepository maintenanceRecordRepository;
+    private final VehicleRepository vehicleRepository;
+    private final com.evfleet.analytics.service.AnalyticsService analyticsService;
 
     public MaintenanceRecordResponse createMaintenanceRecord(Long companyId, MaintenanceRecordRequest request) {
         log.info("POST /api/v1/maintenance/records - Creating maintenance record for vehicle: {}", request.getVehicleId());
@@ -133,6 +139,22 @@ public class MaintenanceService {
         record.setCompletedDate(LocalDate.now());
 
         MaintenanceRecord updated = maintenanceRecordRepository.save(record);
+        
+        // Update analytics with maintenance cost
+        if (updated.getCost() != null && updated.getCost().compareTo(java.math.BigDecimal.ZERO) > 0) {
+            try {
+                analyticsService.updateMaintenanceCost(
+                    updated.getCompanyId(), 
+                    updated.getCompletedDate(), 
+                    updated.getCost()
+                );
+                log.info("Analytics updated with maintenance cost: {}", updated.getCost());
+            } catch (Exception e) {
+                log.error("Failed to update analytics for maintenance completion", e);
+                // Don't fail the operation if analytics update fails
+            }
+        }
+        
         log.info("Maintenance record completed successfully: {}", id);
         return MaintenanceRecordResponse.fromEntity(updated);
     }
@@ -146,5 +168,57 @@ public class MaintenanceService {
 
         maintenanceRecordRepository.deleteById(id);
         log.info("Maintenance record deleted successfully: {}", id);
+    }
+
+    /**
+     * Get maintenance alerts for a company
+     * Returns upcoming maintenance within the next 30 days, prioritized by urgency
+     */
+    @Transactional(readOnly = true)
+    public List<MaintenanceAlertResponse> getMaintenanceAlerts(Long companyId, Integer daysAhead) {
+        log.info("GET /api/v1/maintenance/alerts - Fetching alerts for company: {}, daysAhead: {}", 
+                companyId, daysAhead);
+        
+        LocalDate endDate = LocalDate.now().plusDays(daysAhead != null ? daysAhead : 30);
+        List<MaintenanceRecord> upcomingRecords = maintenanceRecordRepository.findUpcomingMaintenanceAlerts(
+                companyId, endDate);
+        
+        return upcomingRecords.stream()
+                .map(record -> {
+                    Vehicle vehicle = vehicleRepository.findById(record.getVehicleId()).orElse(null);
+                    LocalDate now = LocalDate.now();
+                    long daysUntil = ChronoUnit.DAYS.between(now, record.getScheduledDate());
+                    
+                    MaintenanceAlertResponse.Priority priority;
+                    if (daysUntil < 0) {
+                        priority = MaintenanceAlertResponse.Priority.HIGH; // Overdue
+                    } else if (daysUntil <= 7) {
+                        priority = MaintenanceAlertResponse.Priority.MEDIUM; // Due within 7 days
+                    } else {
+                        priority = MaintenanceAlertResponse.Priority.LOW; // Due within 30 days
+                    }
+                    
+                    return MaintenanceAlertResponse.builder()
+                            .id(record.getId())
+                            .vehicleId(record.getVehicleId())
+                            .vehicleNumber(vehicle != null ? vehicle.getLicensePlate() : "Unknown")
+                            .fuelType(vehicle != null ? vehicle.getFuelType() : null)
+                            .maintenanceType(record.getType().name())
+                            .scheduledDate(record.getScheduledDate())
+                            .status(daysUntil < 0 ? "OVERDUE" : record.getStatus().name())
+                            .priority(priority)
+                            .description(record.getDescription())
+                            .daysUntilDue((int) daysUntil)
+                            .build();
+                })
+                .sorted((a, b) -> {
+                    // Sort by priority first, then by scheduled date
+                    int priorityCompare = a.getPriority().compareTo(b.getPriority());
+                    if (priorityCompare != 0) {
+                        return priorityCompare;
+                    }
+                    return a.getScheduledDate().compareTo(b.getScheduledDate());
+                })
+                .collect(Collectors.toList());
     }
 }
