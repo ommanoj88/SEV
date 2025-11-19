@@ -63,6 +63,13 @@ public class MaintenanceRecord extends BaseEntity {
     @Column(name = "policy_id")
     private Long policyId;
 
+    /**
+     * URLs or paths to attached documents (invoices, photos, reports)
+     * Stored as comma-separated list
+     */
+    @Column(name = "attachment_urls", length = 2000)
+    private String attachmentUrls;
+
     public enum MaintenanceType {
         ROUTINE_SERVICE,
         BATTERY_CHECK,

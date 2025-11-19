@@ -2,10 +2,14 @@ package com.evfleet.maintenance.service;
 
 import com.evfleet.common.exception.ResourceNotFoundException;
 import com.evfleet.fleet.model.Vehicle;
+import com.evfleet.maintenance.dto.MaintenanceLineItemRequest;
+import com.evfleet.maintenance.dto.MaintenanceLineItemResponse;
 import com.evfleet.maintenance.dto.MaintenanceRecordRequest;
 import com.evfleet.maintenance.dto.MaintenanceRecordResponse;
+import com.evfleet.maintenance.model.MaintenanceLineItem;
 import com.evfleet.maintenance.model.MaintenancePolicy;
 import com.evfleet.maintenance.model.MaintenanceRecord;
+import com.evfleet.maintenance.repository.MaintenanceLineItemRepository;
 import com.evfleet.maintenance.repository.MaintenancePolicyRepository;
 import com.evfleet.maintenance.repository.MaintenanceRecordRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -33,9 +38,16 @@ public class MaintenanceService {
 
     private final MaintenanceRecordRepository maintenanceRecordRepository;
     private final MaintenancePolicyRepository maintenancePolicyRepository;
+    private final MaintenanceLineItemRepository maintenanceLineItemRepository;
 
     public MaintenanceRecordResponse createMaintenanceRecord(Long companyId, MaintenanceRecordRequest request) {
         log.info("POST /api/v1/maintenance/records - Creating maintenance record for vehicle: {}", request.getVehicleId());
+
+        // Convert attachment URLs list to comma-separated string
+        String attachmentUrlsString = null;
+        if (request.getAttachmentUrls() != null && !request.getAttachmentUrls().isEmpty()) {
+            attachmentUrlsString = String.join(",", request.getAttachmentUrls());
+        }
 
         MaintenanceRecord record = MaintenanceRecord.builder()
                 .vehicleId(request.getVehicleId())
@@ -49,11 +61,28 @@ public class MaintenanceService {
                 .cost(request.getCost())
                 .description(request.getDescription())
                 .serviceProvider(request.getServiceProvider())
+                .attachmentUrls(attachmentUrlsString)
                 .build();
 
         MaintenanceRecord saved = maintenanceRecordRepository.save(record);
+
+        // Save line items if provided
+        if (request.getLineItems() != null && !request.getLineItems().isEmpty()) {
+            for (MaintenanceLineItemRequest lineItemRequest : request.getLineItems()) {
+                MaintenanceLineItem lineItem = lineItemRequest.toEntity(saved.getId());
+                maintenanceLineItemRepository.save(lineItem);
+            }
+
+            // Recalculate total cost from line items
+            BigDecimal totalCost = maintenanceLineItemRepository.calculateTotalCostForRecord(saved.getId());
+            if (totalCost != null) {
+                saved.setCost(totalCost);
+                saved = maintenanceRecordRepository.save(saved);
+            }
+        }
+
         log.info("Maintenance record created successfully: {}", saved.getId());
-        return MaintenanceRecordResponse.fromEntity(saved);
+        return getMaintenanceRecordResponseWithLineItems(saved);
     }
 
     @Transactional(readOnly = true)
@@ -61,7 +90,7 @@ public class MaintenanceService {
         log.info("GET /api/v1/maintenance/records - Fetching all maintenance records for company: {}", companyId);
         List<MaintenanceRecord> records = maintenanceRecordRepository.findByCompanyId(companyId);
         return records.stream()
-                .map(MaintenanceRecordResponse::fromEntity)
+                .map(this::getMaintenanceRecordResponseWithLineItems)
                 .collect(Collectors.toList());
     }
 
@@ -70,7 +99,7 @@ public class MaintenanceService {
         log.info("GET /api/v1/maintenance/records/{} - Fetching maintenance record", id);
         MaintenanceRecord record = maintenanceRecordRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("MaintenanceRecord", "id", id));
-        return MaintenanceRecordResponse.fromEntity(record);
+        return getMaintenanceRecordResponseWithLineItems(record);
     }
 
     @Transactional(readOnly = true)
@@ -78,7 +107,7 @@ public class MaintenanceService {
         log.info("GET /api/v1/maintenance/records/vehicle/{} - Fetching maintenance records", vehicleId);
         List<MaintenanceRecord> records = maintenanceRecordRepository.findByVehicleId(vehicleId);
         return records.stream()
-                .map(MaintenanceRecordResponse::fromEntity)
+                .map(this::getMaintenanceRecordResponseWithLineItems)
                 .collect(Collectors.toList());
     }
 
@@ -214,4 +243,20 @@ public class MaintenanceService {
             }
         }
     }
+
+    /**
+     * Helper method to build MaintenanceRecordResponse with line items
+     */
+    private MaintenanceRecordResponse getMaintenanceRecordResponseWithLineItems(MaintenanceRecord record) {
+        MaintenanceRecordResponse response = MaintenanceRecordResponse.fromEntity(record);
+        
+        // Load line items
+        List<MaintenanceLineItem> lineItems = maintenanceLineItemRepository.findByMaintenanceRecordId(record.getId());
+        response.setLineItems(lineItems.stream()
+                .map(MaintenanceLineItemResponse::fromEntity)
+                .collect(Collectors.toList()));
+        
+        return response;
+    }
 }
+
