@@ -33,6 +33,9 @@ public class ChargingStation extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     @Column(nullable = false, length = 200)
     private String name;
 
