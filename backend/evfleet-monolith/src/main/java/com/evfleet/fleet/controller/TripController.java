@@ -49,14 +49,19 @@ public class TripController {
             @RequestParam Double endLatitude,
             @RequestParam Double endLongitude,
             @RequestParam Double distance,
-            @RequestParam(required = false) BigDecimal energyConsumed) {
+            @RequestParam(required = false) BigDecimal energyConsumed,
+            @RequestParam(required = false) BigDecimal fuelConsumed) {
         log.info("POST /api/v1/fleet/trips/{}/complete", id);
 
         if (energyConsumed == null) {
             energyConsumed = BigDecimal.ZERO;
         }
+        
+        if (fuelConsumed == null) {
+            fuelConsumed = BigDecimal.ZERO;
+        }
 
-        Trip trip = tripService.completeTrip(id, endLatitude, endLongitude, distance, energyConsumed);
+        Trip trip = tripService.completeTrip(id, endLatitude, endLongitude, distance, energyConsumed, fuelConsumed);
         return ResponseEntity.ok(TripResponse.from(trip));
     }
 

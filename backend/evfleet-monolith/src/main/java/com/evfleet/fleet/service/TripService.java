@@ -2,6 +2,8 @@ package com.evfleet.fleet.service;
 
 import com.evfleet.common.event.EventPublisher;
 import com.evfleet.common.exception.ResourceNotFoundException;
+import com.evfleet.driver.model.Driver;
+import com.evfleet.driver.repository.DriverRepository;
 import com.evfleet.fleet.event.TripCompletedEvent;
 import com.evfleet.fleet.event.TripStartedEvent;
 import com.evfleet.fleet.model.Trip;
@@ -31,7 +33,11 @@ public class TripService {
 
     private final TripRepository tripRepository;
     private final VehicleRepository vehicleRepository;
+    private final DriverRepository driverRepository;
     private final EventPublisher eventPublisher;
+    
+    private static final double MAX_SPEED_KMH = 200.0; // Maximum realistic speed
+    private static final double EARTH_RADIUS_KM = 6371.0; // Earth's radius in kilometers
 
     public Trip startTrip(Long vehicleId, Long driverId, Double startLat, Double startLon) {
         log.info("Starting trip for vehicle: {}", vehicleId);
@@ -45,6 +51,22 @@ public class TripService {
             .ifPresent(t -> {
                 throw new IllegalStateException("Vehicle already has an active trip");
             });
+
+        // Validate and check driver availability (if driver is assigned)
+        if (driverId != null) {
+            Driver driver = driverRepository.findById(driverId)
+                .orElseThrow(() -> new ResourceNotFoundException("Driver", "id", driverId));
+            
+            // Check if driver is already on a trip
+            if (driver.getStatus() == Driver.DriverStatus.ON_TRIP) {
+                throw new IllegalStateException("Driver is already assigned to another trip");
+            }
+            
+            // Update driver status
+            driver.setStatus(Driver.DriverStatus.ON_TRIP);
+            driver.setCurrentVehicleId(vehicleId);
+            driverRepository.save(driver);
+        }
 
         // Create trip
         Trip trip = Trip.builder()
@@ -72,7 +94,7 @@ public class TripService {
     }
 
     public Trip completeTrip(Long tripId, Double endLat, Double endLon,
-                            Double distance, BigDecimal energyConsumed) {
+                            Double distance, BigDecimal energyConsumed, BigDecimal fuelConsumed) {
         log.info("Completing trip: {}", tripId);
 
         Trip trip = tripRepository.findById(tripId)
@@ -82,12 +104,54 @@ public class TripService {
             throw new IllegalStateException("Cannot complete trip that is not in progress");
         }
 
+        // Validate distance
+        if (distance == null || distance < 0) {
+            throw new IllegalArgumentException("Distance must be a positive value");
+        }
+
         // Calculate duration
-        long duration = java.time.Duration.between(trip.getStartTime(), LocalDateTime.now()).getSeconds();
+        long durationSeconds = java.time.Duration.between(trip.getStartTime(), LocalDateTime.now()).getSeconds();
+        
+        // Validate speed (distance vs duration check)
+        if (durationSeconds > 0) {
+            double durationHours = durationSeconds / 3600.0;
+            double averageSpeed = distance / durationHours;
+            
+            if (averageSpeed > MAX_SPEED_KMH) {
+                log.warn("Trip {}: Suspicious speed detected - {} km/h (distance: {} km, duration: {} hours)", 
+                    tripId, averageSpeed, distance, durationHours);
+                throw new IllegalArgumentException(
+                    String.format("Impossible average speed: %.2f km/h. Maximum allowed: %.2f km/h", 
+                        averageSpeed, MAX_SPEED_KMH));
+            }
+        }
+        
+        // Geospatial validation using Haversine formula
+        if (trip.getStartLatitude() != null && trip.getStartLongitude() != null 
+            && endLat != null && endLon != null) {
+            double haversineDistance = calculateHaversineDistance(
+                trip.getStartLatitude(), trip.getStartLongitude(), endLat, endLon);
+            
+            // Check if claimed distance is suspiciously different from straight-line distance
+            if (distance < haversineDistance * 0.8) {
+                log.warn("Trip {}: Claimed distance ({} km) is less than straight-line distance ({} km)", 
+                    tripId, distance, haversineDistance);
+                throw new IllegalArgumentException(
+                    String.format("Claimed distance (%.2f km) cannot be less than straight-line distance (%.2f km)", 
+                        distance, haversineDistance));
+            }
+            
+            // Log warning if distance is suspiciously high (more than 3x straight-line)
+            if (distance > haversineDistance * 3.0 && haversineDistance > 1.0) {
+                log.warn("Trip {}: Claimed distance ({} km) is much larger than straight-line distance ({} km). " +
+                    "This might indicate circuitous routing.", tripId, distance, haversineDistance);
+            }
+        }
 
         // Complete trip
-        trip.complete(endLat, endLon, distance, duration);
+        trip.complete(endLat, endLon, distance, durationSeconds);
         trip.setEnergyConsumed(energyConsumed);
+        trip.setFuelConsumed(fuelConsumed);
 
         Trip completed = tripRepository.save(trip);
 
@@ -105,16 +169,88 @@ public class TripService {
             vehicle.setTotalDistance(0.0);
         }
         vehicle.setTotalDistance(vehicle.getTotalDistance() + distance);
+        
+        // Update energy consumption for EV/Hybrid
+        if (energyConsumed != null && energyConsumed.compareTo(BigDecimal.ZERO) > 0) {
+            if (vehicle.getTotalEnergyConsumed() == null) {
+                vehicle.setTotalEnergyConsumed(0.0);
+            }
+            vehicle.setTotalEnergyConsumed(vehicle.getTotalEnergyConsumed() + energyConsumed.doubleValue());
+            
+            // Update battery SOC if applicable
+            if (vehicle.getBatteryCapacity() != null && vehicle.getBatteryCapacity() > 0) {
+                double energyConsumedKwh = energyConsumed.doubleValue();
+                double socDecrease = (energyConsumedKwh / vehicle.getBatteryCapacity()) * 100.0;
+                double newSoc = Math.max(0, (vehicle.getCurrentBatterySoc() != null ? vehicle.getCurrentBatterySoc() : 100.0) - socDecrease);
+                vehicle.setCurrentBatterySoc(newSoc);
+            }
+        }
+        
+        // Update fuel consumption for ICE/Hybrid
+        if (fuelConsumed != null && fuelConsumed.compareTo(BigDecimal.ZERO) > 0) {
+            if (vehicle.getTotalFuelConsumed() == null) {
+                vehicle.setTotalFuelConsumed(0.0);
+            }
+            vehicle.setTotalFuelConsumed(vehicle.getTotalFuelConsumed() + fuelConsumed.doubleValue());
+            
+            // Update fuel level if applicable
+            if (vehicle.getFuelLevel() != null) {
+                double newFuelLevel = Math.max(0, vehicle.getFuelLevel() - fuelConsumed.doubleValue());
+                vehicle.setFuelLevel(newFuelLevel);
+            }
+        }
 
         vehicleRepository.save(vehicle);
+        
+        // Update driver status if driver was assigned
+        if (trip.getDriverId() != null) {
+            driverRepository.findById(trip.getDriverId()).ifPresent(driver -> {
+                driver.setStatus(Driver.DriverStatus.ACTIVE);
+                driver.setCurrentVehicleId(null);
+                
+                // Update driver statistics
+                if (driver.getTotalTrips() == null) {
+                    driver.setTotalTrips(0);
+                }
+                driver.setTotalTrips(driver.getTotalTrips() + 1);
+                
+                if (driver.getTotalDistance() == null) {
+                    driver.setTotalDistance(0.0);
+                }
+                driver.setTotalDistance(driver.getTotalDistance() + distance);
+                
+                driverRepository.save(driver);
+            });
+        }
 
         // Publish event
         eventPublisher.publish(new TripCompletedEvent(
-            this, tripId, trip.getVehicleId(), distance, duration, energyConsumed
+            this, tripId, trip.getVehicleId(), distance, durationSeconds, energyConsumed
         ));
 
-        log.info("Trip completed: {} - Distance: {} km, Duration: {} sec", tripId, distance, duration);
+        log.info("Trip completed: {} - Distance: {} km, Duration: {} sec", tripId, distance, durationSeconds);
         return completed;
+    }
+    
+    /**
+     * Calculate the great-circle distance between two points using the Haversine formula
+     * @param lat1 Start latitude
+     * @param lon1 Start longitude
+     * @param lat2 End latitude
+     * @param lon2 End longitude
+     * @return Distance in kilometers
+     */
+    private double calculateHaversineDistance(double lat1, double lon1, double lat2, double lon2) {
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                   Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                   Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        
+        return EARTH_RADIUS_KM * c;
     }
 
     @Transactional(readOnly = true)
