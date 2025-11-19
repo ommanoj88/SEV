@@ -1,6 +1,6 @@
 package com.evfleet.analytics.controller;
 
-import com.evfleet.analytics.dto.FleetSummaryResponse;
+import com.evfleet.analytics.dto.*;
 import com.evfleet.analytics.service.AnalyticsService;
 import com.evfleet.common.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -81,5 +81,68 @@ public class AnalyticsController {
         log.info("GET /api/v1/analytics/monthly-report - companyId: {}, year: {}, month: {}", companyId, year, month);
         List<FleetSummaryResponse> report = analyticsService.getMonthlyReport(companyId, year, month);
         return ResponseEntity.ok(ApiResponse.success("Monthly report retrieved successfully", report));
+    }
+
+    /**
+     * E1 Fix: Get comprehensive fleet analytics
+     */
+    @GetMapping("/fleet-analytics")
+    @Operation(summary = "Get comprehensive fleet analytics including status breakdown and battery metrics")
+    public ResponseEntity<ApiResponse<FleetAnalyticsResponse>> getFleetAnalytics(
+            @RequestParam(required = false) Long companyId) {
+        log.info("GET /api/v1/analytics/fleet-analytics - companyId: {}", companyId);
+        Long targetCompanyId = (companyId != null) ? companyId : 1L;
+        FleetAnalyticsResponse analytics = analyticsService.getFleetAnalytics(targetCompanyId);
+        return ResponseEntity.ok(ApiResponse.success("Fleet analytics retrieved successfully", analytics));
+    }
+
+    /**
+     * E2 Fix: Get utilization reports for all vehicles
+     */
+    @GetMapping("/utilization-reports")
+    @Operation(summary = "Get vehicle utilization reports")
+    public ResponseEntity<ApiResponse<List<VehicleUtilizationResponse>>> getUtilizationReports(
+            @RequestParam Long companyId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        log.info("GET /api/v1/analytics/utilization-reports - companyId: {}, startDate: {}, endDate: {}",
+                companyId, startDate, endDate);
+
+        if (startDate == null) startDate = LocalDate.now().minusDays(30);
+        if (endDate == null) endDate = LocalDate.now();
+
+        List<VehicleUtilizationResponse> reports = analyticsService.getUtilizationReports(companyId, startDate, endDate);
+        return ResponseEntity.ok(ApiResponse.success("Utilization reports retrieved successfully", reports));
+    }
+
+    /**
+     * E3 Fix: Get cost analytics for company
+     */
+    @GetMapping("/cost-analytics")
+    @Operation(summary = "Get cost analytics for company")
+    public ResponseEntity<ApiResponse<List<CostAnalyticsResponse>>> getCostAnalytics(
+            @RequestParam Long companyId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        log.info("GET /api/v1/analytics/cost-analytics - companyId: {}, startDate: {}, endDate: {}",
+                companyId, startDate, endDate);
+
+        if (startDate == null) startDate = LocalDate.now().minusMonths(12);
+        if (endDate == null) endDate = LocalDate.now();
+
+        List<CostAnalyticsResponse> analytics = analyticsService.getCostAnalytics(companyId, startDate, endDate);
+        return ResponseEntity.ok(ApiResponse.success("Cost analytics retrieved successfully", analytics));
+    }
+
+    /**
+     * E3 Fix: Get TCO analysis for vehicle
+     */
+    @GetMapping("/tco-analysis/{vehicleId}")
+    @Operation(summary = "Get Total Cost of Ownership analysis for vehicle")
+    public ResponseEntity<ApiResponse<TCOAnalysisResponse>> getTCOAnalysis(
+            @PathVariable Long vehicleId) {
+        log.info("GET /api/v1/analytics/tco-analysis/{} - vehicleId: {}", vehicleId, vehicleId);
+        TCOAnalysisResponse tco = analyticsService.getTCOAnalysis(vehicleId);
+        return ResponseEntity.ok(ApiResponse.success("TCO analysis retrieved successfully", tco));
     }
 }

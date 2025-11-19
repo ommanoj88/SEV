@@ -1,6 +1,7 @@
 package com.evfleet.analytics.dto;
 
 import com.evfleet.analytics.model.TCOAnalysis;
+import com.evfleet.fleet.model.FuelType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +12,9 @@ import java.time.LocalDate;
 
 /**
  * TCO Analysis Response DTO
+
+/**
+ * Total Cost of Ownership Analysis Response
  *
  * @author SEV Platform Team
  * @version 1.0.0
@@ -30,6 +34,18 @@ public class TCOAnalysisResponse {
     private BigDecimal purchasePrice;
     private BigDecimal depreciation;
     private BigDecimal energyCosts;
+    private Long vehicleId;
+    private String vehicleName;
+    private String vehicleNumber;
+    private FuelType fuelType;
+
+    // Acquisition costs
+    private BigDecimal purchasePrice;
+    private BigDecimal depreciation;
+    private Integer ageMonths;
+
+    // Operating costs (lifetime)
+    private BigDecimal energyCosts;  // Fuel or electricity
     private BigDecimal maintenanceCosts;
     private BigDecimal insuranceCosts;
     private BigDecimal taxesFees;
@@ -89,5 +105,25 @@ public class TCOAnalysisResponse {
                 .totalDistanceKm(tco.getTotalDistanceKm())
                 .comparisonWithICE(comparison)
                 .build();
+
+    // Totals and metrics
+    private BigDecimal totalCost;
+    private Double costPerKm;
+    private Double costPerYear;
+    private Double totalDistance;
+
+    // ICE comparison (for EVs)
+    private ICEComparison comparisonWithICE;
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ICEComparison {
+        private BigDecimal fuelSavings;
+        private BigDecimal maintenanceSavings;
+        private BigDecimal totalSavings;
+        private Integer paybackPeriodMonths;
+        private Double savingsPercentage;
     }
 }
