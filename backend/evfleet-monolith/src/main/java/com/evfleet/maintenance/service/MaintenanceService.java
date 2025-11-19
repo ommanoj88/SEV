@@ -261,6 +261,9 @@ public class MaintenanceService {
                     return a.getScheduledDate().compareTo(b.getScheduledDate());
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
      * Check if vehicle requires maintenance based on mileage policies
      * Called automatically after trip completion
      */
