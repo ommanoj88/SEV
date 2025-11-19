@@ -199,7 +199,7 @@ public class AnalyticsService {
 
         Double averageBatteryLevel = latestBatteryHealth.isEmpty() ? 0.0 :
                 latestBatteryHealth.stream()
-                        .mapToDouble(BatteryHealth::getSoc)
+                        .mapToDouble(BatteryHealth::getCurrentSoc)
                         .average()
                         .orElse(0.0);
 
@@ -219,7 +219,7 @@ public class AnalyticsService {
                 .mapToDouble(trip -> trip.getDistance() != null ? trip.getDistance() : 0.0)
                 .sum();
         double totalEnergyConsumed = recentTrips.stream()
-                .mapToDouble(trip -> trip.getEnergyConsumed() != null ? trip.getEnergyConsumed() : 0.0)
+                .mapToDouble(trip -> trip.getEnergyConsumed() != null ? trip.getEnergyConsumed().doubleValue() : 0.0)
                 .sum();
 
         // Calculate utilization metrics
@@ -293,7 +293,7 @@ public class AnalyticsService {
                     .mapToDouble(t -> t.getDistance() != null ? t.getDistance() : 0.0)
                     .sum();
             double totalEnergy = trips.stream()
-                    .mapToDouble(t -> t.getEnergyConsumed() != null ? t.getEnergyConsumed() : 0.0)
+                    .mapToDouble(t -> t.getEnergyConsumed() != null ? t.getEnergyConsumed().doubleValue() : 0.0)
                     .sum();
 
             double activeHours = trips.stream()
@@ -449,7 +449,7 @@ public class AnalyticsService {
                 .mapToDouble(t -> t.getDistance() != null ? t.getDistance() : 0.0)
                 .sum();
         double totalEnergy = allTrips.stream()
-                .mapToDouble(t -> t.getEnergyConsumed() != null ? t.getEnergyConsumed() : 0.0)
+                .mapToDouble(t -> t.getEnergyConsumed() != null ? t.getEnergyConsumed().doubleValue() : 0.0)
                 .sum();
 
         // Estimate energy costs (this is a simplified calculation)
