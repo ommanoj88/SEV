@@ -51,6 +51,25 @@ public class MaintenanceRecord extends BaseEntity {
     @Column(length = 100)
     private String serviceProvider;
 
+    /**
+     * Vehicle's total distance (odometer reading) at the time of maintenance
+     */
+    @Column(name = "vehicle_distance_km")
+    private Double vehicleDistanceKm;
+
+    /**
+     * Reference to the maintenance policy that triggered this record (if auto-generated)
+     */
+    @Column(name = "policy_id")
+    private Long policyId;
+
+    /**
+     * URLs or paths to attached documents (invoices, photos, reports)
+     * Stored as comma-separated list
+     */
+    @Column(name = "attachment_urls", length = 2000)
+    private String attachmentUrls;
+
     public enum MaintenanceType {
         ROUTINE_SERVICE,
         BATTERY_CHECK,

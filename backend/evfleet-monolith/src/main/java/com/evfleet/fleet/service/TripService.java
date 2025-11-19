@@ -10,6 +10,7 @@ import com.evfleet.fleet.model.Trip;
 import com.evfleet.fleet.model.Vehicle;
 import com.evfleet.fleet.repository.TripRepository;
 import com.evfleet.fleet.repository.VehicleRepository;
+import com.evfleet.maintenance.service.MaintenanceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class TripService {
     private final VehicleRepository vehicleRepository;
     private final DriverRepository driverRepository;
     private final EventPublisher eventPublisher;
+    private final MaintenanceService maintenanceService;
     
     private static final double MAX_SPEED_KMH = 200.0; // Maximum realistic speed
     private static final double EARTH_RADIUS_KM = 6371.0; // Earth's radius in kilometers
@@ -227,6 +229,14 @@ public class TripService {
         eventPublisher.publish(new TripCompletedEvent(
             this, tripId, trip.getVehicleId(), distance, durationSeconds, energyConsumed
         ));
+
+        // Check and auto-schedule maintenance based on mileage policies
+        maintenanceService.checkAndCreateMaintenanceByMileage(
+                vehicle.getId(),
+                vehicle.getCompanyId(),
+                vehicle.getType(),
+                vehicle.getTotalDistance()
+        );
 
         log.info("Trip completed: {} - Distance: {} km, Duration: {} sec", tripId, distance, durationSeconds);
         return completed;

@@ -33,6 +33,9 @@ public class Trip extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     @Column(name = "vehicle_id", nullable = false)
     private Long vehicleId;
 

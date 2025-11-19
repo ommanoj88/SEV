@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Maintenance Record Request DTO
@@ -41,4 +42,8 @@ public class MaintenanceRecordRequest {
     private String description;
 
     private String serviceProvider;
+
+    private List<MaintenanceLineItemRequest> lineItems;
+
+    private List<String> attachmentUrls;
 }

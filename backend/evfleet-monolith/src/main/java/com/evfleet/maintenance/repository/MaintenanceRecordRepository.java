@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MaintenanceRecordRepository extends JpaRepository<MaintenanceRecord, Long> {
@@ -25,4 +26,11 @@ public interface MaintenanceRecordRepository extends JpaRepository<MaintenanceRe
            "AND m.status NOT IN ('COMPLETED', 'CANCELLED') " +
            "ORDER BY m.scheduledDate ASC")
     List<MaintenanceRecord> findUpcomingMaintenanceAlerts(Long companyId, LocalDate endDate);
+            Long companyId, MaintenanceRecord.MaintenanceStatus status, java.time.LocalDate date);
+    
+    Optional<MaintenanceRecord> findTopByVehicleIdAndTypeAndStatusOrderByCompletedDateDesc(
+            Long vehicleId, MaintenanceRecord.MaintenanceType type, MaintenanceRecord.MaintenanceStatus status);
+    
+    boolean existsByVehicleIdAndTypeAndPolicyIdAndStatusIn(
+            Long vehicleId, MaintenanceRecord.MaintenanceType type, Long policyId, List<MaintenanceRecord.MaintenanceStatus> statuses);
 }
