@@ -33,6 +33,14 @@ public class DriverResponse {
     private Integer totalTrips;
     private Double totalDistance;
     private Boolean isLicenseExpired;
+    
+    // Performance metrics
+    private Double safetyScore;
+    private Double fuelEfficiency;
+    private Integer harshBrakingEvents;
+    private Integer speedingEvents;
+    private Integer idlingTimeMinutes;
+    
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -50,6 +58,11 @@ public class DriverResponse {
                 .totalTrips(driver.getTotalTrips() != null ? driver.getTotalTrips() : 0)
                 .totalDistance(driver.getTotalDistance() != null ? driver.getTotalDistance() : 0.0)
                 .isLicenseExpired(driver.getLicenseExpiry().isBefore(LocalDate.now()))
+                .safetyScore(driver.getSafetyScore() != null ? driver.getSafetyScore() : 0.0)
+                .fuelEfficiency(driver.getFuelEfficiency() != null ? driver.getFuelEfficiency() : 0.0)
+                .harshBrakingEvents(driver.getHarshBrakingEvents() != null ? driver.getHarshBrakingEvents() : 0)
+                .speedingEvents(driver.getSpeedingEvents() != null ? driver.getSpeedingEvents() : 0)
+                .idlingTimeMinutes(driver.getIdlingTimeMinutes() != null ? driver.getIdlingTimeMinutes() : 0)
                 .createdAt(driver.getCreatedAt())
                 .updatedAt(driver.getUpdatedAt())
                 .build();

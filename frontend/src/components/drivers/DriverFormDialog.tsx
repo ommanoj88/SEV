@@ -205,7 +205,17 @@ const DriverFormDialog: React.FC<DriverFormDialogProps> = ({
               <Controller
                 name="licenseNumber"
                 control={control}
-                rules={{ required: 'License number is required' }}
+                rules={{ 
+                  required: 'License number is required',
+                  minLength: {
+                    value: 5,
+                    message: 'License number must be at least 5 characters'
+                  },
+                  pattern: {
+                    value: /^[A-Za-z0-9\-\s]+$/,
+                    message: 'License number can only contain letters, numbers, hyphens and spaces'
+                  }
+                }}
                 render={({ field }) => (
                   <TextField
                     {...field}
@@ -225,7 +235,18 @@ const DriverFormDialog: React.FC<DriverFormDialogProps> = ({
               <Controller
                 name="licenseExpiry"
                 control={control}
-                rules={{ required: 'License expiry date is required' }}
+                rules={{ 
+                  required: 'License expiry date is required',
+                  validate: (value) => {
+                    const selectedDate = new Date(value);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    if (selectedDate < today) {
+                      return 'License expiry date cannot be in the past';
+                    }
+                    return true;
+                  }
+                }}
                 render={({ field }) => (
                   <TextField
                     {...field}

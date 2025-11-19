@@ -48,6 +48,14 @@ public class MaintenanceService {
     public MaintenanceRecordResponse createMaintenanceRecord(Long companyId, MaintenanceRecordRequest request) {
         log.info("POST /api/v1/maintenance/records - Creating maintenance record for vehicle: {}", request.getVehicleId());
 
+        // Validate vehicle exists and get fuel type
+        Vehicle vehicle = vehicleRepository.findById(request.getVehicleId())
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle", "id", request.getVehicleId()));
+
+        // Validate maintenance type is appropriate for vehicle fuel type
+        MaintenanceRecord.MaintenanceType maintenanceType = MaintenanceRecord.MaintenanceType.valueOf(request.getType().toUpperCase());
+        validateMaintenanceTypeForFuelType(maintenanceType, vehicle.getFuelType());
+
         // Convert attachment URLs list to comma-separated string
         String attachmentUrlsString = null;
         if (request.getAttachmentUrls() != null && !request.getAttachmentUrls().isEmpty()) {
@@ -57,7 +65,7 @@ public class MaintenanceService {
         MaintenanceRecord record = MaintenanceRecord.builder()
                 .vehicleId(request.getVehicleId())
                 .companyId(companyId)
-                .type(MaintenanceRecord.MaintenanceType.valueOf(request.getType().toUpperCase()))
+                .type(maintenanceType)
                 .scheduledDate(request.getScheduledDate())
                 .completedDate(request.getCompletedDate())
                 .status(request.getStatus() != null ?
@@ -327,6 +335,122 @@ public class MaintenanceService {
                 .collect(Collectors.toList()));
         
         return response;
+    }
+
+    /**
+     * Validates if a maintenance type is appropriate for a vehicle's fuel type
+     */
+    private void validateMaintenanceTypeForFuelType(MaintenanceRecord.MaintenanceType maintenanceType, 
+                                                      com.evfleet.fleet.model.FuelType fuelType) {
+        if (fuelType == null) {
+            // If fuel type is not set, allow all maintenance types
+            return;
+        }
+
+        // Define ICE-specific maintenance types
+        List<MaintenanceRecord.MaintenanceType> iceOnlyTypes = List.of(
+            MaintenanceRecord.MaintenanceType.OIL_CHANGE,
+            MaintenanceRecord.MaintenanceType.FILTER_REPLACEMENT,
+            MaintenanceRecord.MaintenanceType.EMISSION_TEST,
+            MaintenanceRecord.MaintenanceType.COOLANT_FLUSH,
+            MaintenanceRecord.MaintenanceType.TRANSMISSION_SERVICE,
+            MaintenanceRecord.MaintenanceType.ENGINE_DIAGNOSTICS
+        );
+
+        // Define EV-specific maintenance types
+        List<MaintenanceRecord.MaintenanceType> evOnlyTypes = List.of(
+            MaintenanceRecord.MaintenanceType.BATTERY_CHECK,
+            MaintenanceRecord.MaintenanceType.HV_SYSTEM_CHECK,
+            MaintenanceRecord.MaintenanceType.FIRMWARE_UPDATE,
+            MaintenanceRecord.MaintenanceType.CHARGING_PORT_INSPECTION,
+            MaintenanceRecord.MaintenanceType.THERMAL_MANAGEMENT_CHECK
+        );
+
+        // Check if maintenance type is invalid for the fuel type
+        if (fuelType == com.evfleet.fleet.model.FuelType.EV && iceOnlyTypes.contains(maintenanceType)) {
+            throw new IllegalArgumentException(
+                String.format("Maintenance type %s is not applicable for Electric Vehicles", maintenanceType)
+            );
+        }
+
+        if (fuelType == com.evfleet.fleet.model.FuelType.ICE && evOnlyTypes.contains(maintenanceType)) {
+            throw new IllegalArgumentException(
+                String.format("Maintenance type %s is not applicable for Internal Combustion Engine vehicles", maintenanceType)
+            );
+        }
+
+        // HYBRID vehicles can have both ICE and EV maintenance types, so no restrictions
+    }
+
+    /**
+     * Get all available maintenance types
+     */
+    public List<String> getAllMaintenanceTypes() {
+        return java.util.Arrays.stream(MaintenanceRecord.MaintenanceType.values())
+                .map(Enum::name)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get valid maintenance types for a specific vehicle based on its fuel type
+     */
+    public List<String> getValidMaintenanceTypesForVehicle(Long vehicleId) {
+        Vehicle vehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle", "id", vehicleId));
+
+        com.evfleet.fleet.model.FuelType fuelType = vehicle.getFuelType();
+        
+        if (fuelType == null) {
+            // If fuel type is not set, return all types
+            return getAllMaintenanceTypes();
+        }
+
+        // Define common types (applicable to all)
+        List<MaintenanceRecord.MaintenanceType> commonTypes = List.of(
+            MaintenanceRecord.MaintenanceType.ROUTINE_SERVICE,
+            MaintenanceRecord.MaintenanceType.TIRE_REPLACEMENT,
+            MaintenanceRecord.MaintenanceType.BRAKE_SERVICE,
+            MaintenanceRecord.MaintenanceType.EMERGENCY_REPAIR
+        );
+
+        // Define ICE-specific types
+        List<MaintenanceRecord.MaintenanceType> iceTypes = List.of(
+            MaintenanceRecord.MaintenanceType.OIL_CHANGE,
+            MaintenanceRecord.MaintenanceType.FILTER_REPLACEMENT,
+            MaintenanceRecord.MaintenanceType.EMISSION_TEST,
+            MaintenanceRecord.MaintenanceType.COOLANT_FLUSH,
+            MaintenanceRecord.MaintenanceType.TRANSMISSION_SERVICE,
+            MaintenanceRecord.MaintenanceType.ENGINE_DIAGNOSTICS
+        );
+
+        // Define EV-specific types
+        List<MaintenanceRecord.MaintenanceType> evTypes = List.of(
+            MaintenanceRecord.MaintenanceType.BATTERY_CHECK,
+            MaintenanceRecord.MaintenanceType.HV_SYSTEM_CHECK,
+            MaintenanceRecord.MaintenanceType.FIRMWARE_UPDATE,
+            MaintenanceRecord.MaintenanceType.CHARGING_PORT_INSPECTION,
+            MaintenanceRecord.MaintenanceType.THERMAL_MANAGEMENT_CHECK
+        );
+
+        List<MaintenanceRecord.MaintenanceType> validTypes = new java.util.ArrayList<>(commonTypes);
+
+        switch (fuelType) {
+            case ICE:
+                validTypes.addAll(iceTypes);
+                break;
+            case EV:
+                validTypes.addAll(evTypes);
+                break;
+            case HYBRID:
+                validTypes.addAll(iceTypes);
+                validTypes.addAll(evTypes);
+                validTypes.add(MaintenanceRecord.MaintenanceType.HYBRID_SYSTEM_CHECK);
+                break;
+        }
+
+        return validTypes.stream()
+                .map(Enum::name)
+                .collect(Collectors.toList());
     }
 }
 

@@ -35,6 +35,16 @@ public class DriverService {
     public DriverResponse createDriver(Long companyId, DriverRequest request) {
         log.info("POST /api/v1/drivers - Creating driver for company: {}", companyId);
 
+        // Validate license expiry date is not in the past
+        if (request.getLicenseExpiry() != null && request.getLicenseExpiry().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("License expiry date cannot be in the past");
+        }
+
+        // Validate license number format (basic validation)
+        if (request.getLicenseNumber() != null && !isValidLicenseNumber(request.getLicenseNumber())) {
+            throw new IllegalArgumentException("Invalid license number format");
+        }
+
         Driver driver = Driver.builder()
                 .companyId(companyId)
                 .name(request.getName())
@@ -48,6 +58,12 @@ public class DriverService {
                 .currentVehicleId(request.getCurrentVehicleId())
                 .totalTrips(0)
                 .totalDistance(0.0)
+                // Initialize performance metrics
+                .safetyScore(100.0) // Start with perfect score
+                .fuelEfficiency(0.0)
+                .harshBrakingEvents(0)
+                .speedingEvents(0)
+                .idlingTimeMinutes(0)
                 .build();
 
         Driver saved = driverRepository.save(driver);
@@ -101,6 +117,32 @@ public class DriverService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<DriverResponse> getDriverLeaderboard(Long companyId) {
+        log.info("GET /api/v1/drivers/leaderboard - Fetching driver leaderboard for company: {}", companyId);
+        List<Driver> drivers = driverRepository.findByCompanyId(companyId);
+        
+        // Sort by safety score (descending), then by total trips (descending)
+        return drivers.stream()
+                .filter(d -> d.getTotalTrips() != null && d.getTotalTrips() > 0) // Only include drivers with trips
+                .sorted((d1, d2) -> {
+                    // Primary sort by safety score (higher is better)
+                    int safetyCompare = Double.compare(
+                        d2.getSafetyScore() != null ? d2.getSafetyScore() : 0.0,
+                        d1.getSafetyScore() != null ? d1.getSafetyScore() : 0.0
+                    );
+                    if (safetyCompare != 0) return safetyCompare;
+                    
+                    // Secondary sort by total trips (more is better)
+                    return Integer.compare(
+                        d2.getTotalTrips() != null ? d2.getTotalTrips() : 0,
+                        d1.getTotalTrips() != null ? d1.getTotalTrips() : 0
+                    );
+                })
+                .map(DriverResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
+
     public DriverResponse updateDriver(Long id, DriverRequest request) {
         log.info("PUT /api/v1/drivers/{} - Updating driver", id);
 
@@ -117,9 +159,17 @@ public class DriverService {
             driver.setEmail(request.getEmail());
         }
         if (request.getLicenseNumber() != null) {
+            // Validate license number format
+            if (!isValidLicenseNumber(request.getLicenseNumber())) {
+                throw new IllegalArgumentException("Invalid license number format");
+            }
             driver.setLicenseNumber(request.getLicenseNumber());
         }
         if (request.getLicenseExpiry() != null) {
+            // Warn if license is already expired or will expire soon
+            if (request.getLicenseExpiry().isBefore(LocalDate.now())) {
+                log.warn("Updating driver {} with expired license date", id);
+            }
             driver.setLicenseExpiry(request.getLicenseExpiry());
         }
         if (request.getStatus() != null) {
@@ -145,11 +195,27 @@ public class DriverService {
         Vehicle vehicle = vehicleRepository.findById(vehicleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle", "id", vehicleId));
 
+        // VALIDATION: Check if driver is already assigned to a vehicle
+        if (driver.getCurrentVehicleId() != null) {
+            throw new IllegalStateException(
+                String.format("Driver %s is already assigned to vehicle %d. Please unassign first.", 
+                    driver.getName(), driver.getCurrentVehicleId())
+            );
+        }
+
+        // VALIDATION: Check if vehicle is already assigned to another driver
+        if (vehicle.getCurrentDriverId() != null) {
+            throw new IllegalStateException(
+                String.format("Vehicle %s is already assigned to driver %d. Please unassign first.", 
+                    vehicle.getLicensePlate(), vehicle.getCurrentDriverId())
+            );
+        }
+
         // Update driver
         driver.setCurrentVehicleId(vehicleId);
         driver.setStatus(Driver.DriverStatus.ON_TRIP);
 
-        // Update vehicle - THIS IS THE FIX!
+        // Update vehicle
         vehicle.setCurrentDriverId(driverId);
         vehicle.setStatus(Vehicle.VehicleStatus.IN_TRIP);
 
@@ -200,5 +266,36 @@ public class DriverService {
 
         driverRepository.deleteById(id);
         log.info("Driver deleted successfully: {}", id);
+    }
+
+    /**
+     * Validates license number format.
+     * This is a basic validation. In production, this should be configurable based on region/country.
+     * 
+     * Current validation:
+     * - Minimum 5 characters
+     * - Maximum 50 characters
+     * - Contains alphanumeric characters and hyphens
+     * 
+     * For specific regions, patterns like:
+     * - India: ^[A-Z]{2}[0-9]{13}$ (e.g., MH0120210012345)
+     * - US: varies by state
+     * - UK: varies by format
+     */
+    private boolean isValidLicenseNumber(String licenseNumber) {
+        if (licenseNumber == null || licenseNumber.trim().isEmpty()) {
+            return false;
+        }
+        
+        // Remove whitespace
+        licenseNumber = licenseNumber.trim();
+        
+        // Check length
+        if (licenseNumber.length() < 5 || licenseNumber.length() > 50) {
+            return false;
+        }
+        
+        // Check for valid characters (alphanumeric and hyphens/spaces)
+        return licenseNumber.matches("^[A-Za-z0-9\\-\\s]+$");
     }
 }

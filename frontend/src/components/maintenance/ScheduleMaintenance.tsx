@@ -1,14 +1,67 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Paper, Typography, Grid, TextField, Button, MenuItem } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { scheduleMaintenance } from '../../redux/slices/maintenanceSlice';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const ScheduleMaintenance: React.FC = () => {
   const dispatch = useAppDispatch();
   const { vehicles } = useAppSelector((state) => state.vehicles);
-  const { control, handleSubmit } = useForm();
+  const { control, handleSubmit, watch } = useForm();
+  const [maintenanceTypes, setMaintenanceTypes] = useState<string[]>([]);
+  const [allMaintenanceTypes, setAllMaintenanceTypes] = useState<string[]>([]);
+  
+  const selectedVehicleId = watch('vehicleId');
+
+  // Fetch all maintenance types on component mount
+  useEffect(() => {
+    const fetchAllTypes = async () => {
+      try {
+        const response = await axios.get('/api/v1/maintenance/types');
+        if (response.data.success) {
+          setAllMaintenanceTypes(response.data.data);
+          setMaintenanceTypes(response.data.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch maintenance types:', error);
+        // Fallback to hardcoded types
+        const fallbackTypes = [
+          'ROUTINE_SERVICE', 'TIRE_REPLACEMENT', 'BRAKE_SERVICE', 'EMERGENCY_REPAIR',
+          'OIL_CHANGE', 'FILTER_REPLACEMENT', 'EMISSION_TEST', 'COOLANT_FLUSH',
+          'TRANSMISSION_SERVICE', 'ENGINE_DIAGNOSTICS', 'BATTERY_CHECK',
+          'HV_SYSTEM_CHECK', 'FIRMWARE_UPDATE', 'CHARGING_PORT_INSPECTION',
+          'THERMAL_MANAGEMENT_CHECK', 'HYBRID_SYSTEM_CHECK'
+        ];
+        setAllMaintenanceTypes(fallbackTypes);
+        setMaintenanceTypes(fallbackTypes);
+      }
+    };
+    fetchAllTypes();
+  }, []);
+
+  // Fetch vehicle-specific maintenance types when vehicle is selected
+  useEffect(() => {
+    if (selectedVehicleId) {
+      const fetchVehicleTypes = async () => {
+        try {
+          const response = await axios.get(`/api/v1/maintenance/types/vehicle/${selectedVehicleId}`);
+          if (response.data.success) {
+            setMaintenanceTypes(response.data.data);
+          }
+        } catch (error) {
+          console.error('Failed to fetch vehicle-specific types:', error);
+          // Fall back to all types if fetch fails
+          setMaintenanceTypes(allMaintenanceTypes);
+        }
+      };
+      fetchVehicleTypes();
+    } else {
+      // Reset to all types if no vehicle selected
+      setMaintenanceTypes(allMaintenanceTypes);
+    }
+  }, [selectedVehicleId, allMaintenanceTypes]);
 
   const onSubmit = async (data: any) => {
     try {
@@ -17,6 +70,12 @@ const ScheduleMaintenance: React.FC = () => {
     } catch (error: any) {
       toast.error(error.message || 'Failed to schedule maintenance');
     }
+  };
+
+  const formatMaintenanceType = (type: string) => {
+    return type.split('_').map(word => 
+      word.charAt(0) + word.slice(1).toLowerCase()
+    ).join(' ');
   };
 
   return (
@@ -34,10 +93,11 @@ const ScheduleMaintenance: React.FC = () => {
           <Grid item xs={12} md={6}>
             <Controller name="type" control={control} defaultValue="" render={({ field }) => (
               <TextField {...field} select label="Service Type" fullWidth required>
-                <MenuItem value="scheduled">Scheduled</MenuItem>
-                <MenuItem value="preventive">Preventive</MenuItem>
-                <MenuItem value="repair">Repair</MenuItem>
-                <MenuItem value="inspection">Inspection</MenuItem>
+                {maintenanceTypes.map((type) => (
+                  <MenuItem key={type} value={type}>
+                    {formatMaintenanceType(type)}
+                  </MenuItem>
+                ))}
               </TextField>
             )} />
           </Grid>
