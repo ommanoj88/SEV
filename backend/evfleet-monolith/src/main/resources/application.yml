@@ -206,3 +206,41 @@ evfleet:
     jwt:
       secret: ${JWT_SECRET:changeme-in-production}
       expiration: 86400000 # 24 hours
+
+  # Multi-Vendor Telematics Configuration
+  telematics:
+    # Tier 2: flespi Middleware (Universal Device Gateway)
+    flespi:
+      enabled: ${FLESPI_ENABLED:false}  # Set to true when you have flespi account
+      token: ${FLESPI_TOKEN:}  # Get from https://flespi.com/
+      api-url: ${FLESPI_API_URL:https://flespi.io/gw/devices}
+
+    # Tier 1: Tata Motors FleetEdge (OEM API)
+    tata-fleetedge:
+      enabled: ${TATA_FLEETEDGE_ENABLED:false}  # Enable after partnership
+      api-key: ${TATA_FLEETEDGE_API_KEY:}  # Contact Tata Motors for API access
+      api-url: ${TATA_FLEETEDGE_API_URL:https://api.fleetedge.tatamotors.com}
+
+    # Tier 1: MG iSmart (OEM API)
+    mg-ismart:
+      enabled: ${MG_ISMART_ENABLED:false}
+      api-key: ${MG_ISMART_API_KEY:}
+      api-url: ${MG_ISMART_API_URL:https://api.mgmotor.co.in}
+
+    # Tier 1: Hyundai Bluelink (OEM API)
+    hyundai-bluelink:
+      enabled: ${HYUNDAI_BLUELINK_ENABLED:false}
+      api-key: ${HYUNDAI_BLUELINK_API_KEY:}
+      api-url: ${HYUNDAI_BLUELINK_API_URL:https://api.bluelink.hyundai.com}
+
+    # Tier 1: Mahindra iMAXX (OEM API)
+    mahindra-imaxx:
+      enabled: ${MAHINDRA_IMAXX_ENABLED:false}
+      api-key: ${MAHINDRA_IMAXX_API_KEY:}
+      api-url: ${MAHINDRA_IMAXX_API_URL:https://api.mahindra.com}
+
+    # Background telemetry sync settings
+    sync:
+      enabled: true
+      interval-seconds: 60  # Fetch telemetry every 60 seconds for all vehicles
+      batch-size: 50  # Process 50 vehicles per batch

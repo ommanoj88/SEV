@@ -37,6 +37,15 @@ public class VehicleResponse {
     private String color;
     private Long currentDriverId;
     private String assignedDriverName;  // Driver's name for UI display
+
+    // ===== TELEMATICS FIELDS =====
+    private String telemetrySource;  // "NONE", "OEM_API", "DEVICE", "MOBILE_APP", "MANUAL"
+    private String oemApiProvider;  // "tata_fleetedge", "mg_ismart", etc.
+    private String telematicsDeviceImei;
+    private LocalDateTime lastTelemetryUpdate;
+    private String telemetryDataQuality;  // "REAL_TIME", "RECENT", "ESTIMATED", "STALE", "MANUAL"
+    private Double odometer;  // Current odometer reading from telematics
+
     private Double totalDistance;
     private Double totalEnergyConsumed;
     private Double totalFuelConsumed;
@@ -72,6 +81,13 @@ public class VehicleResponse {
             .color(vehicle.getColor())
             .currentDriverId(vehicle.getCurrentDriverId())
             .assignedDriverName(driverName)  // Set the driver name if provided
+            // Telematics fields
+            .telemetrySource(vehicle.getTelemetrySource() != null ? vehicle.getTelemetrySource().name() : null)
+            .oemApiProvider(vehicle.getOemApiProvider())
+            .telematicsDeviceImei(vehicle.getTelematicsDeviceImei())
+            .lastTelemetryUpdate(vehicle.getLastTelemetryUpdate())
+            .telemetryDataQuality(vehicle.getTelemetryDataQuality() != null ? vehicle.getTelemetryDataQuality().name() : null)
+            .odometer(vehicle.getOdometer())
             .totalDistance(vehicle.getTotalDistance())
             .totalEnergyConsumed(vehicle.getTotalEnergyConsumed())
             .totalFuelConsumed(vehicle.getTotalFuelConsumed())

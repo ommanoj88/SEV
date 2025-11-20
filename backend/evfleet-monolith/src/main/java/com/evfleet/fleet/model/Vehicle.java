@@ -110,6 +110,54 @@ public class Vehicle extends BaseEntity {
     @Column(name = "current_driver_id")
     private Long currentDriverId;
 
+    // ===== TELEMATICS INTEGRATION FIELDS =====
+
+    /**
+     * Telematics data source type
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "telemetry_source", length = 20)
+    private TelemetrySource telemetrySource;
+
+    /**
+     * OEM API Integration (Tier 1 - Best Quality)
+     * e.g., "tata_fleetedge", "mg_ismart", "hyundai_bluelink"
+     */
+    @Column(name = "oem_api_provider", length = 50)
+    private String oemApiProvider;
+
+    @Column(name = "oem_vehicle_id", length = 100)
+    private String oemVehicleId; // Vehicle ID in OEM system
+
+    /**
+     * Universal Telematics Device (Tier 2 - Medium Quality)
+     * e.g., Teltonika FMC003, Queclink GV300
+     */
+    @Column(name = "telematics_device_imei", length = 20)
+    private String telematicsDeviceImei;
+
+    @Column(name = "telematics_device_type", length = 50)
+    private String telematicsDeviceType; // "teltonika_fmc003", "queclink_gv300"
+
+    /**
+     * Last telemetry update timestamp
+     */
+    @Column(name = "last_telemetry_update")
+    private LocalDateTime lastTelemetryUpdate;
+
+    /**
+     * Data quality indicator
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "telemetry_data_quality", length = 20)
+    private TelemetryDataQuality telemetryDataQuality;
+
+    /**
+     * Current odometer reading from telematics (overrides manual entry)
+     */
+    @Column(name = "odometer")
+    private Double odometer; // in kilometers
+
     @Column(name = "total_distance", columnDefinition = "DOUBLE PRECISION DEFAULT 0")
     private Double totalDistance; // in kilometers
 
@@ -132,5 +180,28 @@ public class Vehicle extends BaseEntity {
         MAINTENANCE,
         IN_TRIP,
         CHARGING
+    }
+
+    /**
+     * Telematics data source type
+     */
+    public enum TelemetrySource {
+        NONE,           // No telematics integration
+        OEM_API,        // Direct OEM API (Tier 1: Tata FleetEdge, MG iSmart, etc.)
+        DEVICE,         // Universal telematics device (Tier 2: Teltonika, Queclink)
+        MOBILE_APP,     // Mobile app GPS tracking (Tier 3)
+        MANUAL          // Manual entry by driver/admin (Tier 3)
+    }
+
+    /**
+     * Telematics data quality indicator
+     */
+    public enum TelemetryDataQuality {
+        REAL_TIME,      // Live data from OEM API or device (<5 min old)
+        RECENT,         // Recent data (5-30 min old)
+        ESTIMATED,      // Calculated/estimated values
+        STALE,          // Old data (>30 min old)
+        MANUAL,         // Manually entered data
+        UNKNOWN         // Quality cannot be determined
     }
 }
