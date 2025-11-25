@@ -6,23 +6,23 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import ForgotPassword from './components/auth/ForgotPassword';
-import DashboardPage from './pages/DashboardPage';
-import FleetManagementPage from './pages/FleetManagementPage';
-import ChargingPage from './pages/ChargingPage';
-import StationDiscoveryPage from './pages/StationDiscoveryPage';
-import DriversPage from './pages/DriversPage';
-import MaintenancePage from './pages/MaintenancePage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import BillingPage from './pages/BillingPage';
-import ProfilePage from './pages/ProfilePage';
-import SettingsPage from './pages/SettingsPage';
-import VehicleReportPage from './pages/VehicleReportPage';
-import DocumentManagementPage from './pages/DocumentManagementPage';
-import ExpenseManagementPage from './pages/ExpenseManagementPage';
-import RouteOptimizationPage from './pages/RouteOptimizationPage';
-import CustomerManagementPage from './pages/CustomerManagementPage';
+import ChargingPage from './pages/ChargingPage';
 import CompanyOnboardingPage from './pages/CompanyOnboardingPage';
+import CustomerManagementPage from './pages/CustomerManagementPage';
+import DashboardPage from './pages/DashboardPage';
+import DocumentManagementPage from './pages/DocumentManagementPage';
+import DriversPage from './pages/DriversPage';
+import ExpenseManagementPage from './pages/ExpenseManagementPage';
+import FleetManagementPage from './pages/FleetManagementPage';
 import GeofenceManagementPage from './pages/GeofenceManagementPage';
+import MaintenancePage from './pages/MaintenancePage';
+import ProfilePage from './pages/ProfilePage';
+import RouteOptimizationPage from './pages/RouteOptimizationPage';
+import SettingsPage from './pages/SettingsPage';
+import StationDiscoveryPage from './pages/StationDiscoveryPage';
+import VehicleReportPage from './pages/VehicleReportPage';
 
 // Component to redirect authenticated users away from auth pages
 const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
