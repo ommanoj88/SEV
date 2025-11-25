@@ -7,9 +7,41 @@
       "Bash(cat:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(curl:*)",
+      "Bash(PGPASSWORD=Shobharain11@ psql:*)",
+      "Bash(mvn clean compile:*)",
+      "Bash(mvn compile:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []
-  }
+  },
+  "enabledMcpjsonServers": [
+    "github",
+    "sentry",
+    "vercel",
+    "netlify",
+    "stripe",
+    "paypal",
+    "notion",
+    "linear",
+    "asana",
+    "atlassian",
+    "figma",
+    "cloudflare",
+    "hubspot",
+    "intercom",
+    "socket",
+    "jam",
+    "huggingface",
+    "monday",
+    "stytch",
+    "plaid",
+    "square",
+    "canva",
+    "cloudinary",
+    "box",
+    "workato"
+  ]
 }

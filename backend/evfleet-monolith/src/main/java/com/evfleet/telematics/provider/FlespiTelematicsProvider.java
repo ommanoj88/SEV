@@ -190,23 +190,31 @@ public class FlespiTelematicsProvider implements TelemetryProvider {
             builder.odometer((Double) message.get("position.mileage"));
         }
 
-        // Battery data (from CAN bus for EVs)
-        if (message.containsKey("can.battery.soc")) {
-            builder.batterySoc((Double) message.get("can.battery.soc"));
-        }
-        if (message.containsKey("can.vehicle.range")) {
-            builder.estimatedRange((Double) message.get("can.vehicle.range"));
-        }
-        if (message.containsKey("can.battery.voltage")) {
-            builder.batteryVoltage((Double) message.get("can.battery.voltage"));
-        }
-        if (message.containsKey("can.battery.temperature")) {
-            builder.batteryTemperature((Double) message.get("can.battery.temperature"));
-        }
-        if (message.containsKey("can.battery.charging.status")) {
-            Boolean charging = (Boolean) message.get("can.battery.charging.status");
-            builder.isCharging(charging);
-            builder.chargingStatus(charging ? "AC_CHARGING" : "NOT_CHARGING");
+        // ===== BATTERY DATA - ONLY FOR 4-WHEELERS (LCV) =====
+        // 2-wheelers and 3-wheelers use GPS-only tracking as per 2WHEELER_GPS_ONLY_STRATEGY.md
+        // They don't have OBD-II ports or accessible CAN bus for battery data
+        if (vehicle.getType() == Vehicle.VehicleType.LCV) {
+            // Battery data (from CAN bus for EVs - 4-wheelers only)
+            if (message.containsKey("can.battery.soc")) {
+                builder.batterySoc((Double) message.get("can.battery.soc"));
+            }
+            if (message.containsKey("can.vehicle.range")) {
+                builder.estimatedRange((Double) message.get("can.vehicle.range"));
+            }
+            if (message.containsKey("can.battery.voltage")) {
+                builder.batteryVoltage((Double) message.get("can.battery.voltage"));
+            }
+            if (message.containsKey("can.battery.temperature")) {
+                builder.batteryTemperature((Double) message.get("can.battery.temperature"));
+            }
+            if (message.containsKey("can.battery.charging.status")) {
+                Boolean charging = (Boolean) message.get("can.battery.charging.status");
+                builder.isCharging(charging);
+                builder.chargingStatus(charging ? "AC_CHARGING" : "NOT_CHARGING");
+            }
+        } else {
+            // For 2-wheelers and 3-wheelers, mark as GPS-only tracking
+            builder.notes("GPS-only tracking - Battery data not available for " + vehicle.getType());
         }
 
         // Ignition status

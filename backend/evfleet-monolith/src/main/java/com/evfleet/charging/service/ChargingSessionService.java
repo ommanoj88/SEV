@@ -8,6 +8,8 @@ import com.evfleet.charging.repository.ChargingSessionRepository;
 import com.evfleet.charging.repository.ChargingStationRepository;
 import com.evfleet.common.event.EventPublisher;
 import com.evfleet.common.exception.ResourceNotFoundException;
+import com.evfleet.fleet.model.Vehicle;
+import com.evfleet.fleet.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,10 +33,25 @@ public class ChargingSessionService {
 
     private final ChargingSessionRepository sessionRepository;
     private final ChargingStationRepository stationRepository;
+    private final VehicleRepository vehicleRepository;
     private final EventPublisher eventPublisher;
 
     public ChargingSession startSession(Long vehicleId, Long stationId, Long companyId, Double initialSoc) {
         log.info("Starting charging session - Vehicle: {}, Station: {}", vehicleId, stationId);
+
+        // Validate vehicle exists and check type
+        Vehicle vehicle = vehicleRepository.findById(vehicleId)
+            .orElseThrow(() -> new ResourceNotFoundException("Vehicle", "id", vehicleId));
+
+        // Validate vehicle type - only 4-wheelers (LCV) with battery tracking are supported
+        if (vehicle.getType() == Vehicle.VehicleType.TWO_WHEELER ||
+            vehicle.getType() == Vehicle.VehicleType.THREE_WHEELER) {
+            throw new IllegalArgumentException(
+                "Charging management requires battery tracking and is available for 4-wheeler EVs only. " +
+                "For 2-wheelers and 3-wheelers, we track GPS location only. " +
+                "Please use external charging tracking if needed."
+            );
+        }
 
         // Validate initialSoc
         if (initialSoc != null && (initialSoc < 0.0 || initialSoc > 100.0)) {

@@ -35,7 +35,7 @@ import { formatBatteryLevel, formatDistance } from '../utils/formatters';
 import { getVehicleStatusColor, getBatteryStatusColor } from '../utils/helpers';
 import VehicleFormDialog from '../components/vehicles/VehicleFormDialog';
 import VehicleDetailDialog from '../components/vehicles/VehicleDetailDialog';
-import { VehicleFormData, Vehicle } from '../types';
+import { VehicleFormData, Vehicle, VehicleType, FuelType } from '../types';
 import { toast } from 'react-toastify';
 import vehicleService from '../services/vehicleService';
 
@@ -190,6 +190,8 @@ const FleetManagementPage: React.FC = () => {
       <Grid container spacing={3}>
         {vehicles.map((vehicle) => {
           // Safely extract vehicle properties with defaults
+          const vehicleType = vehicle?.type ?? VehicleType.LCV;
+          const fuelType = vehicle?.fuelType ?? FuelType.EV;
           const batterySOC = vehicle?.battery?.stateOfCharge ?? 0;
           const batteryRange = vehicle?.battery?.range ?? 0;
           const vehicleStatus = vehicle?.status ?? 'INACTIVE';
@@ -197,6 +199,10 @@ const FleetManagementPage: React.FC = () => {
           const model = vehicle?.model ?? 'Vehicle';
           const licensePlate = vehicle?.licensePlate ?? 'N/A';
           const odometer = vehicle?.odometer ?? 0;
+
+          // Show battery only for 4-wheelers (LCV) with EV fuel type
+          // Hide for 2-wheelers and 3-wheelers as per 2-wheeler GPS-only strategy
+          const showBattery = vehicleType === VehicleType.LCV && fuelType === FuelType.EV;
 
           return (
             <Grid item xs={12} sm={6} md={4} lg={3} key={vehicle?.id || Math.random()}>
@@ -238,33 +244,37 @@ const FleetManagementPage: React.FC = () => {
                     sx={{ mb: 2, bgcolor: getVehicleStatusColor(vehicleStatus), color: 'white' }}
                   />
 
-                  <Box mb={1}>
-                    <Box display="flex" justifyContent="space-between" mb={0.5}>
-                      <Typography variant="caption" color="text.secondary">
-                        Battery
-                      </Typography>
-                      <Typography variant="caption" fontWeight={600} sx={{ color: getBatteryStatusColor(batterySOC) }}>
-                        {formatBatteryLevel(batterySOC)}
-                      </Typography>
+                  {showBattery && (
+                    <Box mb={1}>
+                      <Box display="flex" justifyContent="space-between" mb={0.5}>
+                        <Typography variant="caption" color="text.secondary">
+                          Battery
+                        </Typography>
+                        <Typography variant="caption" fontWeight={600} sx={{ color: getBatteryStatusColor(batterySOC) }}>
+                          {formatBatteryLevel(batterySOC)}
+                        </Typography>
+                      </Box>
+                      <LinearProgress
+                        variant="determinate"
+                        value={Math.min(Math.max(batterySOC, 0), 100)}
+                        sx={{
+                          height: 6,
+                          borderRadius: 3,
+                          bgcolor: 'grey.200',
+                          '& .MuiLinearProgress-bar': {
+                            bgcolor: getBatteryStatusColor(batterySOC),
+                          },
+                        }}
+                      />
                     </Box>
-                    <LinearProgress
-                      variant="determinate"
-                      value={Math.min(Math.max(batterySOC, 0), 100)}
-                      sx={{
-                        height: 6,
-                        borderRadius: 3,
-                        bgcolor: 'grey.200',
-                        '& .MuiLinearProgress-bar': {
-                          bgcolor: getBatteryStatusColor(batterySOC),
-                        },
-                      }}
-                    />
-                  </Box>
+                  )}
 
                   <Box display="flex" justifyContent="space-between">
-                    <Typography variant="caption" color="text.secondary">
-                      Range: {formatDistance(batteryRange)}
-                    </Typography>
+                    {showBattery && (
+                      <Typography variant="caption" color="text.secondary">
+                        Range: {formatDistance(batteryRange)}
+                      </Typography>
+                    )}
                     <Typography variant="caption" color="text.secondary">
                       Odometer: {formatDistance(odometer)}
                     </Typography>

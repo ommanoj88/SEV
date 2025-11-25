@@ -31,7 +31,7 @@ import {
   DirectionsCar as CarIcon,
   Person as PersonIcon,
 } from '@mui/icons-material';
-import { Vehicle, FuelType, VehicleStatus } from '../../types';
+import { Vehicle, FuelType, VehicleStatus, VehicleType } from '../../types';
 import { formatBatteryLevel, formatDistance, formatDate } from '../../utils/formatters';
 import { getVehicleStatusColor, getBatteryStatusColor } from '../../utils/helpers';
 
@@ -75,8 +75,11 @@ const VehicleDetailDialog: React.FC<VehicleDetailDialogProps> = ({
   const isEV = vehicle.fuelType === FuelType.EV;
   const isICE = vehicle.fuelType === FuelType.ICE;
   const isHybrid = vehicle.fuelType === FuelType.HYBRID;
-  const showBattery = isEV || isHybrid;
+  // Battery tracking only for 4-wheelers (LCV) - 2W/3W use GPS-only per strategy
+  const is4Wheeler = vehicle.type === VehicleType.LCV;
+  const showBattery = is4Wheeler && (isEV || isHybrid);
   const showFuel = isICE || isHybrid;
+  const is2WheelerOr3Wheeler = vehicle.type === VehicleType.TWO_WHEELER || vehicle.type === VehicleType.THREE_WHEELER;
 
   const handleEdit = () => {
     onEdit?.(vehicle);
@@ -197,6 +200,18 @@ const VehicleDetailDialog: React.FC<VehicleDetailDialogProps> = ({
                     </Typography>
                   </Box>
                 </Box>
+              </Grid>
+            )}
+
+            {/* GPS-only info for 2-wheelers and 3-wheelers */}
+            {is2WheelerOr3Wheeler && isEV && (
+              <Grid item xs={12}>
+                <Alert severity="info" icon={<LocationIcon />}>
+                  <Typography variant="body2">
+                    <strong>GPS Tracking Active</strong> - Battery monitoring is not available for {vehicle.type.replace('_', '-').toLowerCase()}s. 
+                    GPS location, speed, and odometer are tracked in real-time.
+                  </Typography>
+                </Alert>
               </Grid>
             )}
 

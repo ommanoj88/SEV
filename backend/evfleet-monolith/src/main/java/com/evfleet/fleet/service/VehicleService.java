@@ -174,7 +174,9 @@ public class VehicleService {
         Vehicle updated = vehicleRepository.save(vehicle);
 
         // Check battery level and publish warning if low
-        if (vehicle.getCurrentBatterySoc() != null && vehicle.getCurrentBatterySoc() < 20) {
+        // Only for 4-wheelers (LCV) with battery tracking - 2W/3W use GPS-only
+        if (vehicle.getType() == Vehicle.VehicleType.LCV && 
+            vehicle.getCurrentBatterySoc() != null && vehicle.getCurrentBatterySoc() < 20) {
             eventPublisher.publish(new BatteryLowEvent(
                 this, vehicleId, vehicle.getVehicleNumber(),
                 vehicle.getCurrentBatterySoc(), latitude, longitude

@@ -6,13 +6,15 @@ import {
   LinearProgress,
   Grid,
   Chip,
+  Alert,
 } from '@mui/material';
 import {
   BatteryFull as BatteryIcon,
   LocalGasStation as FuelIcon,
   BatteryChargingFull as ChargingIcon,
+  LocationOn as LocationIcon,
 } from '@mui/icons-material';
-import { Vehicle, FuelType } from '../../types/vehicle';
+import { Vehicle, FuelType, VehicleType } from '../../types/vehicle';
 import { getFuelTypeColor, getFuelTypeOption } from '../../constants/fuelTypes';
 
 interface FuelStatusPanelProps {
@@ -22,8 +24,12 @@ interface FuelStatusPanelProps {
 
 const FuelStatusPanel: React.FC<FuelStatusPanelProps> = ({ vehicle, compact = false }) => {
   const fuelTypeOption = getFuelTypeOption(vehicle.fuelType);
-  const showBattery = vehicle.fuelType === FuelType.EV || vehicle.fuelType === FuelType.HYBRID;
+  // Battery tracking only for 4-wheelers (LCV) - 2W/3W use GPS-only per strategy
+  const is4Wheeler = vehicle.type === 'LCV';
+  const is2WheelerOr3Wheeler = vehicle.type === VehicleType.TWO_WHEELER || vehicle.type === VehicleType.THREE_WHEELER;
+  const showBattery = is4Wheeler && (vehicle.fuelType === FuelType.EV || vehicle.fuelType === FuelType.HYBRID);
   const showFuel = vehicle.fuelType === FuelType.ICE || vehicle.fuelType === FuelType.HYBRID;
+  const isEV = vehicle.fuelType === FuelType.EV;
 
   const getBatteryColor = (level: number): 'success' | 'warning' | 'error' => {
     if (level >= 60) return 'success';
@@ -159,6 +165,16 @@ const FuelStatusPanel: React.FC<FuelStatusPanelProps> = ({ vehicle, compact = fa
             💡 Hybrid vehicle: Can use both electric power and fuel for optimal efficiency
           </Typography>
         </Box>
+      )}
+
+      {/* GPS-only tracking info for 2-wheelers and 3-wheelers */}
+      {is2WheelerOr3Wheeler && isEV && (
+        <Alert severity="info" icon={<LocationIcon />} sx={{ mt: 2 }}>
+          <Typography variant="body2">
+            <strong>GPS Tracking Active</strong> - Battery monitoring is not available for {vehicle.type?.replace('_', '-').toLowerCase()}s. 
+            Real-time location, speed, and odometer tracking enabled.
+          </Typography>
+        </Alert>
       )}
     </Paper>
   );

@@ -160,7 +160,9 @@ const VehicleList: React.FC = () => {
           <TableBody>
             {vehicles.map((vehicle) => {
               const fuelTypeOption = getFuelTypeOption(vehicle.fuelType);
-              const showBattery = vehicle.fuelType === FuelType.EV || vehicle.fuelType === FuelType.HYBRID;
+              // Battery tracking only for 4-wheelers (LCV) with EV/HYBRID - 2W/3W use GPS-only
+              const is4Wheeler = vehicle.type === 'LCV';
+              const showBattery = is4Wheeler && (vehicle.fuelType === FuelType.EV || vehicle.fuelType === FuelType.HYBRID);
               const showFuel = vehicle.fuelType === FuelType.ICE || vehicle.fuelType === FuelType.HYBRID;
 
               return (

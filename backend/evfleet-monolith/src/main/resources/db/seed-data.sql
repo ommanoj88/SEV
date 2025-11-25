@@ -20,11 +20,13 @@ ON CONFLICT (id) DO NOTHING;
 \c evfleet_fleet
 
 -- Sample vehicles (for company_id = 1)
-INSERT INTO vehicles (company_id, vehicle_number, make, model, year, fuel_type, battery_capacity, current_battery_soc, fuel_tank_capacity, fuel_level, latitude, longitude, status, created_at, updated_at) VALUES
-(1, 'MH12AB1234', 'Tata', 'Nexon EV', 2023, 'EV', 40.5, 85.0, NULL, NULL, 19.0760, 72.8777, 'AVAILABLE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(1, 'MH14CD5678', 'MG', 'ZS EV', 2023, 'EV', 50.3, 92.0, NULL, NULL, 19.0820, 72.8850, 'AVAILABLE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(1, 'MH12EF9012', 'Mahindra', 'XUV700', 2023, 'ICE', NULL, NULL, 60.0, 45.5, 19.0700, 72.8700, 'AVAILABLE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(1, 'MH14GH3456', 'Toyota', 'Innova Hycross', 2024, 'HYBRID', 1.8, 100.0, 52.0, 40.0, 19.0850, 72.8900, 'AVAILABLE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+-- IMPORTANT: All 4-wheeler vehicles (cars/LCVs) should have type='LCV'
+-- Only 2-wheelers (motorcycles/scooters) should have type='TWO_WHEELER'
+INSERT INTO vehicles (company_id, vehicle_number, type, make, model, year, fuel_type, battery_capacity, current_battery_soc, fuel_tank_capacity, fuel_level, latitude, longitude, status, created_at, updated_at) VALUES
+(1, 'MH12AB1234', 'LCV', 'Tata', 'Nexon EV', 2023, 'EV', 40.5, 85.0, NULL, NULL, 19.0760, 72.8777, 'AVAILABLE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1, 'MH14CD5678', 'LCV', 'MG', 'ZS EV', 2023, 'EV', 50.3, 92.0, NULL, NULL, 19.0820, 72.8850, 'AVAILABLE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1, 'MH12EF9012', 'LCV', 'Mahindra', 'XUV700', 2023, 'ICE', NULL, NULL, 60.0, 45.5, 19.0700, 72.8700, 'AVAILABLE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1, 'MH14GH3456', 'LCV', 'Toyota', 'Innova Hycross', 2024, 'HYBRID', 1.8, 100.0, 52.0, 40.0, 19.0850, 72.8900, 'AVAILABLE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 ON CONFLICT DO NOTHING;
 
 -- ========== CHARGING DATABASE ==========

@@ -63,9 +63,11 @@ const VehicleDetails: React.FC = () => {
 
   const vehicle = selectedVehicle;
   const batteryPercentage = vehicle.battery.stateOfCharge;
-  const showBattery = vehicle.fuelType === FuelType.EV || vehicle.fuelType === FuelType.HYBRID;
+  // Battery tracking only for 4-wheelers (LCV) - 2W/3W use GPS-only per 2WHEELER_GPS_ONLY_STRATEGY
+  const is4Wheeler = vehicle.type === 'LCV';
+  const showBattery = is4Wheeler && (vehicle.fuelType === FuelType.EV || vehicle.fuelType === FuelType.HYBRID);
   const showFuel = vehicle.fuelType === FuelType.ICE || vehicle.fuelType === FuelType.HYBRID;
-  const showCharging = vehicle.fuelType === FuelType.EV || vehicle.fuelType === FuelType.HYBRID;
+  const showCharging = is4Wheeler && (vehicle.fuelType === FuelType.EV || vehicle.fuelType === FuelType.HYBRID);
 
   return (
     <Box>

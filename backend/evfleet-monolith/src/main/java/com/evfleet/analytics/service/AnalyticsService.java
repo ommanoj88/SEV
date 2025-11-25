@@ -189,10 +189,16 @@ public class AnalyticsService {
                 .filter(v -> v.getStatus() == Vehicle.VehicleStatus.IN_TRIP)
                 .count();
 
-        // Calculate battery metrics (only for vehicles with battery health data)
-        List<Long> vehicleIds = vehicles.stream().map(Vehicle::getId).collect(Collectors.toList());
+        // Calculate battery metrics ONLY for 4-wheelers (LCV) with EV/HYBRID
+        // 2-wheelers and 3-wheelers use GPS-only tracking per 2WHEELER_GPS_ONLY_STRATEGY
+        List<Vehicle> batteryTrackedVehicles = vehicles.stream()
+                .filter(v -> v.getType() == Vehicle.VehicleType.LCV)
+                .filter(v -> v.getFuelType() == FuelType.EV || v.getFuelType() == FuelType.HYBRID)
+                .collect(Collectors.toList());
+        
+        List<Long> batteryVehicleIds = batteryTrackedVehicles.stream().map(Vehicle::getId).collect(Collectors.toList());
         List<BatteryHealth> latestBatteryHealth = new ArrayList<>();
-        for (Long vehicleId : vehicleIds) {
+        for (Long vehicleId : batteryVehicleIds) {
             batteryHealthRepository.findFirstByVehicleIdOrderByRecordedAtDesc(vehicleId)
                     .ifPresent(latestBatteryHealth::add);
         }

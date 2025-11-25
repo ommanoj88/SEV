@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Paper, Typography, CircularProgress, Alert, Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import batteryHealthService, { BatteryHealthData } from '@services/batteryHealthService';
+import batteryHealthService, { BatteryHealthData } from '../../services/batteryHealthService';
 
 interface BatteryHealthProps {
   vehicleId?: number;

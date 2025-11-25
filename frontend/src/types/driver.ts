@@ -24,6 +24,7 @@ export interface Driver {
   licenseNumber: string;
   licenseExpiry: string;
   status: DriverStatus;
+  currentVehicleId?: string | number; // Currently assigned vehicle ID
   profileImageUrl?: string;
   dateOfBirth?: string;
   address?: string;

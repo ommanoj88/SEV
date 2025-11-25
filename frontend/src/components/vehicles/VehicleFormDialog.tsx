@@ -13,7 +13,9 @@ import {
   Grid,
   Alert,
   CircularProgress,
+  Box,
 } from '@mui/material';
+import { LocationOn as LocationIcon, Info as InfoIcon } from '@mui/icons-material';
 import { Vehicle, VehicleFormData, VehicleType, VehicleStatus, FuelType } from '../../types';
 
 interface VehicleFormDialogProps {
@@ -318,6 +320,17 @@ const VehicleFormDialog: React.FC<VehicleFormDialogProps> = ({
               {errors.fuelType && <p style={{ color: '#d32f2f', fontSize: '0.75rem' }}>{errors.fuelType}</p>}
             </FormControl>
           </Grid>
+
+          {/* GPS-Only tracking notice for 2-wheelers and 3-wheelers with EV */}
+          {(formData.type === VehicleType.TWO_WHEELER || formData.type === VehicleType.THREE_WHEELER) && 
+           formData.fuelType === FuelType.EV && (
+            <Grid item xs={12}>
+              <Alert severity="info" icon={<LocationIcon />}>
+                <strong>GPS-Only Tracking</strong> - Battery monitoring is not available for {formData.type.replace('_', '-').toLowerCase()}s. 
+                Real-time GPS location, speed, and odometer will be tracked. Battery data can be manually reported by drivers.
+              </Alert>
+            </Grid>
+          )}
 
           {/* Battery Capacity - Only for EV and HYBRID */}
           {(formData.fuelType === FuelType.EV || formData.fuelType === FuelType.HYBRID) && (
