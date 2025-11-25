@@ -76,17 +76,32 @@ MCP (Model Context Protocol) documentation:
 Archived documentation and historical references:
 - Legacy guides and references
 
+### 🔧 BACKEND
+Backend-specific documentation:
+- Microservices architecture
+- Migration guides and verification
+- Bug fixes and improvements
+- Deployment and optimization guides
+- Implementation summaries
+
+### 🎨 FRONTEND
+Frontend-specific documentation:
+- UI/UX design system
+- Backend integration guide
+- Visual changes and modernization
+- Error fixes and troubleshooting
+
 ---
 
 ## Quick Navigation
 
 ### For Developers
-1. Start with `ARCHITECTURE/MICROSERVICES_ARCHITECTURE.md`
+1. Start with `BACKEND/MICROSERVICES_ARCHITECTURE.md`
 2. Review analysis documents in `ANALYSIS/`
-3. Check `GUIDES/BACKEND_INTEGRATION_GUIDE.md`
+3. Check `FRONTEND/BACKEND_INTEGRATION_GUIDE.md`
 
 ### For DevOps
-1. Read `GUIDES/RESTART_GUIDE.md`
+1. Read `BACKEND/DEPLOYMENT_GUIDE.md`
 2. Check `MCP/GUIDES/SETUP_GUIDE.md`
 3. Review `OFFLINE_MODE_TROUBLESHOOTING.md`
 
