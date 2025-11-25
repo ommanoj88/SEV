@@ -47,19 +47,20 @@ Get-Content .mcp.json | ConvertFrom-Json
 
 #### Step 1: Verify Token Setup
 ```bash
-# Check if environment variable is set
-echo $MYGITHUB_TOKEN          # GitHub
-echo $SENTRY_AUTH_TOKEN       # Sentry
-echo $LINEAR_API_KEY          # Linear
-echo $STRIPE_API_KEY          # Stripe
+# Check if environment variables are set (without displaying values)
+test -n "$MYGITHUB_TOKEN" && echo "MYGITHUB_TOKEN: Set" || echo "MYGITHUB_TOKEN: Not set"
+test -n "$SENTRY_AUTH_TOKEN" && echo "SENTRY_AUTH_TOKEN: Set" || echo "SENTRY_AUTH_TOKEN: Not set"
+test -n "$LINEAR_API_KEY" && echo "LINEAR_API_KEY: Set" || echo "LINEAR_API_KEY: Not set"
+test -n "$STRIPE_API_KEY" && echo "STRIPE_API_KEY: Set" || echo "STRIPE_API_KEY: Not set"
 ```
 
 **Windows PowerShell:**
 ```powershell
-$env:MYGITHUB_TOKEN           # GitHub
-$env:SENTRY_AUTH_TOKEN        # Sentry
-$env:LINEAR_API_KEY           # Linear
-$env:STRIPE_API_KEY           # Stripe
+# Check if environment variables are set (without displaying values)
+if ($env:MYGITHUB_TOKEN) { "MYGITHUB_TOKEN: Set" } else { "MYGITHUB_TOKEN: Not set" }
+if ($env:SENTRY_AUTH_TOKEN) { "SENTRY_AUTH_TOKEN: Set" } else { "SENTRY_AUTH_TOKEN: Not set" }
+if ($env:LINEAR_API_KEY) { "LINEAR_API_KEY: Set" } else { "LINEAR_API_KEY: Not set" }
+if ($env:STRIPE_API_KEY) { "STRIPE_API_KEY: Set" } else { "STRIPE_API_KEY: Not set" }
 ```
 
 #### Step 2: Re-authenticate

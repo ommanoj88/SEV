@@ -117,4 +117,28 @@ Frontend-specific documentation:
 
 ---
 
+## Documentation Guidelines
+
+### Where to Add New Documentation
+
+| Document Type | Location | Naming Convention |
+|---------------|----------|-------------------|
+| Feature Analysis | `ANALYSIS/<CATEGORY>/` | `<NUMBER>.<FEATURE_NAME>_ANALYSIS.md` |
+| Implementation Summary | `IMPLEMENTATION/` | `IMPLEMENTATION_<FEATURE>_SUMMARY.md` |
+| Verification Report | `VERIFICATION/` | `VERIFICATION_<FEATURE>.md` |
+| Strategy Document | `STRATEGIES/` | `<FEATURE>_STRATEGY.md` |
+| Session Notes | `SESSION_NOTES/` | `SESSION_SUMMARY_<DATE>.md` |
+| Backend-specific | `BACKEND/` | Descriptive name |
+| Frontend-specific | `FRONTEND/` | Descriptive name |
+| Guides/How-to | `GUIDES/` | `<TOPIC>_GUIDE.md` |
+
+### Best Practices
+- Use meaningful file names that describe the content
+- Include creation/update dates in document headers
+- Use markdown formatting consistently
+- Keep technical documentation close to the code it documents
+- Archive outdated documentation to `ARCHIVES/`
+
+---
+
 **Last Updated:** November 25, 2025
