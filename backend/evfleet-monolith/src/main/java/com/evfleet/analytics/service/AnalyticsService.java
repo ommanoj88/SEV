@@ -6,6 +6,7 @@ import com.evfleet.analytics.repository.FleetSummaryRepository;
 import com.evfleet.charging.repository.ChargingSessionRepository;
 import com.evfleet.common.exception.ResourceNotFoundException;
 import com.evfleet.fleet.model.BatteryHealth;
+import com.evfleet.fleet.model.FuelType;
 import com.evfleet.fleet.model.Trip;
 import com.evfleet.fleet.model.Vehicle;
 import com.evfleet.fleet.repository.BatteryHealthRepository;

@@ -1,54 +1,144 @@
 # SEV - EV Fleet Management Platform Documentation
 
-Welcome to the SEV project documentation! This folder is organized into three main sections:
+Welcome to the SEV project documentation! This folder contains all project documentation organized by category.
 
-## 📐 ARCHITECTURE
-Core system design, database schemas, and microservices architecture documentation.
-- System architecture overview
-- Database schema documentation
-- Microservices design patterns
-- API specifications
+## 📁 Documentation Structure
 
-## 📖 GUIDES
-Implementation guides, deployment instructions, and operational documentation.
-- Quick start guides
-- Deployment procedures
-- Testing documentation
-- Troubleshooting guides
-- Audit and verification documents
+### 📊 ANALYSIS
+Feature analysis documents organized by domain:
+- **CORE_FEATURES/** - Core fleet management features (1-9 series)
+  - Multi-fuel support, vehicle registration, trip management
+  - Real-time tracking, fuel consumption, document management
+  - Route planning, geofencing, customer management
+- **CHARGING/** - Charging infrastructure analysis (B1-B6)
+  - Station management, session tracking, cost calculation
+  - Payment processing, station discovery, concurrency
+- **MAINTENANCE/** - Maintenance system analysis (C1-C6)
+  - Scheduling, service history, battery health
+  - Preventive alerts, cost analytics, multi-fuel maintenance
+- **DRIVER/** - Driver management analysis (D1-D5)
+  - Registration, assignment, performance tracking
+  - Behavior monitoring, license management
+- **ANALYTICS/** - Reporting and analytics analysis (E1-E7)
+  - Fleet summary, utilization, cost analytics, TCO
+  - Energy tracking, PDF generation, historical data
 
-## 📋 PLANNING
-Strategic documents, project status, and planning materials.
-- Product concept documents
-- Project status reports
+### 📐 ARCHITECTURE
+Core system design documentation:
+- Microservices architecture design
+- Product concepts and enterprise architecture
 - Risk mitigation strategies
-- Completion summaries
-- AI/Grok advice notes
+
+### 🔧 IMPLEMENTATION
+Implementation summaries and progress:
+- Feature implementation summaries
+- Bug fixes and improvements
+- Module completion reports
+
+### ✅ VERIFICATION
+Testing and verification reports:
+- Feature verification reports
+- Validation summaries
+- Multi-fuel validation documentation
+
+### 📖 GUIDES
+Implementation and operational guides:
+- Authentication flows
+- Backend integration
+- Chaos testing documentation
+- Service implementation guides
+- Telemetry implementation
+
+### 📋 PLANNING
+Strategic and planning documents:
+- Product concept documentation
+- Project roadmaps
+
+### 🎯 STRATEGIES
+Strategic documents for specific implementations:
+- 2-Wheeler GPS-only strategy
+
+### 📝 SESSION_NOTES
+Development session notes and progress:
+- Session summaries
+- Completion reports
+- Visual summaries
+- Testing guides
+
+### 🔗 MCP
+MCP (Model Context Protocol) documentation:
+- Quick start guides
+- Setup instructions
+- Command references
+- Service workflows
+
+### 📚 ARCHIVES
+Archived documentation and historical references:
+- Legacy guides and references
+
+### 🔧 BACKEND
+Backend-specific documentation:
+- Microservices architecture
+- Migration guides and verification
+- Bug fixes and improvements
+- Deployment and optimization guides
+- Implementation summaries
+
+### 🎨 FRONTEND
+Frontend-specific documentation:
+- UI/UX design system
+- Backend integration guide
+- Visual changes and modernization
+- Error fixes and troubleshooting
 
 ---
 
 ## Quick Navigation
 
 ### For Developers
-1. Start with `ARCHITECTURE/MICROSERVICES_ARCHITECTURE_DETAILED.md`
-2. Review `ARCHITECTURE/DATABASE_SCHEMA_DOCUMENTATION.md`
-3. Check `GUIDES/QUICK_START_GUIDE.md` for setup instructions
+1. Start with `BACKEND/MICROSERVICES_ARCHITECTURE.md`
+2. Review analysis documents in `ANALYSIS/`
+3. Check `FRONTEND/BACKEND_INTEGRATION_GUIDE.md`
 
 ### For DevOps
-1. Read `GUIDES/DEPLOYMENT_GUIDE.md`
-2. Check `GUIDES/PRODUCTION_READINESS_GUIDE.md`
-3. Review `GUIDES/DEPLOYMENT_AND_IMPLEMENTATION_GUIDE.md`
+1. Read `BACKEND/DEPLOYMENT_GUIDE.md`
+2. Check `MCP/GUIDES/SETUP_GUIDE.md`
+3. Review `OFFLINE_MODE_TROUBLESHOOTING.md`
 
 ### For QA/Testing
-1. Read `GUIDES/complete_testing_guide.md`
-2. Check `GUIDES/CHAOS_TESTING_DOCUMENTATION.md`
-3. Review test results in `GUIDES/CHAOS_TESTING_RESULTS.md`
+1. Read `GUIDES/CHAOS_TESTING_DOCUMENTATION.md`
+2. Check `VERIFICATION/` for test results
+3. Review `SESSION_NOTES/FLEET_FEATURE_TESTING_GUIDE.md`
 
-### For Management
-1. Check `PLANNING/PROJECT_SUMMARY.md`
-2. Review `PLANNING/PROJECT_COMPLETION_SUMMARY.md`
-3. Understand risks in `PLANNING/RISK_MITIGATION_STRATEGY.md`
+### For Product/Management
+1. Check `APPLICATION_OVERVIEW.md`
+2. Review `PLANNING/PRODUCT_CONCEPT_DOCUMENTATION.md`
+3. Check implementation progress in `IMPLEMENTATION/`
 
 ---
 
-**Last Updated:** November 4, 2025
+## Documentation Guidelines
+
+### Where to Add New Documentation
+
+| Document Type | Location | Naming Convention |
+|---------------|----------|-------------------|
+| Feature Analysis | `ANALYSIS/<CATEGORY>/` | `<NUMBER>.<FEATURE_NAME>_ANALYSIS.md` |
+| Implementation Summary | `IMPLEMENTATION/` | `IMPLEMENTATION_<FEATURE>_SUMMARY.md` |
+| Verification Report | `VERIFICATION/` | `VERIFICATION_<FEATURE>.md` |
+| Strategy Document | `STRATEGIES/` | `<FEATURE>_STRATEGY.md` |
+| Session Notes | `SESSION_NOTES/` | `SESSION_SUMMARY_<DATE>.md` |
+| Backend-specific | `BACKEND/` | Descriptive name |
+| Frontend-specific | `FRONTEND/` | Descriptive name |
+| Guides/How-to | `GUIDES/` | `<TOPIC>_GUIDE.md` |
+
+### Best Practices
+- Use meaningful file names that describe the content
+- Include creation/update dates in document headers
+- Use markdown formatting consistently
+- Keep technical documentation close to the code it documents
+- Archive outdated documentation to `ARCHIVES/`
+
+---
+
+**Last Updated:** November 25, 2025
