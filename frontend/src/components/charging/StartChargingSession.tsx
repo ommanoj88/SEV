@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useAppDispatch, useAppSelector } from '@redux/hooks';
 import { startChargingSession } from '@redux/slices/chargingSlice';
 import { toast } from 'react-toastify';
-import { VehicleType, FuelType } from '@types/vehicle';
+import { VehicleType, FuelType } from '../../types/vehicle';
 
 const StartChargingSession: React.FC = () => {
   const dispatch = useAppDispatch();

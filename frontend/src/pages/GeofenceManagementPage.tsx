@@ -145,7 +145,7 @@ const GeofenceManagementPage: React.FC = () => {
   };
 
   const handleDeleteGeofence = async (geofence: Geofence) => {
-    if (!geofence.id || !confirm('Are you sure you want to delete this geofence?')) return;
+    if (!geofence.id || !window.confirm('Are you sure you want to delete this geofence?')) return;
     setActionLoading(true);
     try {
       dispatch(deleteGeofence(Number(geofence.id)) as any);
