@@ -146,7 +146,7 @@ The application follows a microservices architecture with the following componen
 ### Frontend
 - **React App** (Port 3000) - Web Application
 
-For detailed architecture documentation, see [docs/MICROSERVICES_ARCHITECTURE.md](docs/MICROSERVICES_ARCHITECTURE.md)
+For detailed architecture documentation, see [docs/ARCHITECTURE/MICROSERVICES_ARCHITECTURE.md](docs/ARCHITECTURE/MICROSERVICES_ARCHITECTURE.md)
 
 ---
 
@@ -155,25 +155,43 @@ For detailed architecture documentation, see [docs/MICROSERVICES_ARCHITECTURE.md
 ```
 SEV/
 ├── backend/
-│   ├── eureka-server/          # Service Discovery
-│   ├── config-server/          # Configuration Management
-│   ├── api-gateway/            # API Gateway
-│   ├── auth-service/           # Authentication Service
-│   ├── fleet-service/          # Fleet Management Service
-│   ├── charging-service/       # Charging Management Service
-│   ├── maintenance-service/    # Maintenance Service
-│   ├── driver-service/         # Driver Management Service
-│   ├── analytics-service/      # Analytics Service
-│   ├── notification-service/   # Notification Service
-│   └── billing-service/        # Billing Service
+│   └── evfleet-monolith/       # Monolith Backend Application
+│       ├── src/main/java/com/evfleet/
+│       │   ├── analytics/      # Analytics & Reporting
+│       │   ├── auth/           # Authentication & Authorization
+│       │   ├── billing/        # Billing & Invoicing
+│       │   ├── charging/       # Charging Infrastructure
+│       │   ├── customer/       # Customer Management
+│       │   ├── document/       # Document Management
+│       │   ├── driver/         # Driver Management
+│       │   ├── fleet/          # Fleet & Vehicle Management
+│       │   ├── geofencing/     # Geofencing & Zones
+│       │   ├── maintenance/    # Maintenance & Service
+│       │   ├── notification/   # Notifications & Alerts
+│       │   ├── routing/        # Route Planning & Optimization
+│       │   └── telematics/     # Telematics & GPS Tracking
+│       └── pom.xml
 ├── frontend/                   # React Application
+│   └── src/
+│       ├── components/         # Reusable UI Components
+│       ├── pages/              # Page Components
+│       ├── services/           # API Services
+│       └── redux/              # State Management
 ├── docker/                     # Docker Compose & Configuration
-├── docs/                       # Documentation
-│   ├── MICROSERVICES_ARCHITECTURE.md
-│   ├── Product_Concept_Document.md
-│   └── Research_Notes_and_Sources.md
-├── impresourcesfortesting/     # Firebase & Test Resources
-│   └── firebase-service-account-test.json
+├── docs/                       # Documentation (Organized)
+│   ├── ANALYSIS/               # Feature Analysis Documents
+│   │   ├── CORE_FEATURES/      # Core fleet features (1-9)
+│   │   ├── CHARGING/           # Charging analysis (B1-B6)
+│   │   ├── MAINTENANCE/        # Maintenance analysis (C1-C6)
+│   │   ├── DRIVER/             # Driver analysis (D1-D5)
+│   │   └── ANALYTICS/          # Analytics analysis (E1-E7)
+│   ├── ARCHITECTURE/           # System Architecture
+│   ├── IMPLEMENTATION/         # Implementation Summaries
+│   ├── VERIFICATION/           # Testing & Verification
+│   ├── GUIDES/                 # How-to Guides
+│   ├── STRATEGIES/             # Strategy Documents
+│   ├── MCP/                    # MCP Documentation
+│   └── SESSION_NOTES/          # Development Session Notes
 └── README.md
 ```
 
