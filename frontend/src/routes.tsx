@@ -22,6 +22,7 @@ import ExpenseManagementPage from './pages/ExpenseManagementPage';
 import RouteOptimizationPage from './pages/RouteOptimizationPage';
 import CustomerManagementPage from './pages/CustomerManagementPage';
 import CompanyOnboardingPage from './pages/CompanyOnboardingPage';
+import GeofenceManagementPage from './pages/GeofenceManagementPage';
 
 // Component to redirect authenticated users away from auth pages
 const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -170,6 +171,14 @@ const AppRoutes: React.FC = () => {
         element={
           <ProtectedRoute>
             <CustomerManagementPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/geofencing"
+        element={
+          <ProtectedRoute>
+            <GeofenceManagementPage />
           </ProtectedRoute>
         }
       />
