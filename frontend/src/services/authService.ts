@@ -31,11 +31,7 @@ export const authService = {
       payload.name = `${data.firstName || ''} ${data.lastName || ''}`.trim();
     }
     
-    return apiClient.put(`/auth/users/${userId}`, payload);
-  // Update user profile
-  updateProfile: async (data: UpdateProfileData): Promise<User> => {
-    // Use raw api because auth endpoints return data directly
-    const response = await api.patch('/auth/profile', data);
+    const response = await api.put(`/auth/users/${userId}`, payload);
     return response.data;
   },
 
