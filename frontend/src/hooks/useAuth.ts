@@ -7,6 +7,9 @@ import { toast } from 'react-toastify';
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+// Global state to ensure Firebase listener is only set up once across ALL components
+let globalListenerInitialized = false;
+
 export const useAuth = () => {
   const dispatch = useAppDispatch();
   const auth = useAppSelector(selectAuth);
@@ -14,14 +17,13 @@ export const useAuth = () => {
   const lastFirebaseUid = useRef<string | null>(null);
   const retryCountRef = useRef(0);
   const maxRetries = 3;
-  const hasInitializedRef = useRef(false);
 
   useEffect(() => {
-    // Ensure we only set up the listener once
-    if (hasInitializedRef.current) {
+    // Ensure we only set up the listener once GLOBALLY (not per component)
+    if (globalListenerInitialized) {
       return;
     }
-    hasInitializedRef.current = true;
+    globalListenerInitialized = true;
 
     const unsubscribe = firebaseAuth.onAuthStateChanged(async (firebaseUser) => {
       // Prevent infinite loops - only process if UID changed
@@ -141,9 +143,10 @@ export const useAuth = () => {
       }
     });
 
+    // Don't clean up on component unmount - keep listener active globally
+    // This prevents re-initialization when components remount
     return () => {
-      hasInitializedRef.current = false;
-      unsubscribe();
+      // No-op: we want to keep the listener alive across component remounts
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run once on mount

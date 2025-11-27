@@ -13,7 +13,7 @@ import AppRoutes from './routes';
 import LoadingSpinner from './components/common/LoadingSpinner';
 
 const App: React.FC = () => {
-  const { isAuthenticated, loading, user } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
   // Get system preference for dark mode
@@ -51,7 +51,7 @@ const App: React.FC = () => {
     <ErrorBoundary>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <BrowserRouter>
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           {isFullyAuthenticated ? (
             <Box sx={{ display: 'flex' }}>
               <Header

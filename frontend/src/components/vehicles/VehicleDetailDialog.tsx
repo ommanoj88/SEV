@@ -26,12 +26,11 @@ import {
   LocalGasStation as FuelIcon,
   BatteryFull as BatteryIcon,
   Speed as SpeedIcon,
-  CalendarToday as CalendarIcon,
   LocationOn as LocationIcon,
   DirectionsCar as CarIcon,
   Person as PersonIcon,
 } from '@mui/icons-material';
-import { Vehicle, FuelType, VehicleStatus, VehicleType } from '../../types';
+import { Vehicle, FuelType, VehicleType } from '../../types';
 import { formatBatteryLevel, formatDistance, formatDate } from '../../utils/formatters';
 import { getVehicleStatusColor, getBatteryStatusColor } from '../../utils/helpers';
 

@@ -13,9 +13,8 @@ import {
   Grid,
   Alert,
   CircularProgress,
-  Box,
 } from '@mui/material';
-import { LocationOn as LocationIcon, Info as InfoIcon } from '@mui/icons-material';
+import { LocationOn as LocationIcon } from '@mui/icons-material';
 import { Vehicle, VehicleFormData, VehicleType, VehicleStatus, FuelType } from '../../types';
 
 interface VehicleFormDialogProps {

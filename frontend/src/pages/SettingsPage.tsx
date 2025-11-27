@@ -16,7 +16,7 @@ import { useAuth } from '../hooks/useAuth';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 
 export const SettingsPage: React.FC = () => {
-  const { user } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -81,8 +81,18 @@ export const SettingsPage: React.FC = () => {
     }
   };
 
-  if (!user) {
-    return <LoadingSpinner />;
+  if (authLoading) {
+    return <LoadingSpinner message="Loading settings..." />;
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <Container maxWidth="md" sx={{ py: 4, textAlign: 'center' }}>
+        <Typography variant="h5" color="textSecondary">
+          Please log in to view settings.
+        </Typography>
+      </Container>
+    );
   }
 
   return (
