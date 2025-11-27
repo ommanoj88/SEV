@@ -7,10 +7,10 @@ import {
   ListItemIcon,
   ListItemText,
   Toolbar,
+  Divider,
   Box,
   Typography,
   alpha,
-  Chip,
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
@@ -20,14 +20,13 @@ import {
   Build as MaintenanceIcon,
   Analytics as AnalyticsIcon,
   Receipt as BillingIcon,
+  Person as ProfileIcon,
   Settings as SettingsIcon,
   PictureAsPdf as ReportIcon,
   Description as DocumentIcon,
   AttachMoney as ExpenseIcon,
   Route as RouteIcon,
   PersonOutline as CustomerIcon,
-  Notifications as NotificationsIcon,
-  HelpOutline as HelpIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -38,57 +37,24 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-interface MenuItemType {
-  text: string;
-  icon: React.ReactNode;
-  path: string;
-  badge?: string;
-}
-
-interface MenuSectionType {
-  title: string;
-  items: MenuItemType[];
-}
-
-const menuSections: MenuSectionType[] = [
-  {
-    title: 'Overview',
-    items: [
-      { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-      { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
-    ],
-  },
-  {
-    title: 'Fleet Operations',
-    items: [
-      { text: 'Vehicles', icon: <VehicleIcon />, path: '/fleet' },
-      { text: 'Drivers', icon: <DriversIcon />, path: '/drivers' },
-      { text: 'Routes', icon: <RouteIcon />, path: '/routes' },
-      { text: 'Charging', icon: <ChargingIcon />, path: '/charging' },
-    ],
-  },
-  {
-    title: 'Management',
-    items: [
-      { text: 'Maintenance', icon: <MaintenanceIcon />, path: '/maintenance' },
-      { text: 'Documents', icon: <DocumentIcon />, path: '/documents' },
-      { text: 'Expenses', icon: <ExpenseIcon />, path: '/expenses' },
-      { text: 'Customers', icon: <CustomerIcon />, path: '/customers' },
-    ],
-  },
-  {
-    title: 'Finance',
-    items: [
-      { text: 'Billing', icon: <BillingIcon />, path: '/billing' },
-      { text: 'Reports', icon: <ReportIcon />, path: '/reports' },
-    ],
-  },
+const menuItems = [
+  { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+  { text: 'Fleet', icon: <VehicleIcon />, path: '/fleet' },
+  { text: 'Charging', icon: <ChargingIcon />, path: '/charging' },
+  { text: 'Drivers', icon: <DriversIcon />, path: '/drivers' },
+  { text: 'Maintenance', icon: <MaintenanceIcon />, path: '/maintenance' },
+  { text: 'Documents', icon: <DocumentIcon />, path: '/documents' },
+  { text: 'Expenses', icon: <ExpenseIcon />, path: '/expenses' },
+  { text: 'Routes', icon: <RouteIcon />, path: '/routes' },
+  { text: 'Customers', icon: <CustomerIcon />, path: '/customers' },
+  { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
+  { text: 'Billing', icon: <BillingIcon />, path: '/billing' },
+  { text: 'Reports', icon: <ReportIcon />, path: '/reports' },
 ];
 
-const bottomMenuItems: MenuItemType[] = [
-  { text: 'Notifications', icon: <NotificationsIcon />, path: '/notifications' },
+const bottomMenuItems = [
+  { text: 'Profile', icon: <ProfileIcon />, path: '/profile' },
   { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
-  { text: 'Help & Support', icon: <HelpIcon />, path: '/help' },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
@@ -100,129 +66,143 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
     onClose();
   };
 
-  const isActive = (path: string) => {
-    return location.pathname === path || location.pathname.startsWith(path + '/');
-  };
-
-  const renderMenuItem = (item: MenuItemType) => {
-    const active = isActive(item.path);
-    return (
-      <ListItem key={item.text} disablePadding sx={{ mb: 0.25 }}>
-        <ListItemButton
-          selected={active}
-          onClick={() => handleNavigation(item.path)}
-          sx={{
-            minHeight: 42,
-            px: 1.5,
-            position: 'relative',
-          }}
-        >
-          <ListItemIcon 
-            sx={{ 
-              color: active ? 'primary.main' : 'text.secondary',
-              minWidth: 36,
-            }}
-          >
-            {item.icon}
-          </ListItemIcon>
-          <ListItemText 
-            primary={item.text}
-            primaryTypographyProps={{
-              fontWeight: active ? 600 : 500,
-              fontSize: '0.875rem',
-              color: active ? 'text.primary' : 'text.secondary',
-            }}
-          />
-          {item.badge && (
-            <Chip
-              label={item.badge}
-              size="small"
-              sx={{
-                height: 18,
-                fontSize: '0.65rem',
-                fontWeight: 700,
-                bgcolor: active ? 'primary.main' : 'action.selected',
-                color: active ? 'primary.contrastText' : 'text.secondary',
-              }}
-            />
-          )}
-        </ListItemButton>
-      </ListItem>
-    );
-  };
-
   const drawer = (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      {/* Spacer for AppBar */}
-      <Toolbar sx={{ minHeight: { xs: 56, sm: 64 } }} />
+      <Toolbar>
+        <Box sx={{ py: 1 }}>
+          <Typography 
+            variant="h6" 
+            fontWeight={700}
+            sx={{
+              background: (theme) => 
+                `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${alpha(theme.palette.primary.main, 0.7)} 100%)`,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            Smart Fleet
+          </Typography>
+          <Typography variant="caption" color="text.secondary" fontWeight={600}>
+            Multi-Fuel Management
+          </Typography>
+        </Box>
+      </Toolbar>
+      <Divider />
       
-      {/* Main Navigation */}
       <Box sx={{ flexGrow: 1, overflowY: 'auto', py: 1 }}>
-        {menuSections.map((section, sectionIndex) => (
-          <Box key={section.title} sx={{ mb: 1.5 }}>
-            <Typography
-              variant="overline"
-              sx={{
-                px: 2.5,
-                py: 1,
-                display: 'block',
-                color: 'text.disabled',
-                fontSize: '0.65rem',
-                letterSpacing: '0.1em',
-              }}
-            >
-              {section.title}
-            </Typography>
-            <List disablePadding sx={{ px: 1 }}>
-              {section.items.map(renderMenuItem)}
-            </List>
-          </Box>
-        ))}
-      </Box>
-
-      {/* Bottom Section */}
-      <Box sx={{ borderTop: (theme) => `1px solid ${theme.palette.divider}`, py: 1 }}>
-        <List disablePadding sx={{ px: 1 }}>
-          {bottomMenuItems.map(renderMenuItem)}
+        <List>
+          {menuItems.map((item) => {
+            const isActive = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
+            return (
+              <ListItem key={item.text} disablePadding>
+                <ListItemButton
+                  selected={isActive}
+                  onClick={() => handleNavigation(item.path)}
+                  sx={{
+                    mx: 1,
+                    borderRadius: 2,
+                    minHeight: 48,
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                    '&.Mui-selected': {
+                      background: (theme) => 
+                        `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.12)} 0%, ${alpha(theme.palette.primary.main, 0.08)} 100%)`,
+                      color: 'primary.main',
+                      fontWeight: 600,
+                      '&:hover': {
+                        background: (theme) => 
+                          `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.18)} 0%, ${alpha(theme.palette.primary.main, 0.12)} 100%)`,
+                      },
+                      '& .MuiListItemIcon-root': {
+                        color: 'primary.main',
+                      },
+                      '&::before': {
+                        content: '""',
+                        position: 'absolute',
+                        left: 0,
+                        top: '20%',
+                        bottom: '20%',
+                        width: '4px',
+                        borderRadius: '0 4px 4px 0',
+                        backgroundColor: 'primary.main',
+                      },
+                    },
+                    '&:hover': {
+                      backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.04),
+                      transform: 'translateX(4px)',
+                    },
+                  }}
+                >
+                  <ListItemIcon 
+                    sx={{ 
+                      color: isActive ? 'primary.main' : 'text.secondary',
+                      minWidth: 40,
+                      transition: 'transform 0.2s ease',
+                      '.Mui-selected &': {
+                        transform: 'scale(1.1)',
+                      },
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary={item.text}
+                    primaryTypographyProps={{
+                      fontWeight: isActive ? 600 : 500,
+                      fontSize: '0.938rem',
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
         </List>
       </Box>
 
-      {/* Footer */}
-      <Box 
-        sx={{ 
-          px: 2, 
-          py: 2, 
-          borderTop: (theme) => `1px solid ${theme.palette.divider}`,
-        }}
-      >
-        <Box
-          sx={{
-            p: 1.5,
-            borderRadius: 2,
-            background: (theme) => 
-              theme.palette.mode === 'light'
-                ? alpha(theme.palette.primary.main, 0.04)
-                : alpha(theme.palette.primary.main, 0.08),
-            border: (theme) => 
-              `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
-          }}
-        >
-          <Typography 
-            variant="caption" 
-            fontWeight={600} 
-            color="primary.main"
-            sx={{ display: 'block', mb: 0.25 }}
-          >
-            Smart Fleet Pro
-          </Typography>
-          <Typography 
-            variant="caption" 
-            color="text.secondary"
-            sx={{ fontSize: '0.6875rem' }}
-          >
-            Enterprise Edition v2.0
-          </Typography>
-        </Box>
+      <Divider />
+      
+      <Box sx={{ py: 1 }}>
+        <List>
+          {bottomMenuItems.map((item) => {
+            const isActive = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
+            return (
+              <ListItem key={item.text} disablePadding>
+                <ListItemButton
+                  selected={isActive}
+                  onClick={() => handleNavigation(item.path)}
+                  sx={{
+                    mx: 1,
+                    borderRadius: 2,
+                    minHeight: 48,
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                    '&.Mui-selected': {
+                      background: (theme) => 
+                        `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.12)} 0%, ${alpha(theme.palette.primary.main, 0.08)} 100%)`,
+                      color: 'primary.main',
+                      '& .MuiListItemIcon-root': {
+                        color: 'primary.main',
+                      },
+                    },
+                    '&:hover': {
+                      backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.04),
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ color: isActive ? 'primary.main' : 'text.secondary', minWidth: 40 }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary={item.text}
+                    primaryTypographyProps={{
+                      fontWeight: isActive ? 600 : 500,
+                      fontSize: '0.938rem',
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
+        </List>
       </Box>
     </Box>
   );
