@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import { Card, CardContent, Typography, Box, Grid, alpha } from '@mui/material';
-import { 
-  DirectionsCar, 
-  LocalParking, 
-  EvStation, 
-  Build,
-  TrendingUp,
-} from '@mui/icons-material';
+import { DirectionsCar, LocalParking, EvStation, Build } from '@mui/icons-material';
 import { FleetAnalytics } from '../../types';
 import { VEHICLE_STATUS_COLORS } from '../../utils/constants';
 import VehicleDetailsModal from './VehicleDetailsModal';
@@ -25,46 +19,11 @@ const FleetSummaryCard: React.FC<FleetSummaryCardProps> = ({ analytics }) => {
   if (!analytics) return null;
 
   const statusItems = [
-    { 
-      label: 'Active', 
-      value: analytics.activeVehicles, 
-      icon: <DirectionsCar sx={{ fontSize: 20 }} />, 
-      color: VEHICLE_STATUS_COLORS.ACTIVE, 
-      status: 'ACTIVE',
-      description: 'Currently on duty',
-    },
-    { 
-      label: 'Inactive', 
-      value: analytics.inactiveVehicles, 
-      icon: <LocalParking sx={{ fontSize: 20 }} />, 
-      color: VEHICLE_STATUS_COLORS.INACTIVE, 
-      status: 'INACTIVE',
-      description: 'Parked/Off duty',
-    },
-    { 
-      label: 'Charging', 
-      value: analytics.chargingVehicles, 
-      icon: <EvStation sx={{ fontSize: 20 }} />, 
-      color: VEHICLE_STATUS_COLORS.CHARGING, 
-      status: 'CHARGING',
-      description: 'At charging station',
-    },
-    { 
-      label: 'Maintenance', 
-      value: analytics.maintenanceVehicles, 
-      icon: <Build sx={{ fontSize: 20 }} />, 
-      color: VEHICLE_STATUS_COLORS.MAINTENANCE, 
-      status: 'IN_MAINTENANCE',
-      description: 'Under service',
-    },
-    { 
-      label: 'In Trip', 
-      value: analytics.inTripVehicles, 
-      icon: <TrendingUp sx={{ fontSize: 20 }} />, 
-      color: VEHICLE_STATUS_COLORS.IN_TRIP, 
-      status: 'IN_TRIP',
-      description: 'Active delivery',
-    },
+    { label: 'Active', value: analytics.activeVehicles, icon: <DirectionsCar />, color: VEHICLE_STATUS_COLORS.ACTIVE, status: 'ACTIVE' },
+    { label: 'Inactive', value: analytics.inactiveVehicles, icon: <LocalParking />, color: VEHICLE_STATUS_COLORS.INACTIVE, status: 'INACTIVE' },
+    { label: 'Charging', value: analytics.chargingVehicles, icon: <EvStation />, color: VEHICLE_STATUS_COLORS.CHARGING, status: 'CHARGING' },
+    { label: 'Maintenance', value: analytics.maintenanceVehicles, icon: <Build />, color: VEHICLE_STATUS_COLORS.MAINTENANCE, status: 'IN_MAINTENANCE' },
+    { label: 'In Trip', value: analytics.inTripVehicles, icon: <DirectionsCar />, color: VEHICLE_STATUS_COLORS.IN_TRIP, status: 'IN_TRIP' },
   ];
 
   const handleCategoryClick = async (category: string, status: string) => {
@@ -73,7 +32,9 @@ const FleetSummaryCard: React.FC<FleetSummaryCardProps> = ({ analytics }) => {
     setLoading(true);
 
     try {
+      // Fetch vehicles by status
       const vehicles = await vehicleService.getVehicles();
+      // Filter by status
       const filteredVehicles = vehicles.filter((v: any) => v.status === status);
       setSelectedVehicles(filteredVehicles);
     } catch (error) {
@@ -91,112 +52,97 @@ const FleetSummaryCard: React.FC<FleetSummaryCardProps> = ({ analytics }) => {
   };
 
   return (
-    <Card className="fade-in">
+    <Card 
+      className="fade-in"
+      sx={{
+        height: '100%',
+        background: (theme) => theme.palette.background.paper,
+        border: (theme) => `1px solid ${theme.palette.divider}`,
+      }}
+    >
       <CardContent sx={{ p: 3 }}>
-        {/* Header */}
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
-          <Box>
-            <Typography variant="h6" fontWeight={600} color="text.primary">
-              Fleet Summary
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Real-time vehicle status breakdown
-            </Typography>
-          </Box>
+          <Typography 
+            variant="h6" 
+            fontWeight={600}
+            color="text.primary"
+          >
+            Fleet Summary
+          </Typography>
           <Box 
             sx={{ 
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1.5,
               px: 2,
-              py: 1,
+              py: 0.75,
               borderRadius: 2,
-              background: (theme) => alpha(theme.palette.primary.main, 0.08),
-              border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.15)}`,
+              background: (theme) => alpha(theme.palette.primary.main, 0.1),
+              border: (theme) => `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
             }}
           >
-            <DirectionsCar sx={{ color: 'primary.main', fontSize: 24 }} />
-            <Box>
-              <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                Total Fleet
-              </Typography>
-              <Typography variant="h5" fontWeight={700} color="primary.main" lineHeight={1}>
-                {analytics.totalVehicles}
-              </Typography>
-            </Box>
+            <Typography variant="caption" color="text.secondary" fontWeight={600} textTransform="uppercase" letterSpacing="0.05em">
+              Total Vehicles
+            </Typography>
+            <Typography 
+              variant="h5" 
+              fontWeight={700}
+              color="primary.main"
+              sx={{ mt: 0.5 }}
+            >
+              {analytics.totalVehicles}
+            </Typography>
           </Box>
         </Box>
 
-        {/* Status Grid */}
         <Grid container spacing={2}>
-          {statusItems.map((item) => (
-            <Grid item xs={6} sm={4} md={2.4} key={item.label}>
+          {statusItems.map((item, index) => (
+            <Grid item xs={12} sm={6} md={4} lg={2} xl={2} key={item.label}>
               <Box 
                 onClick={() => handleCategoryClick(item.label, item.status)}
                 sx={{ 
-                  p: 2,
+                  p: 2, 
                   borderRadius: 2,
-                  border: (theme) => `1px solid ${theme.palette.divider}`,
+                  background: (theme) => theme.palette.background.paper,
+                  border: (theme) => `1px solid ${alpha(item.color, 0.2)}`,
                   cursor: 'pointer',
-                  transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                  position: 'relative',
-                  overflow: 'hidden',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
-                    borderColor: alpha(item.color, 0.4),
-                    bgcolor: alpha(item.color, 0.04),
                     transform: 'translateY(-2px)',
-                    boxShadow: (theme) => `0 4px 12px ${alpha(item.color, 0.15)}`,
-                  },
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: 3,
-                    background: item.color,
-                    borderRadius: '2px 2px 0 0',
+                    borderColor: alpha(item.color, 0.5),
+                    boxShadow: (theme) => `0px 4px 16px ${alpha(item.color, 0.15)}`,
                   },
                 }}
               >
-                <Box display="flex" alignItems="center" gap={1.5} mb={1.5}>
+                <Box display="flex" alignItems="center" gap={1.5}>
                   <Box 
                     sx={{ 
-                      width: 36,
-                      height: 36,
-                      borderRadius: 1.5,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
+                      width: 36,
+                      height: 36,
+                      borderRadius: 1.5,
                       color: item.color,
-                      background: alpha(item.color, 0.1),
+                      background: (theme) => alpha(item.color, 0.1),
                     }}
                   >
                     {item.icon}
                   </Box>
+                  <Box flex={1}>
+                    <Typography 
+                      variant="h6" 
+                      fontWeight={700}
+                      sx={{ color: 'text.primary', lineHeight: 1.2 }}
+                    >
+                      {item.value}
+                    </Typography>
+                    <Typography 
+                      variant="caption" 
+                      color="text.secondary"
+                      fontWeight={500}
+                    >
+                      {item.label}
+                    </Typography>
+                  </Box>
                 </Box>
-                <Typography 
-                  variant="h5" 
-                  fontWeight={700}
-                  color="text.primary"
-                  sx={{ mb: 0.25 }}
-                >
-                  {item.value}
-                </Typography>
-                <Typography 
-                  variant="body2" 
-                  color="text.secondary"
-                  fontWeight={500}
-                >
-                  {item.label}
-                </Typography>
-                <Typography 
-                  variant="caption" 
-                  color="text.disabled"
-                  sx={{ display: 'block', mt: 0.5 }}
-                >
-                  {item.description}
-                </Typography>
               </Box>
             </Grid>
           ))}
