@@ -139,7 +139,16 @@ const initialState: DriverState = {
 // Fetching Drivers
 export const fetchAllDrivers = createAsyncThunk(
   'drivers/fetchAll',
-  async (params?: any) => {
+  async (params: any | undefined, { getState }) => {
+    const state = getState() as RootState;
+    const user = state.auth.user;
+    const companyId = user?.companyId;
+    
+    if (companyId) {
+      // Use company-specific endpoint when companyId is available
+      return await driverService.getDriversByCompany(companyId);
+    }
+    // Fallback to general endpoint with params (but backend requires companyId)
     return await driverService.getAllDrivers(params);
   }
 );

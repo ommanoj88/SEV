@@ -104,7 +104,16 @@ const initialState: VehicleState = {
 
 export const fetchVehicles = createAsyncThunk(
   'vehicles/fetchVehicles',
-  async (filters?: VehicleFilters) => {
+  async (filters: VehicleFilters | undefined, { getState }) => {
+    const state = getState() as RootState;
+    const user = state.auth.user;
+    const companyId = user?.companyId;
+    
+    if (companyId) {
+      // Use company-specific endpoint when companyId is available
+      return await vehicleService.getVehiclesByCompany(companyId);
+    }
+    // Fallback to general endpoint with filters
     return await vehicleService.getVehicles(filters);
   }
 );

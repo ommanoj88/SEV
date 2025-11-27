@@ -9,10 +9,15 @@ const DriverList: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { drivers } = useAppSelector((state) => state.drivers);
+  const { user } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    dispatch(fetchAllDrivers(undefined));
-  }, [dispatch]);
+    // User is guaranteed to be available because App.tsx waits for auth initialization
+    if (user?.companyId) {
+      console.log('[DriverList] Fetching drivers for companyId:', user.companyId);
+      dispatch(fetchAllDrivers(undefined));
+    }
+  }, [dispatch, user?.companyId]);
 
   // Helper function to check license status
   const getLicenseStatus = (licenseExpiry: string) => {

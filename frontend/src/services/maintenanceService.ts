@@ -59,45 +59,51 @@ export const maintenanceService = {
   // ========== MAINTENANCE SCHEDULES ==========
 
   /**
-   * Get all maintenance schedules
+   * Get all maintenance schedules (uses upcoming endpoint from backend)
+   * Backend doesn't have a separate schedules endpoint, so we use upcoming maintenance
    */
-  getAllSchedules: async (params?: any): Promise<MaintenanceSchedule[]> => {
-    return apiClient.get('/v1/maintenance/schedules', params);
+  getAllSchedules: async (companyId?: number): Promise<MaintenanceSchedule[]> => {
+    // Use records/upcoming with a company ID, fallback to empty array if no company
+    if (companyId) {
+      return apiClient.get('/v1/maintenance/records/upcoming', { companyId });
+    }
+    // Return empty array if no companyId - can't fetch without it
+    return [];
   },
 
   /**
-   * Get maintenance schedule by ID
+   * Get maintenance schedule by ID (uses record endpoint)
    */
   getScheduleById: async (scheduleId: number): Promise<MaintenanceSchedule> => {
-    return apiClient.get(`/v1/maintenance/schedules/${scheduleId}`);
+    return apiClient.get(`/v1/maintenance/records/${scheduleId}`);
   },
 
   /**
-   * Get maintenance schedules by vehicle
+   * Get maintenance schedules by vehicle (uses records/vehicle endpoint)
    */
   getSchedulesByVehicle: async (vehicleId: number): Promise<MaintenanceSchedule[]> => {
-    return apiClient.get(`/v1/maintenance/schedules/vehicle/${vehicleId}`);
+    return apiClient.get(`/v1/maintenance/records/vehicle/${vehicleId}`);
   },
 
   /**
-   * Create maintenance schedule
+   * Create maintenance schedule (uses records endpoint)
    */
   createSchedule: async (data: Partial<MaintenanceSchedule>): Promise<MaintenanceSchedule> => {
-    return apiClient.post('/v1/maintenance/schedules', data);
+    return apiClient.post('/v1/maintenance/records', data);
   },
 
   /**
-   * Update maintenance schedule
+   * Update maintenance schedule (uses records endpoint)
    */
   updateSchedule: async (scheduleId: number, data: Partial<MaintenanceSchedule>): Promise<MaintenanceSchedule> => {
-    return apiClient.put(`/v1/maintenance/schedules/${scheduleId}`, data);
+    return apiClient.put(`/v1/maintenance/records/${scheduleId}`, data);
   },
 
   /**
-   * Delete maintenance schedule
+   * Delete maintenance schedule (uses records endpoint)
    */
   deleteSchedule: async (scheduleId: number): Promise<void> => {
-    return apiClient.delete(`/v1/maintenance/schedules/${scheduleId}`);
+    return apiClient.delete(`/v1/maintenance/records/${scheduleId}`);
   },
 
   // ========== BATTERY HEALTH ==========

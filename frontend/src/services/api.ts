@@ -156,37 +156,54 @@ interface ApiResponse<T> {
 }
 
 // Helper functions for making requests
+// Handles both wrapped responses (ApiResponse format) and direct responses
 export const apiClient = {
   get: async <T = any>(url: string, params?: any, options?: { silent404?: boolean }): Promise<T> => {
-    const response = await api.get<ApiResponse<T>>(url, {
+    const response = await api.get<any>(url, {
       params,
       metadata: { silent404: options?.silent404 }
     });
-    // Unwrap the data property from the ApiResponse wrapper
-    return response.data.data;
+    // Check if response is wrapped in ApiResponse format (has success and data properties)
+    if (response.data && typeof response.data === 'object' && 'success' in response.data && 'data' in response.data) {
+      return response.data.data;
+    }
+    // Return data directly if not wrapped
+    return response.data;
   },
 
   post: async <T = any>(url: string, data?: any): Promise<T> => {
-    const response = await api.post<ApiResponse<T>>(url, data);
-    // Unwrap the data property from the ApiResponse wrapper
-    return response.data.data;
+    const response = await api.post<any>(url, data);
+    // Check if response is wrapped in ApiResponse format
+    if (response.data && typeof response.data === 'object' && 'success' in response.data && 'data' in response.data) {
+      return response.data.data;
+    }
+    return response.data;
   },
 
   put: async <T = any>(url: string, data?: any): Promise<T> => {
-    const response = await api.put<ApiResponse<T>>(url, data);
-    // Unwrap the data property from the ApiResponse wrapper
-    return response.data.data;
+    const response = await api.put<any>(url, data);
+    // Check if response is wrapped in ApiResponse format
+    if (response.data && typeof response.data === 'object' && 'success' in response.data && 'data' in response.data) {
+      return response.data.data;
+    }
+    return response.data;
   },
 
   patch: async <T = any>(url: string, data?: any): Promise<T> => {
-    const response = await api.patch<ApiResponse<T>>(url, data);
-    // Unwrap the data property from the ApiResponse wrapper
-    return response.data.data;
+    const response = await api.patch<any>(url, data);
+    // Check if response is wrapped in ApiResponse format
+    if (response.data && typeof response.data === 'object' && 'success' in response.data && 'data' in response.data) {
+      return response.data.data;
+    }
+    return response.data;
   },
 
   delete: async <T = any>(url: string): Promise<T> => {
-    const response = await api.delete<ApiResponse<T>>(url);
-    // Unwrap the data property from the ApiResponse wrapper
-    return response.data.data;
+    const response = await api.delete<any>(url);
+    // Check if response is wrapped in ApiResponse format
+    if (response.data && typeof response.data === 'object' && 'success' in response.data && 'data' in response.data) {
+      return response.data.data;
+    }
+    return response.data;
   },
 };

@@ -20,12 +20,16 @@ const Dashboard: React.FC = () => {
   const { user } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    loadDashboardData();
-  }, []);
+    // User is guaranteed to be available here because App.tsx waits for initialization
+    if (user?.companyId) {
+      console.log('[Dashboard] Loading data for companyId:', user.companyId);
+      loadDashboardData();
+    }
+  }, [user?.companyId]);
 
   const loadDashboardData = () => {
-    // Default to company ID 1 for now - in production this should come from user context
-    dispatch(fetchFleetAnalyticsByCompany(1));
+    const companyId = user?.companyId || 1;
+    dispatch(fetchFleetAnalyticsByCompany(companyId));
     dispatch(fetchVehicles());
     dispatch(fetchAlerts());
   };

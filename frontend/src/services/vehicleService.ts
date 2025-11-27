@@ -20,8 +20,9 @@ const mapVehicleResponse = (vehicle: any): Vehicle => {
 export const vehicleService = {
   /**
    * Get all vehicles
+   * Optionally pass companyId to filter by company
    */
-  getVehicles: async (filters?: VehicleFilters): Promise<Vehicle[]> => {
+  getVehicles: async (filters?: VehicleFilters & { companyId?: number }): Promise<Vehicle[]> => {
     const vehicles = await apiClient.get('/v1/vehicles', filters);
     return Array.isArray(vehicles) ? vehicles.map(mapVehicleResponse) : [];
   },

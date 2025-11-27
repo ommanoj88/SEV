@@ -33,6 +33,7 @@ export interface AuthState {
   loading: boolean;
   error: string | null;
   isAuthenticated: boolean;
+  initialized?: boolean; // True when initial auth check is complete
 }
 
 export interface LoginCredentials {
