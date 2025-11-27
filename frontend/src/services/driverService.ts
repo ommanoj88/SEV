@@ -1,5 +1,5 @@
 import { apiClient } from './api';
-import { Driver, DriverFormData, DriverBehavior, DriverLeaderboard } from '../types';
+import { Driver, DriverBehavior, DriverLeaderboard } from '../types';
 
 /**
  * Map backend driver response (single name field) to frontend Driver type (firstName/lastName)

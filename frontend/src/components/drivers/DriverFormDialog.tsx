@@ -9,7 +9,6 @@ import {
   Grid,
   MenuItem,
   IconButton,
-  Box,
   Typography,
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';

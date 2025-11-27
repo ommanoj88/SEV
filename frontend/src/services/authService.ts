@@ -16,6 +16,22 @@ export const authService = {
     return response.data;
   },
 
+  // Update user profile - uses PUT /auth/users/{id}
+  updateProfile: async (userId: string | number, data: UpdateProfileData): Promise<User> => {
+    // Backend expects UserResponse format with full name
+    const payload: any = {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      phone: data.phone,
+      profileImageUrl: data.profileImageUrl,
+    };
+    
+    // Construct name from firstName and lastName if both provided
+    if (data.firstName || data.lastName) {
+      payload.name = `${data.firstName || ''} ${data.lastName || ''}`.trim();
+    }
+    
+    return apiClient.put(`/auth/users/${userId}`, payload);
   // Update user profile
   updateProfile: async (data: UpdateProfileData): Promise<User> => {
     // Use raw api because auth endpoints return data directly

@@ -25,7 +25,8 @@ export const useAuth = () => {
     }
     globalListenerInitialized = true;
 
-    const unsubscribe = firebaseAuth.onAuthStateChanged(async (firebaseUser) => {
+    // Set up listener - unsubscribe is intentionally unused since we want to keep listener active globally
+    firebaseAuth.onAuthStateChanged(async (firebaseUser) => {
       // Prevent infinite loops - only process if UID changed
       if (firebaseUser && firebaseUser.uid === lastFirebaseUid.current) {
         console.log('[useAuth] Skipping duplicate auth state change');
