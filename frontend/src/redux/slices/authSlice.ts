@@ -87,9 +87,14 @@ export const fetchCurrentUser = createAsyncThunk(
 
 export const updateProfile = createAsyncThunk(
   'auth/updateProfile',
-  async (data: UpdateProfileData, { rejectWithValue }) => {
+  async (data: UpdateProfileData, { getState, rejectWithValue }) => {
     try {
-      const user = await authService.updateProfile(data);
+      const state = getState() as RootState;
+      const userId = state.auth.user?.id;
+      if (!userId) {
+        throw new Error('User not found');
+      }
+      const user = await authService.updateProfile(userId, data);
       return user;
     } catch (error: any) {
       return rejectWithValue(error.message);

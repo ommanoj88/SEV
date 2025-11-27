@@ -18,6 +18,7 @@ const BatteryHealth: React.FC<BatteryHealthProps> = ({ vehicleId }) => {
     if (vehicleId) {
       loadBatteryHealth();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vehicleId]);
 
   const loadBatteryHealth = async () => {

@@ -17,7 +17,7 @@ const companyOnboardingSchema = yup.object({
     .min(2, 'Company name must be at least 2 characters'),
   phone: yup
     .string()
-    .matches(/^[\d\s\-\+\(\)]+$/, { message: 'Invalid phone number format', excludeEmptyString: true })
+    .matches(/^[\d\s\-+()]+$/, { message: 'Invalid phone number format', excludeEmptyString: true })
     .optional(),
 });
 
@@ -46,11 +46,15 @@ const CompanyOnboardingPage: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      // Update user profile with company information
-      await authService.updateProfile({
-        ...data,
+      if (!user?.id) {
+        throw new Error('User not found. Please try again.');
+      }
+
+      // Update user profile with company information using backend API
+      await authService.updateProfile(user.id, {
         firstName: user?.firstName,
         lastName: user?.lastName,
+        phone: data.phone,
       });
 
       // Refetch user to get updated companyId

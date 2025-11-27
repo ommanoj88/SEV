@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Avatar, Box, Chip, Typography } from '@mui/material';
 import { EmojiEvents as TrophyIcon } from '@mui/icons-material';
-import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { useAppSelector } from '../../redux/hooks';
 import { selectUser } from '../../redux/slices/authSlice';
 import axios from 'axios';
 
@@ -15,7 +15,6 @@ interface LeaderboardEntry {
 }
 
 const DriverLeaderboard: React.FC = () => {
-  const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
   const [leaderboard, setLeaderboard] = React.useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = React.useState(true);
