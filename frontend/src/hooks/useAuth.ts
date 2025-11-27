@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { setFirebaseUser, fetchCurrentUser, selectAuth, logout } from '../redux/slices/authSlice';
+import { setFirebaseUser, fetchCurrentUser, selectAuth, logout, setAuthInitialized } from '../redux/slices/authSlice';
 import { firebaseAuth } from '../services/firebase';
 import authService from '../services/authService';
 import { toast } from 'react-toastify';
@@ -61,6 +61,7 @@ export const useAuth = () => {
 
           await dispatch(fetchCurrentUser()).unwrap();
           console.log('[useAuth] User fetched successfully from backend');
+          dispatch(setAuthInitialized()); // Mark auth as initialized
           retryCountRef.current = 0; // Reset on success
           toast.dismiss('backend-unavailable');
           toast.dismiss('backend-sync-required');
@@ -77,6 +78,7 @@ export const useAuth = () => {
             try {
               await dispatch(fetchCurrentUser()).unwrap();
               console.log('[useAuth] User fetched after retry');
+              dispatch(setAuthInitialized()); // Mark auth as initialized
               retryCountRef.current = 0; // Reset on success
               toast.dismiss('backend-unavailable');
               toast.dismiss('backend-sync-required');
@@ -98,6 +100,7 @@ export const useAuth = () => {
               // Retry fetching user after sync
               await dispatch(fetchCurrentUser()).unwrap();
               console.log('[useAuth] User fetched after sync - authentication complete');
+              dispatch(setAuthInitialized()); // Mark auth as initialized
               retryCountRef.current = 0; // Reset on success
               toast.dismiss('backend-unavailable');
               toast.dismiss('backend-sync-required');
@@ -135,7 +138,9 @@ export const useAuth = () => {
           syncingRef.current = false;
         }
       } else {
-        // User logged out, reset retry counter
+        // No Firebase user - user is not logged in
+        console.log('[useAuth] No Firebase user - setting auth as initialized');
+        dispatch(setAuthInitialized());
         retryCountRef.current = 0;
         toast.dismiss('backend-unavailable');
         toast.dismiss('backend-sync-required');

@@ -13,7 +13,13 @@ import AppRoutes from './routes';
 import LoadingSpinner from './components/common/LoadingSpinner';
 
 const App: React.FC = () => {
-  const { isAuthenticated, loading } = useAuth();
+  const auth = useAuth();
+  const { isAuthenticated, loading, user } = auth;
+  const initialized = (auth as any).initialized;
+  
+  // Debug logging
+  console.log('[App] Auth state:', { isAuthenticated, loading, initialized, hasUser: !!user });
+  
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
   // Get system preference for dark mode
@@ -34,7 +40,8 @@ const App: React.FC = () => {
     localStorage.setItem('themeMode', newMode);
   };
 
-  if (loading) {
+  // Show loading until auth is fully initialized (Firebase checked AND user fetched if logged in)
+  if (!initialized || loading) {
     return (
       <ThemeProvider theme={theme}>
         <CssBaseline />
@@ -43,16 +50,15 @@ const App: React.FC = () => {
     );
   }
 
-  // Only show authenticated UI if authenticated
-  // Show layout even if user is still loading to prevent layout flash
-  const isFullyAuthenticated = isAuthenticated;
+  // Show Header and Sidebar for authenticated users (just need isAuthenticated)
+  const showNavigation = isAuthenticated;
 
   return (
     <ErrorBoundary>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-          {isFullyAuthenticated ? (
+          {showNavigation ? (
             <Box sx={{ display: 'flex' }}>
               <Header
                 onMenuClick={handleSidebarToggle}
@@ -66,6 +72,7 @@ const App: React.FC = () => {
                   flexGrow: 1,
                   p: 3,
                   width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
+                  ml: { md: `${DRAWER_WIDTH}px` },
                   mt: 8,
                   minHeight: '100vh',
                 }}

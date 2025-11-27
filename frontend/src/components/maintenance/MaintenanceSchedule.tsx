@@ -1,16 +1,32 @@
 import React, { useEffect } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip, Typography, Box } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { fetchMaintenanceSchedule } from '../../redux/slices/maintenanceSlice';
 import { formatDate } from '../../utils/formatters';
 
 const MaintenanceSchedule: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { reminders: schedule } = useAppSelector((state) => state.maintenance);
+  const { reminders: schedule, loading } = useAppSelector((state) => state.maintenance);
+  const { user, isAuthenticated } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    dispatch(fetchMaintenanceSchedule());
-  }, [dispatch]);
+    // Only fetch when user is authenticated with a companyId
+    if (isAuthenticated && user?.companyId) {
+      dispatch(fetchMaintenanceSchedule());
+    }
+  }, [dispatch, isAuthenticated, user?.companyId]);
+
+  if (loading) {
+    return <Typography>Loading...</Typography>;
+  }
+
+  if (!schedule || schedule.length === 0) {
+    return (
+      <Box p={2}>
+        <Typography color="text.secondary">No scheduled maintenance found.</Typography>
+      </Box>
+    );
+  }
 
   return (
     <TableContainer component={Paper}>

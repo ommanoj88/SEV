@@ -38,15 +38,36 @@ const VehicleList: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { vehicles, loading } = useAppSelector((state) => state.vehicles);
+  const { user, isAuthenticated } = useAppSelector((state) => state.auth);
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<VehicleStatus | ''>('');
 
+  // User is guaranteed to be available because App.tsx waits for auth initialization
+  const companyId = user?.companyId;
+
+  // Effect to load vehicles when component mounts or companyId changes
   useEffect(() => {
-    loadVehicles();
-  }, [page, rowsPerPage, search, statusFilter]);
+    if (companyId) {
+      console.log('[VehicleList] Fetching vehicles for companyId:', companyId);
+      dispatch(fetchVehicles({
+        search,
+        status: statusFilter ? [statusFilter] : undefined,
+      }));
+    }
+  }, [dispatch, companyId]);
+
+  // Effect to reload on filter changes
+  useEffect(() => {
+    if (companyId && (search || statusFilter)) {
+      dispatch(fetchVehicles({
+        search,
+        status: statusFilter ? [statusFilter] : undefined,
+      }));
+    }
+  }, [search, statusFilter]);
 
   const loadVehicles = () => {
     dispatch(fetchVehicles({

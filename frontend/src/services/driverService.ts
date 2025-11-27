@@ -46,9 +46,10 @@ export const driverService = {
 
   /**
    * Get drivers by company
+   * Uses query parameter since backend doesn't have /company/{id} endpoint
    */
   getDriversByCompany: async (companyId: number): Promise<Driver[]> => {
-    const drivers = await apiClient.get(`/v1/drivers/company/${companyId}`);
+    const drivers = await apiClient.get('/v1/drivers', { companyId });
     return Array.isArray(drivers) ? drivers.map(mapDriverResponse) : [];
   },
 

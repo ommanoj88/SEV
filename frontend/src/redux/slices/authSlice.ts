@@ -4,13 +4,19 @@ import { firebaseAuth } from '../../services/firebase';
 import authService from '../../services/authService';
 import { RootState } from '../store';
 
-const initialState: AuthState = {
+// Extended AuthState to track initialization
+interface ExtendedAuthState extends AuthState {
+  initialized: boolean; // True when initial auth check is complete
+}
+
+const initialState: ExtendedAuthState = {
   user: null,
   firebaseUser: null,
   token: null,
-  loading: false,
+  loading: true, // Start with loading true until auth is initialized
   error: null,
   isAuthenticated: false,
+  initialized: false,
 };
 
 // Async thunks
@@ -121,13 +127,25 @@ const authSlice = createSlice({
   reducers: {
     setFirebaseUser: (state, action: PayloadAction<any>) => {
       state.firebaseUser = action.payload;
-      state.isAuthenticated = !!action.payload;
+      // Don't set isAuthenticated here - wait for user to be fetched
+      // This prevents components from rendering before user data is available
+      if (!action.payload) {
+        // User logged out
+        state.isAuthenticated = false;
+        state.user = null;
+        state.loading = false;
+        state.initialized = true;
+      }
     },
     setToken: (state, action: PayloadAction<string | null>) => {
       state.token = action.payload;
     },
     clearError: (state) => {
       state.error = null;
+    },
+    setAuthInitialized: (state) => {
+      state.initialized = true;
+      state.loading = false;
     },
   },
   extraReducers: (builder) => {
@@ -190,6 +208,7 @@ const authSlice = createSlice({
         state.token = null;
         state.isAuthenticated = false;
         state.error = null;
+        state.initialized = true;
       })
       // Fetch current user
       .addCase(fetchCurrentUser.pending, (state) => {
@@ -198,11 +217,13 @@ const authSlice = createSlice({
       .addCase(fetchCurrentUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
-        state.isAuthenticated = true; // Set authenticated when user is fetched
+        state.isAuthenticated = true;
+        state.initialized = true; // Auth is now fully initialized
       })
       .addCase(fetchCurrentUser.rejected, (state) => {
         state.loading = false;
-        state.isAuthenticated = false; // Clear auth state on fetch failure
+        state.isAuthenticated = false;
+        state.initialized = true; // Auth check complete, but failed
       })
       // Update profile
       .addCase(updateProfile.fulfilled, (state, action) => {
@@ -223,7 +244,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { setFirebaseUser, setToken, clearError } = authSlice.actions;
+export const { setFirebaseUser, setToken, clearError, setAuthInitialized } = authSlice.actions;
 
 // Selectors
 export const selectAuth = (state: RootState) => state.auth;
@@ -231,5 +252,6 @@ export const selectUser = (state: RootState) => state.auth.user;
 export const selectIsAuthenticated = (state: RootState) => state.auth.isAuthenticated;
 export const selectAuthLoading = (state: RootState) => state.auth.loading;
 export const selectAuthError = (state: RootState) => state.auth.error;
+export const selectAuthInitialized = (state: RootState) => (state.auth as any).initialized;
 
 export default authSlice.reducer;

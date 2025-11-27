@@ -81,9 +81,17 @@ const initialState: MaintenanceState = {
   error: null,
 };
 
-export const fetchRecords = createAsyncThunk('maintenance/fetchRecords', async () => {
-  return await maintenanceService.getAllRecords();
-});
+export const fetchRecords = createAsyncThunk(
+  'maintenance/fetchRecords',
+  async (_, { getState }) => {
+    const state = getState() as RootState;
+    const companyId = state.auth.user?.companyId;
+    if (companyId) {
+      return await maintenanceService.getAllRecords({ companyId });
+    }
+    return [];
+  }
+);
 
 export const fetchReminders = createAsyncThunk('maintenance/fetchReminders', async () => {
   return await maintenanceService.getReminders();
@@ -91,8 +99,10 @@ export const fetchReminders = createAsyncThunk('maintenance/fetchReminders', asy
 
 export const createRecord = createAsyncThunk(
   'maintenance/createRecord',
-  async (data: any) => {
-    return await maintenanceService.createRecord(data);
+  async (data: any, { getState }) => {
+    const state = getState() as RootState;
+    const companyId = state.auth.user?.companyId;
+    return await maintenanceService.createRecord({ ...data, companyId });
   }
 );
 
@@ -105,8 +115,10 @@ export const updateRecord = createAsyncThunk(
 
 export const fetchMaintenanceSchedule = createAsyncThunk(
   'maintenance/fetchMaintenanceSchedule',
-  async () => {
-    return await maintenanceService.getAllSchedules();
+  async (_, { getState }) => {
+    const state = getState() as RootState;
+    const companyId = state.auth.user?.companyId;
+    return await maintenanceService.getAllSchedules(companyId);
   }
 );
 

@@ -11,7 +11,9 @@ export const authService = {
 
   // Get current user profile
   getCurrentUser: async (): Promise<User> => {
-    return apiClient.get('/auth/me', undefined, { silent404: true });
+    // Use raw api because /auth/me returns UserResponse directly (not wrapped in ApiResponse)
+    const response = await api.get('/auth/me');
+    return response.data;
   },
 
   // Update user profile - uses PUT /auth/users/{id}
@@ -30,6 +32,11 @@ export const authService = {
     }
     
     return apiClient.put(`/auth/users/${userId}`, payload);
+  // Update user profile
+  updateProfile: async (data: UpdateProfileData): Promise<User> => {
+    // Use raw api because auth endpoints return data directly
+    const response = await api.patch('/auth/profile', data);
+    return response.data;
   },
 
   // Sync Firebase user with backend
