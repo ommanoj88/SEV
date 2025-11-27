@@ -2,7 +2,7 @@ import { createTheme, ThemeOptions, alpha, Shadows } from '@mui/material/styles'
 
 /**
  * Enterprise-Grade Premium Theme for Smart Fleet Management Platform
- * Design System 2025 - Professional & Mature
+ * Professional Design System v2.0
  * 
  * Features:
  * - Sophisticated enterprise color palette

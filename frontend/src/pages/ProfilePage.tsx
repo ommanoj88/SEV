@@ -32,6 +32,13 @@ import { useAuth } from '../hooks/useAuth';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { getNameFromEmail } from '../utils/helpers';
 
+interface StatItemProps {
+  label: string;
+  value: string | number;
+  icon: React.ReactNode;
+  color: string;
+}
+
 export const ProfilePage: React.FC = () => {
   const { user, firebaseUser, isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -109,13 +116,6 @@ export const ProfilePage: React.FC = () => {
     }
     return 'U';
   };
-
-  interface StatItemProps {
-    label: string;
-    value: string | number;
-    icon: React.ReactNode;
-    color: string;
-  }
 
   const StatItem: React.FC<StatItemProps> = ({ label, value, icon, color }) => (
     <Box

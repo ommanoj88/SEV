@@ -487,9 +487,25 @@ const Login: React.FC = () => {
           <Box mt={6} textAlign="center">
             <Typography variant="caption" color="text.disabled">
               By signing in, you agree to our{' '}
-              <Link href="#" color="inherit" sx={{ fontWeight: 600 }}>Terms of Service</Link>
+              <Link 
+                component="button" 
+                type="button"
+                color="inherit" 
+                sx={{ fontWeight: 600 }}
+                onClick={() => navigate('/terms')}
+              >
+                Terms of Service
+              </Link>
               {' '}and{' '}
-              <Link href="#" color="inherit" sx={{ fontWeight: 600 }}>Privacy Policy</Link>
+              <Link 
+                component="button"
+                type="button" 
+                color="inherit" 
+                sx={{ fontWeight: 600 }}
+                onClick={() => navigate('/privacy')}
+              >
+                Privacy Policy
+              </Link>
             </Typography>
           </Box>
         </Box>

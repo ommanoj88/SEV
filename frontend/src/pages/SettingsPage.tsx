@@ -24,6 +24,22 @@ import {
 import { useAuth } from '../hooks/useAuth';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 
+interface SettingSectionProps {
+  title: string;
+  description?: string;
+  icon: React.ReactNode;
+  iconColor: string;
+  children: React.ReactNode;
+}
+
+interface SettingItemProps {
+  label: string;
+  description: string;
+  checked: boolean;
+  onChange: () => void;
+  badge?: string;
+}
+
 export const SettingsPage: React.FC = () => {
   const { isAuthenticated, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -95,14 +111,6 @@ export const SettingsPage: React.FC = () => {
     );
   }
 
-  interface SettingSectionProps {
-    title: string;
-    description?: string;
-    icon: React.ReactNode;
-    iconColor: string;
-    children: React.ReactNode;
-  }
-
   const SettingSection: React.FC<SettingSectionProps> = ({ 
     title, 
     description, 
@@ -155,14 +163,6 @@ export const SettingsPage: React.FC = () => {
       </CardContent>
     </Card>
   );
-
-  interface SettingItemProps {
-    label: string;
-    description: string;
-    checked: boolean;
-    onChange: () => void;
-    badge?: string;
-  }
 
   const SettingItem: React.FC<SettingItemProps> = ({ 
     label, 

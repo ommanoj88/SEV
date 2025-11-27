@@ -154,7 +154,8 @@ code, pre {
 }
 
 .text-balance {
-  text-wrap: balance;
+  /* text-wrap: balance has limited browser support, using fallback */
+  max-width: 65ch; /* Fallback for unsupported browsers */
 }
 
 .text-truncate {
