@@ -1,17 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Container,
-  Paper,
+  Box,
   TextField,
   Button,
   Grid,
   Typography,
-  Box,
   Avatar,
   Stack,
   Card,
   CardContent,
+  Divider,
+  alpha,
+  Chip,
+  IconButton,
+  Alert,
 } from '@mui/material';
+import {
+  Person as PersonIcon,
+  Email as EmailIcon,
+  Phone as PhoneIcon,
+  Business as BusinessIcon,
+  Badge as BadgeIcon,
+  Edit as EditIcon,
+  CameraAlt as CameraIcon,
+  CalendarToday as CalendarIcon,
+  Security as SecurityIcon,
+  DirectionsCar as VehicleIcon,
+  CheckCircle as CheckCircleIcon,
+} from '@mui/icons-material';
 import { useAuth } from '../hooks/useAuth';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { getNameFromEmail } from '../utils/helpers';
@@ -29,7 +45,6 @@ export const ProfilePage: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
-    // Prioritize backend user data, fallback to Firebase user
     if (user) {
       setFormData({
         email: user.email || '',
@@ -39,7 +54,6 @@ export const ProfilePage: React.FC = () => {
         role: user.role || '',
       });
     } else if (firebaseUser) {
-      // Use Firebase user data when backend data is not available
       setFormData({
         email: firebaseUser.email || '',
         name: firebaseUser.displayName || getNameFromEmail(firebaseUser.email || ''),
@@ -62,7 +76,6 @@ export const ProfilePage: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      // Update profile logic here
       setSuccessMessage('Profile updated successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
@@ -74,11 +87,11 @@ export const ProfilePage: React.FC = () => {
 
   if (!isAuthenticated) {
     return (
-      <Container maxWidth="md" sx={{ py: 4, textAlign: 'center' }}>
-        <Typography variant="h5" color="textSecondary">
+      <Box sx={{ py: 8, textAlign: 'center' }}>
+        <Typography variant="h5" color="text.secondary">
           Please log in to view your profile.
         </Typography>
-      </Container>
+      </Box>
     );
   }
 
@@ -86,49 +99,156 @@ export const ProfilePage: React.FC = () => {
     return <LoadingSpinner />;
   }
 
+  const getUserInitials = () => {
+    if (formData.name) {
+      const parts = formData.name.split(' ');
+      if (parts.length >= 2) {
+        return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+      }
+      return formData.name[0]?.toUpperCase() || 'U';
+    }
+    return 'U';
+  };
+
+  interface StatItemProps {
+    label: string;
+    value: string | number;
+    icon: React.ReactNode;
+    color: string;
+  }
+
+  const StatItem: React.FC<StatItemProps> = ({ label, value, icon, color }) => (
+    <Box
+      sx={{
+        p: 2.5,
+        borderRadius: 2,
+        border: (theme) => `1px solid ${theme.palette.divider}`,
+        transition: 'all 0.2s ease',
+        '&:hover': {
+          borderColor: alpha(color, 0.3),
+          bgcolor: alpha(color, 0.02),
+        },
+      }}
+    >
+      <Box display="flex" alignItems="center" gap={1.5} mb={1}>
+        <Box
+          sx={{
+            width: 32,
+            height: 32,
+            borderRadius: 1.5,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            bgcolor: alpha(color, 0.1),
+            color: color,
+          }}
+        >
+          {icon}
+        </Box>
+        <Typography variant="caption" color="text.secondary" fontWeight={500}>
+          {label}
+        </Typography>
+      </Box>
+      <Typography variant="h6" fontWeight={600} color="text.primary">
+        {value}
+      </Typography>
+    </Box>
+  );
+
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
+    <Box className="fade-in" sx={{ maxWidth: 1000, mx: 'auto' }}>
+      {/* Page Header */}
+      <Box mb={4}>
+        <Typography variant="h4" fontWeight={700} color="text.primary" gutterBottom>
           My Profile
         </Typography>
-        <Typography color="textSecondary">
-          Manage your account information and preferences
+        <Typography variant="body1" color="text.secondary">
+          Manage your personal information and account settings
         </Typography>
         {!user && firebaseUser && (
-          <Typography color="warning.main" variant="body2" sx={{ mt: 1 }}>
-            Note: Backend services are unavailable. Showing Firebase profile data only.
-          </Typography>
+          <Alert severity="warning" sx={{ mt: 2 }}>
+            Backend services are unavailable. Showing Firebase profile data only.
+          </Alert>
         )}
       </Box>
 
       <Grid container spacing={3}>
         {/* Profile Card */}
         <Grid item xs={12} md={4}>
-          <Card>
-            <CardContent sx={{ textAlign: 'center' }}>
-              <Avatar
-                sx={{
-                  width: 100,
-                  height: 100,
-                  mx: 'auto',
-                  mb: 2,
-                  bgcolor: 'primary.main',
-                }}
-              >
-                {formData.name.charAt(0).toUpperCase()}
-              </Avatar>
-              <Typography variant="h6" gutterBottom>
+          <Card sx={{ position: 'sticky', top: 88 }}>
+            <CardContent sx={{ p: 3, textAlign: 'center' }}>
+              {/* Avatar */}
+              <Box sx={{ position: 'relative', display: 'inline-block', mb: 2 }}>
+                <Avatar
+                  sx={{
+                    width: 120,
+                    height: 120,
+                    bgcolor: 'primary.main',
+                    fontSize: '2.5rem',
+                    fontWeight: 600,
+                    border: (theme) => `4px solid ${theme.palette.background.paper}`,
+                    boxShadow: (theme) => `0 4px 20px ${alpha(theme.palette.primary.main, 0.25)}`,
+                  }}
+                >
+                  {getUserInitials()}
+                </Avatar>
+                <IconButton
+                  size="small"
+                  sx={{
+                    position: 'absolute',
+                    bottom: 4,
+                    right: 4,
+                    bgcolor: 'background.paper',
+                    border: (theme) => `2px solid ${theme.palette.divider}`,
+                    '&:hover': {
+                      bgcolor: 'background.paper',
+                    },
+                  }}
+                >
+                  <CameraIcon sx={{ fontSize: 16 }} />
+                </IconButton>
+              </Box>
+
+              {/* Name & Email */}
+              <Typography variant="h5" fontWeight={600} gutterBottom>
                 {formData.name || 'User'}
               </Typography>
-              <Typography color="textSecondary" gutterBottom>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
                 {formData.email}
               </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Role: {formData.role || 'Not assigned'}
-              </Typography>
+
+              {/* Role Badge */}
+              <Chip
+                label={formData.role || 'Member'}
+                size="small"
+                sx={{
+                  mt: 1,
+                  fontWeight: 600,
+                  bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
+                  color: 'primary.main',
+                }}
+              />
+
+              {/* Status */}
+              <Box 
+                display="flex" 
+                alignItems="center" 
+                justifyContent="center" 
+                gap={0.75}
+                mt={2}
+              >
+                <CheckCircleIcon sx={{ color: 'success.main', fontSize: 18 }} />
+                <Typography variant="body2" color="success.main" fontWeight={500}>
+                  Account Active
+                </Typography>
+              </Box>
+
               {!user && firebaseUser && (
-                <Typography variant="caption" color="warning.main" sx={{ mt: 1, display: 'block' }}>
+                <Typography 
+                  variant="caption" 
+                  color="warning.main" 
+                  sx={{ mt: 2, display: 'block' }}
+                >
                   Firebase user only
                 </Typography>
               )}
@@ -136,140 +256,191 @@ export const ProfilePage: React.FC = () => {
           </Card>
         </Grid>
 
-        {/* Edit Profile Form */}
+        {/* Edit Form */}
         <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 3 }}>
-            <form onSubmit={handleSubmit}>
-              <Stack spacing={3}>
-                <TextField
-                  fullWidth
-                  label="Email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  disabled
-                  type="email"
-                />
-
-                <TextField
-                  fullWidth
-                  label="Full Name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  placeholder="Enter your full name"
-                />
-
-                <TextField
-                  fullWidth
-                  label="Phone Number"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  placeholder="Enter your phone number"
-                  type="tel"
-                />
-
-                <TextField
-                  fullWidth
-                  label="Company"
-                  name="company"
-                  value={formData.company}
-                  onChange={handleInputChange}
-                  disabled
-                  placeholder="Your company"
-                />
-
-                <TextField
-                  fullWidth
-                  label="Role"
-                  name="role"
-                  value={formData.role}
-                  onChange={handleInputChange}
-                  disabled
-                  placeholder="Your role"
-                />
-
-                {successMessage && (
-                  <Typography color="success.main" variant="body2">
-                    {successMessage}
-                  </Typography>
-                )}
-
-                <Stack direction="row" spacing={2} justifyContent="flex-end">
-                  <Button
-                    variant="outlined"
-                    color="inherit"
-                    onClick={() => window.history.back()}
+          <Card>
+            <CardContent sx={{ p: 3 }}>
+              <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
+                <Box display="flex" alignItems="center" gap={1.5}>
+                  <Box
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 2,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
+                      color: 'primary.main',
+                    }}
                   >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    disabled={loading || !user}
-                  >
-                    {loading ? 'Saving...' : 'Save Changes'}
-                  </Button>
+                    <PersonIcon />
+                  </Box>
+                  <Box>
+                    <Typography variant="subtitle1" fontWeight={600}>
+                      Personal Information
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Update your personal details
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+
+              <Divider sx={{ mb: 3 }} />
+
+              {successMessage && (
+                <Alert severity="success" sx={{ mb: 3 }}>
+                  {successMessage}
+                </Alert>
+              )}
+
+              <form onSubmit={handleSubmit}>
+                <Stack spacing={2.5}>
+                  <TextField
+                    fullWidth
+                    label="Email Address"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    disabled
+                    type="email"
+                    InputProps={{
+                      startAdornment: (
+                        <EmailIcon sx={{ color: 'text.disabled', mr: 1, fontSize: 20 }} />
+                      ),
+                    }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    label="Full Name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder="Enter your full name"
+                    InputProps={{
+                      startAdornment: (
+                        <PersonIcon sx={{ color: 'text.disabled', mr: 1, fontSize: 20 }} />
+                      ),
+                    }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    label="Phone Number"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    placeholder="Enter your phone number"
+                    type="tel"
+                    InputProps={{
+                      startAdornment: (
+                        <PhoneIcon sx={{ color: 'text.disabled', mr: 1, fontSize: 20 }} />
+                      ),
+                    }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    label="Company"
+                    name="company"
+                    value={formData.company}
+                    onChange={handleInputChange}
+                    disabled
+                    placeholder="Your company"
+                    InputProps={{
+                      startAdornment: (
+                        <BusinessIcon sx={{ color: 'text.disabled', mr: 1, fontSize: 20 }} />
+                      ),
+                    }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    label="Role"
+                    name="role"
+                    value={formData.role}
+                    onChange={handleInputChange}
+                    disabled
+                    placeholder="Your role"
+                    InputProps={{
+                      startAdornment: (
+                        <BadgeIcon sx={{ color: 'text.disabled', mr: 1, fontSize: 20 }} />
+                      ),
+                    }}
+                  />
+
+                  <Box display="flex" gap={2} justifyContent="flex-end" pt={2}>
+                    <Button
+                      variant="outlined"
+                      onClick={() => window.history.back()}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      disabled={loading || !user}
+                      startIcon={loading ? null : <EditIcon />}
+                    >
+                      {loading ? 'Saving...' : 'Save Changes'}
+                    </Button>
+                  </Box>
+
                   {!user && (
-                    <Typography variant="caption" color="warning.main">
+                    <Typography variant="caption" color="warning.main" textAlign="right">
                       Profile updates require backend connection
                     </Typography>
                   )}
                 </Stack>
-              </Stack>
-            </form>
-          </Paper>
-        </Grid>
-      </Grid>
+              </form>
+            </CardContent>
+          </Card>
 
-      {/* Account Stats */}
-      <Grid container spacing={2} sx={{ mt: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Account Status
-              </Typography>
-              <Typography variant="h6">Active</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Member Since
-              </Typography>
-              <Typography variant="h6">
-                {user?.createdAt ? new Date(user.createdAt).getFullYear() : 'N/A'}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Last Login
-              </Typography>
-              <Typography variant="h6">Today</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Vehicles
-              </Typography>
-              <Typography variant="h6">-</Typography>
-            </CardContent>
-          </Card>
+          {/* Account Stats */}
+          <Box mt={3}>
+            <Typography variant="subtitle2" fontWeight={600} mb={2}>
+              Account Statistics
+            </Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={6} sm={3}>
+                <StatItem
+                  label="Member Since"
+                  value={user?.createdAt ? new Date(user.createdAt).getFullYear() : 'N/A'}
+                  icon={<CalendarIcon sx={{ fontSize: 18 }} />}
+                  color="#0052CC"
+                />
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <StatItem
+                  label="Last Login"
+                  value="Today"
+                  icon={<SecurityIcon sx={{ fontSize: 18 }} />}
+                  color="#00875A"
+                />
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <StatItem
+                  label="Vehicles"
+                  value="—"
+                  icon={<VehicleIcon sx={{ fontSize: 18 }} />}
+                  color="#6554C0"
+                />
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <StatItem
+                  label="Status"
+                  value="Active"
+                  icon={<CheckCircleIcon sx={{ fontSize: 18 }} />}
+                  color="#00875A"
+                />
+              </Grid>
+            </Grid>
+          </Box>
         </Grid>
       </Grid>
-    </Container>
+    </Box>
   );
 };
 
