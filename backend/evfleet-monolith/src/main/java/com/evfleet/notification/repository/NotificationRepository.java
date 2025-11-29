@@ -15,4 +15,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     List<Notification> findByUserIdAndIsReadOrderByCreatedAtDesc(Long userId, Boolean isRead);
     long countByUserIdAndIsRead(Long userId, Boolean isRead);
     boolean existsByUserIdAndReferenceIdAndCreatedAtAfter(Long userId, String referenceId, LocalDateTime createdAfter);
+    
+    // Method for license expiry scheduler to prevent duplicate alerts
+    List<Notification> findByReferenceIdAndCreatedAtAfter(String referenceId, LocalDateTime createdAfter);
 }
