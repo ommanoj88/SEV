@@ -105,6 +105,43 @@ public class VehicleController {
         return ResponseEntity.ok(VehicleResponse.from(updated));
     }
 
+    @PutMapping("/{id}")
+    @Operation(summary = "Update vehicle", description = "Update an existing vehicle. Validates fuel-type specific fields when changing fuel types.")
+    public ResponseEntity<VehicleResponse> updateVehicle(
+            @PathVariable Long id,
+            @Valid @RequestBody VehicleRequest request) {
+        log.info("PUT /api/v1/vehicles/{}", id);
+
+        Vehicle updateData = Vehicle.builder()
+            .vehicleNumber(request.getVehicleNumber())
+            .type(request.getType())
+            .fuelType(request.getFuelType())
+            .make(request.getMake())
+            .model(request.getModel())
+            .year(request.getYear())
+            .batteryCapacity(request.getBatteryCapacity())
+            .currentBatterySoc(request.getCurrentBatterySoc())
+            .defaultChargerType(request.getDefaultChargerType())
+            .fuelTankCapacity(request.getFuelTankCapacity())
+            .fuelLevel(request.getFuelLevel())
+            .engineType(request.getEngineType())
+            .vin(request.getVin())
+            .licensePlate(request.getLicensePlate())
+            .color(request.getColor())
+            .build();
+
+        Vehicle updated = vehicleService.updateVehicle(id, updateData);
+        return ResponseEntity.ok(VehicleResponse.from(updated));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete vehicle", description = "Delete a vehicle. Cannot delete vehicles that are in an active trip, have an assigned driver, or are currently charging.")
+    public ResponseEntity<com.evfleet.common.dto.ApiResponse<Void>> deleteVehicle(@PathVariable Long id) {
+        log.info("DELETE /api/v1/vehicles/{}", id);
+        vehicleService.deleteVehicle(id);
+        return ResponseEntity.ok(com.evfleet.common.dto.ApiResponse.success("Vehicle deleted successfully", null));
+    }
+
     @GetMapping("/health")
     public ResponseEntity<String> health() {
         return ResponseEntity.ok("Fleet Service is running");
