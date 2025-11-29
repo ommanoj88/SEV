@@ -2,13 +2,16 @@ package com.evfleet.fleet.service;
 
 import com.evfleet.common.event.EventPublisher;
 import com.evfleet.common.exception.ResourceNotFoundException;
+import com.evfleet.common.exception.InvalidInputException;
 import com.evfleet.driver.model.Driver;
 import com.evfleet.driver.repository.DriverRepository;
 import com.evfleet.fleet.event.TripCompletedEvent;
 import com.evfleet.fleet.event.TripStartedEvent;
 import com.evfleet.fleet.model.Trip;
+import com.evfleet.fleet.model.TripLocationHistory;
 import com.evfleet.fleet.model.Vehicle;
 import com.evfleet.fleet.repository.TripRepository;
+import com.evfleet.fleet.repository.TripLocationHistoryRepository;
 import com.evfleet.fleet.repository.VehicleRepository;
 import com.evfleet.maintenance.service.MaintenanceService;
 import lombok.RequiredArgsConstructor;
@@ -17,14 +20,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Trip Service
+ * 
+ * PR #6: Added teleportation prevention and trip path history
+ * - updateTripLocation() validates speed between consecutive updates
+ * - Stores complete path history for trip replay
+ * - Rejects impossible location jumps (teleportation)
  *
  * @author SEV Platform Team
- * @version 1.0.0
+ * @version 2.0.0
  */
 @Service
 @Slf4j
@@ -33,6 +43,7 @@ import java.util.List;
 public class TripService {
 
     private final TripRepository tripRepository;
+    private final TripLocationHistoryRepository locationHistoryRepository;
     private final VehicleRepository vehicleRepository;
     private final DriverRepository driverRepository;
     private final EventPublisher eventPublisher;
@@ -40,6 +51,7 @@ public class TripService {
     
     private static final double MAX_SPEED_KMH = 200.0; // Maximum realistic speed
     private static final double EARTH_RADIUS_KM = 6371.0; // Earth's radius in kilometers
+    private static final double MIN_TIME_BETWEEN_UPDATES_SECONDS = 1.0; // Minimum 1 second between updates
 
     public Trip startTrip(Long vehicleId, Long driverId, Double startLat, Double startLon) {
         log.info("Starting trip for vehicle: {}", vehicleId);
@@ -88,11 +100,172 @@ public class TripService {
         vehicle.setCurrentDriverId(driverId);
         vehicleRepository.save(vehicle);
 
+        // Record the starting location in path history
+        TripLocationHistory startLocation = TripLocationHistory.builder()
+            .tripId(saved.getId())
+            .latitude(startLat)
+            .longitude(startLon)
+            .recordedAt(LocalDateTime.now())
+            .sequenceNumber(0)
+            .distanceFromPrevious(0.0)
+            .cumulativeDistance(0.0)
+            .speed(0.0)
+            .teleportationWarning(false)
+            .build();
+        locationHistoryRepository.save(startLocation);
+
         // Publish event
         eventPublisher.publish(new TripStartedEvent(this, saved.getId(), vehicleId, driverId));
 
         log.info("Trip started with ID: {}", saved.getId());
         return saved;
+    }
+
+    /**
+     * Update trip location during an active trip.
+     * Validates that the location update is physically possible (no teleportation).
+     * Stores location in path history for trip replay.
+     * 
+     * @param tripId The trip ID
+     * @param latitude Current latitude
+     * @param longitude Current longitude
+     * @return Updated TripLocationHistory record
+     * @throws ResourceNotFoundException if trip not found
+     * @throws IllegalStateException if trip is not in progress
+     * @throws InvalidInputException if location update implies impossible speed (teleportation)
+     */
+    public TripLocationHistory updateTripLocation(Long tripId, Double latitude, Double longitude) {
+        log.info("Updating trip location: tripId={}, lat={}, lon={}", tripId, latitude, longitude);
+
+        // Validate coordinates
+        validateLatitude(latitude);
+        validateLongitude(longitude);
+
+        // Find the trip
+        Trip trip = tripRepository.findById(tripId)
+            .orElseThrow(() -> new ResourceNotFoundException("Trip", "id", tripId));
+
+        if (trip.getStatus() != Trip.TripStatus.IN_PROGRESS) {
+            throw new IllegalStateException("Cannot update location for trip that is not in progress");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        Double speed = 0.0;
+        Double distanceFromPrevious = 0.0;
+        Double cumulativeDistance = 0.0;
+        boolean teleportationWarning = false;
+        int sequenceNumber = 0;
+
+        // Get the last recorded location
+        Optional<TripLocationHistory> lastLocationOpt = 
+            locationHistoryRepository.findFirstByTripIdOrderBySequenceNumberDesc(tripId);
+
+        if (lastLocationOpt.isPresent()) {
+            TripLocationHistory lastLocation = lastLocationOpt.get();
+            sequenceNumber = lastLocation.getSequenceNumber() + 1;
+
+            // Calculate distance and time delta
+            distanceFromPrevious = calculateHaversineDistance(
+                lastLocation.getLatitude(), lastLocation.getLongitude(),
+                latitude, longitude
+            );
+
+            Duration timeDelta = Duration.between(lastLocation.getRecordedAt(), now);
+            double timeDeltaSeconds = timeDelta.toMillis() / 1000.0;
+
+            // Avoid division by zero and too-rapid updates
+            if (timeDeltaSeconds < MIN_TIME_BETWEEN_UPDATES_SECONDS) {
+                log.warn("Trip {}: Location update too rapid ({}ms since last update)", 
+                    tripId, timeDelta.toMillis());
+                throw new InvalidInputException("locationUpdate", 
+                    "Location updates must be at least 1 second apart");
+            }
+
+            // Calculate speed in km/h
+            double timeDeltaHours = timeDeltaSeconds / 3600.0;
+            speed = distanceFromPrevious / timeDeltaHours;
+
+            // Check for teleportation (impossible speed)
+            if (speed > MAX_SPEED_KMH) {
+                log.warn("Trip {}: TELEPORTATION DETECTED - Speed {} km/h from ({}, {}) to ({}, {}) in {} seconds",
+                    tripId, speed, 
+                    lastLocation.getLatitude(), lastLocation.getLongitude(),
+                    latitude, longitude, timeDeltaSeconds);
+
+                teleportationWarning = true;
+
+                throw new InvalidInputException("location",
+                    String.format("Impossible speed detected: %.2f km/h. Maximum allowed: %.2f km/h. " +
+                        "Distance: %.2f km in %.2f seconds. This appears to be teleportation.",
+                        speed, MAX_SPEED_KMH, distanceFromPrevious, timeDeltaSeconds));
+            }
+
+            // Calculate cumulative distance
+            cumulativeDistance = (lastLocation.getCumulativeDistance() != null ? 
+                lastLocation.getCumulativeDistance() : 0.0) + distanceFromPrevious;
+        }
+
+        // Create and save the location history record
+        TripLocationHistory locationRecord = TripLocationHistory.builder()
+            .tripId(tripId)
+            .latitude(latitude)
+            .longitude(longitude)
+            .recordedAt(now)
+            .sequenceNumber(sequenceNumber)
+            .distanceFromPrevious(distanceFromPrevious)
+            .cumulativeDistance(cumulativeDistance)
+            .speed(speed)
+            .teleportationWarning(teleportationWarning)
+            .build();
+
+        TripLocationHistory saved = locationHistoryRepository.save(locationRecord);
+
+        // Update vehicle's current location
+        Vehicle vehicle = vehicleRepository.findById(trip.getVehicleId())
+            .orElseThrow(() -> new ResourceNotFoundException("Vehicle", "id", trip.getVehicleId()));
+        vehicle.setLatitude(latitude);
+        vehicle.setLongitude(longitude);
+        vehicle.setLastUpdated(now);
+        vehicleRepository.save(vehicle);
+
+        log.debug("Trip {}: Location updated - seq={}, dist={:.2f}km, speed={:.2f}km/h", 
+            tripId, sequenceNumber, distanceFromPrevious, speed);
+
+        return saved;
+    }
+
+    /**
+     * Get the complete path history for a trip (for trip replay)
+     */
+    @Transactional(readOnly = true)
+    public List<TripLocationHistory> getTripPath(Long tripId) {
+        return locationHistoryRepository.findByTripIdOrderBySequenceNumberAsc(tripId);
+    }
+
+    /**
+     * Get calculated distance from path history
+     */
+    @Transactional(readOnly = true)
+    public Double getCalculatedTripDistance(Long tripId) {
+        return locationHistoryRepository.getTotalDistanceByTripId(tripId);
+    }
+
+    private void validateLatitude(Double latitude) {
+        if (latitude == null) {
+            throw new InvalidInputException("latitude", "is required");
+        }
+        if (latitude < -90 || latitude > 90) {
+            throw new InvalidInputException("latitude", "must be between -90 and 90");
+        }
+    }
+
+    private void validateLongitude(Double longitude) {
+        if (longitude == null) {
+            throw new InvalidInputException("longitude", "is required");
+        }
+        if (longitude < -180 || longitude > 180) {
+            throw new InvalidInputException("longitude", "must be between -180 and 180");
+        }
     }
 
     public Trip completeTrip(Long tripId, Double endLat, Double endLon,
