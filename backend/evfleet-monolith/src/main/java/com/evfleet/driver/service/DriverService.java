@@ -195,19 +195,67 @@ public class DriverService {
         Vehicle vehicle = vehicleRepository.findById(vehicleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle", "id", vehicleId));
 
-        // VALIDATION: Check if driver is already assigned to a vehicle
+        // VALIDATION 1: Check if driver status is ACTIVE
+        if (driver.getStatus() != Driver.DriverStatus.ACTIVE) {
+            log.warn("AUDIT: Assignment blocked - Driver {} has status {} (not ACTIVE)", driverId, driver.getStatus());
+            throw new IllegalStateException(
+                String.format("Driver %s is not active (current status: %s). Only active drivers can be assigned to vehicles.",
+                    driver.getName(), driver.getStatus())
+            );
+        }
+
+        // VALIDATION 2: Check if driver's license is expired
+        if (driver.getLicenseExpiry() != null && driver.getLicenseExpiry().isBefore(LocalDate.now())) {
+            log.warn("AUDIT: Assignment blocked - Driver {} license expired on {}", driverId, driver.getLicenseExpiry());
+            throw new IllegalStateException(
+                String.format("Driver %s has an expired license (expired on %s). Please renew the license before assigning to a vehicle.",
+                    driver.getName(), driver.getLicenseExpiry())
+            );
+        }
+
+        // VALIDATION 3: Warn if license will expire within 7 days
+        if (driver.getLicenseExpiry() != null && 
+            driver.getLicenseExpiry().isBefore(LocalDate.now().plusDays(7)) &&
+            !driver.getLicenseExpiry().isBefore(LocalDate.now())) {
+            log.warn("AUDIT: License expiry warning - Driver {} license expires on {} (within 7 days)", 
+                driverId, driver.getLicenseExpiry());
+        }
+
+        // VALIDATION 4: Check if driver is already assigned to a vehicle
         if (driver.getCurrentVehicleId() != null) {
+            log.warn("AUDIT: Assignment blocked - Driver {} already assigned to vehicle {}", driverId, driver.getCurrentVehicleId());
             throw new IllegalStateException(
                 String.format("Driver %s is already assigned to vehicle %d. Please unassign first.", 
                     driver.getName(), driver.getCurrentVehicleId())
             );
         }
 
-        // VALIDATION: Check if vehicle is already assigned to another driver
+        // VALIDATION 5: Check if vehicle is already assigned to another driver
         if (vehicle.getCurrentDriverId() != null) {
+            log.warn("AUDIT: Assignment blocked - Vehicle {} already assigned to driver {}", vehicleId, vehicle.getCurrentDriverId());
             throw new IllegalStateException(
                 String.format("Vehicle %s is already assigned to driver %d. Please unassign first.", 
                     vehicle.getLicensePlate(), vehicle.getCurrentDriverId())
+            );
+        }
+
+        // VALIDATION 6: Check if vehicle status allows assignment
+        if (vehicle.getStatus() != null && 
+            (vehicle.getStatus() == Vehicle.VehicleStatus.MAINTENANCE || 
+             vehicle.getStatus() == Vehicle.VehicleStatus.CHARGING)) {
+            log.warn("AUDIT: Assignment blocked - Vehicle {} has status {} (not assignable)", vehicleId, vehicle.getStatus());
+            throw new IllegalStateException(
+                String.format("Vehicle %s is currently in %s status and cannot be assigned to a driver.",
+                    vehicle.getLicensePlate(), vehicle.getStatus())
+            );
+        }
+
+        // VALIDATION 7: Verify company ownership - driver and vehicle must belong to same company
+        if (!driver.getCompanyId().equals(vehicle.getCompanyId())) {
+            log.error("AUDIT: SECURITY VIOLATION - Attempted cross-company assignment: Driver {} (company {}) to Vehicle {} (company {})",
+                driverId, driver.getCompanyId(), vehicleId, vehicle.getCompanyId());
+            throw new IllegalStateException(
+                "Security violation: Driver and vehicle must belong to the same company."
             );
         }
 
@@ -223,7 +271,8 @@ public class DriverService {
         Driver updated = driverRepository.save(driver);
         vehicleRepository.save(vehicle);
 
-        log.info("Vehicle {} assigned to driver {} successfully", vehicleId, driverId);
+        log.info("AUDIT: Vehicle {} assigned to driver {} successfully (company: {})", 
+            vehicleId, driverId, driver.getCompanyId());
         return DriverResponse.fromEntity(updated);
     }
 
