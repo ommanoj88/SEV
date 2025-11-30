@@ -23,6 +23,11 @@ public class PaymentFailureRequest {
     private String razorpayOrderId;
 
     /**
+     * Razorpay payment ID
+     */
+    private String razorpayPaymentId;
+
+    /**
      * Error code from Razorpay
      */
     private String errorCode;
