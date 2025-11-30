@@ -657,21 +657,32 @@ After completion, Copilot Coding Agent should update each PR entry with:
 
 ---
 
-### PR #22: Enhance TCO Analysis with Multi-Fuel Support
+### PR #22: Enhance TCO Analysis with Multi-Fuel Support ✅ DONE
 **Files to Work On:** `backend/evfleet-monolith/src/main/java/com/evfleet/analytics/service/TCOAnalysisService.java`  
 **Scope:** Improve TCO calculations for different fuel types
+**Commit:** b6348b7
 **Tasks:**
-1. Add fuel-type-specific cost calculations:
-   - EV: electricity cost per kWh, battery depreciation
-   - ICE: fuel cost per liter, oil change costs
-   - Hybrid: combined calculations
-2. Add regional cost variations (fuel prices by city)
-3. Add carbon cost calculations (for ESG reporting)
-4. Add comparison mode (ICE vs EV equivalent)
-5. Add projection calculations (5-year TCO forecast)
-6. Update tests
+1. ✅ Add fuel-type-specific cost calculations:
+   - EV: electricity cost per kWh (₹8.00), battery depreciation
+   - ICE: fuel cost per liter (₹0.12/km), oil change costs
+   - Hybrid: combined calculations (70% of ICE fuel efficiency)
+   - CNG: ₹80/kg, 22 km/kg efficiency
+   - LPG: ₹55/liter, 12 km/l efficiency
+2. ✅ Add regional cost variations (Mumbai, Delhi, Bangalore, Chennai, Kolkata, Hyderabad, Pune)
+3. ✅ Add carbon cost calculations (emission factors per fuel type, ₹5/kg CO2)
+4. ✅ Add comparison mode (multi-fuel comparison with rankings)
+5. ✅ Add projection calculations (5-year TCO forecast with yearly breakdowns)
+6. ✅ Update tests (multi-fuel TCO, carbon calculations)
 
-**Success Criteria:** TCO analysis accounts for all fuel types with projections
+**Files Changed:**
+- TCOAnalysis.java - Extended entity with multi-fuel, carbon, regional, projection fields
+- TCOAnalysisService.java - 750+ lines with multi-fuel calculations
+- TCOAnalysisResponse.java - Enhanced DTO with nested classes
+- TCOProjectionResponse.java - New DTO for 5-year projections
+- V6__add_tco_multi_fuel_support.sql - Database migration
+- TCOAnalysisServiceTest.java - Comprehensive unit tests
+
+**Success Criteria:** ✅ TCO analysis accounts for all fuel types with projections
 
 ---
 
