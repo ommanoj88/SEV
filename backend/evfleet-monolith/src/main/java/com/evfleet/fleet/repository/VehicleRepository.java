@@ -63,4 +63,10 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
      */
     @Query("SELECT v FROM Vehicle v WHERE v.companyId = :companyId AND v.status = 'ACTIVE'")
     List<Vehicle> findActiveVehiclesByCompany(Long companyId);
+
+    /**
+     * Find all distinct company IDs that have vehicles
+     */
+    @Query("SELECT DISTINCT v.companyId FROM Vehicle v")
+    List<Long> findAllCompanyIds();
 }
