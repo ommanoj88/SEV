@@ -333,6 +333,21 @@ public class PaymentOrder extends BaseEntity {
         this.attempts = (this.attempts != null ? this.attempts : 0) + 1;
     }
 
+    /**
+     * Mark order as expired
+     */
+    public void markAsExpired() {
+        this.status = OrderStatus.EXPIRED;
+    }
+
+    /**
+     * Get Razorpay fee in rupees
+     */
+    public BigDecimal getRazorpayFeeInRupees() {
+        if (razorpayFee == null) return null;
+        return BigDecimal.valueOf(razorpayFee).divide(BigDecimal.valueOf(100));
+    }
+
     @PrePersist
     protected void onCreate() {
         if (currency == null) {
