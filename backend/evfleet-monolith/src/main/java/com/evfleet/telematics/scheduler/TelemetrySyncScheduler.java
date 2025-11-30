@@ -6,6 +6,7 @@ import com.evfleet.telematics.dto.VehicleTelemetryData;
 import com.evfleet.telematics.model.TelemetrySnapshot;
 import com.evfleet.telematics.provider.TelemetryProvider;
 import com.evfleet.telematics.repository.TelemetrySnapshotRepository;
+import com.evfleet.telematics.service.TelemetryAlertService;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
@@ -45,6 +46,7 @@ public class TelemetrySyncScheduler {
     private final TelemetrySnapshotRepository snapshotRepository;
     private final List<TelemetryProvider> telemetryProviders;
     private final MeterRegistry meterRegistry;
+    private final TelemetryAlertService alertService;
 
     // Configuration
     @Value("${telematics.sync.enabled:true}")
@@ -77,11 +79,13 @@ public class TelemetrySyncScheduler {
             VehicleRepository vehicleRepository,
             TelemetrySnapshotRepository snapshotRepository,
             List<TelemetryProvider> telemetryProviders,
-            MeterRegistry meterRegistry) {
+            MeterRegistry meterRegistry,
+            TelemetryAlertService alertService) {
         this.vehicleRepository = vehicleRepository;
         this.snapshotRepository = snapshotRepository;
         this.telemetryProviders = telemetryProviders;
         this.meterRegistry = meterRegistry;
+        this.alertService = alertService;
     }
 
     @PostConstruct
@@ -219,6 +223,9 @@ public class TelemetrySyncScheduler {
         // Update vehicle with latest telemetry
         updateVehicleFromTelemetry(vehicle, data);
 
+        // Process telemetry for alerts (battery, speed, etc.)
+        alertService.processAndGenerateAlerts(vehicle, data);
+
         log.debug("Successfully synced telemetry for vehicle {} - SOC: {}%, Speed: {} km/h", 
             vehicle.getId(), data.getBatterySoc(), data.getSpeed());
 
@@ -267,25 +274,23 @@ public class TelemetrySyncScheduler {
             .batteryTemperature(data.getBatteryTemperature())
             .isCharging(data.getIsCharging())
             .estimatedRange(data.getEstimatedRange())
-            .chargingPower(data.getChargingPower())
+            .chargingStatus(data.getChargingStatus())
             // Fuel (for hybrid/ICE)
             .fuelLevel(data.getFuelLevel())
-            .fuelConsumptionRate(data.getFuelConsumptionRate())
+            .fuelPercentage(data.getFuelPercentage())
             // Engine & Diagnostics
-            .engineRunning(data.getEngineRunning())
+            .ignitionOn(data.getIgnitionOn())
+            .isMoving(data.getIsMoving())
             .engineRpm(data.getEngineRpm())
-            .coolantTemperature(data.getCoolantTemperature())
-            .ignitionStatus(data.getIgnitionStatus())
-            .checkEngineLightOn(data.getCheckEngineLightOn())
+            .vehicleStatus(data.getVehicleStatus())
+            .checkEngineLight(data.getCheckEngineLight())
             // Driver Behavior
-            .accelerometerX(data.getAccelerometerX())
-            .accelerometerY(data.getAccelerometerY())
-            .accelerometerZ(data.getAccelerometerZ())
-            .maxGForce(data.getMaxGForce())
+            .accelerationX(data.getAccelerationX())
+            .accelerationY(data.getAccelerationY())
+            .accelerationZ(data.getAccelerationZ())
             // Connectivity
             .signalStrength(data.getSignalStrength())
-            .gpsValid(data.getGpsValid())
-            .networkType(data.getNetworkType())
+            .isEstimated(data.getIsEstimated())
             .build();
     }
 

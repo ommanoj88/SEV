@@ -380,18 +380,38 @@ After completion, Copilot Coding Agent should update each PR entry with:
 ---
 
 ### PR #15: Implement Telemetry Background Sync
+✅ **PR #15 DONE - November 30, 2025**
+
 **Files to Work On:** `backend/evfleet-monolith/src/main/java/com/evfleet/telematics/scheduler/TelemetrySyncScheduler.java`  
 **Scope:** Automatically fetch and store telemetry
 **Tasks:**
-1. Create TelemetrySyncScheduler.java with @Scheduled annotation
-2. Fetch telemetry for all vehicles with DEVICE or OEM_API source
-3. Store snapshots in TelemetrySnapshotRepository
-4. Update Vehicle's lastTelemetryUpdate timestamp
-5. Add configurable sync interval (default: 60 seconds)
-6. Add metrics for sync success/failure rates
-7. Add error handling with per-vehicle isolation
+1. ✅ Create TelemetrySyncScheduler.java with @Scheduled annotation
+2. ✅ Fetch telemetry for all vehicles with DEVICE or OEM_API source
+3. ✅ Store snapshots in TelemetrySnapshotRepository
+4. ✅ Update Vehicle's lastTelemetryUpdate timestamp
+5. ✅ Add configurable sync interval (default: 60 seconds)
+6. ✅ Add metrics for sync success/failure rates
+7. ✅ Add error handling with per-vehicle isolation
 
-**Success Criteria:** Telemetry auto-syncs every minute for configured vehicles
+**Success Criteria:** ✅ Telemetry auto-syncs every minute for configured vehicles
+
+**Implementation Details:**
+| Component | Lines | Key Features |
+|-----------|-------|--------------|
+| TelemetrySyncScheduler.java | 380 | @Scheduled 60s, per-vehicle sync, exponential backoff |
+| TelematicsController.java | +40 | 4 new endpoints: /sync, /sync/vehicle/{id}, /sync/stats |
+| TelemetrySyncSchedulerTest.java | 340 | 13 test cases covering all scenarios |
+
+| Feature | Status |
+|---------|--------|
+| Auto-sync every 60s | ✅ @Scheduled(fixedRateString = "${telematics.sync.interval-ms:60000}") |
+| Per-vehicle error isolation | ✅ Try-catch per vehicle, failures don't affect others |
+| Exponential backoff | ✅ 1m → 2m → 4m → 8m → max 30m for failing vehicles |
+| Micrometer metrics | ✅ success/failure counters, duration timer, snapshots saved |
+| Manual sync trigger | ✅ POST /api/v1/telematics/sync |
+| Vehicle-specific sync | ✅ POST /api/v1/telematics/sync/vehicle/{id} |
+| Sync statistics | ✅ GET /api/v1/telematics/sync/stats |
+| Backoff reset | ✅ POST /api/v1/telematics/sync/vehicle/{id}/reset-backoff |
 
 ---
 
