@@ -1,7 +1,7 @@
 # SEV Fleet Management - Developer Guide
 
 **Version:** 2.0.0  
-**Last Updated:** January 2024
+**Last Updated:** November 2025
 
 ---
 

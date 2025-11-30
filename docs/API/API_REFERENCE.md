@@ -1,6 +1,7 @@
 # SEV Fleet Management - API Reference
 
 **Version:** 2.0.0  
+**Last Updated:** November 2025  
 **Base URL:** `https://api.sevfleet.com/api/v1`  
 **Authentication:** Bearer Token (Firebase Auth)
 
