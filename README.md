@@ -1,5 +1,10 @@
 # Commercial EV Fleet Management Platform
 
+[![CI Pipeline](https://github.com/ommanoj88/SEV/actions/workflows/ci.yml/badge.svg)](https://github.com/ommanoj88/SEV/actions/workflows/ci.yml)
+[![CD Pipeline](https://github.com/ommanoj88/SEV/actions/workflows/cd.yml/badge.svg)](https://github.com/ommanoj88/SEV/actions/workflows/cd.yml)
+[![codecov](https://codecov.io/gh/ommanoj88/SEV/branch/main/graph/badge.svg)](https://codecov.io/gh/ommanoj88/SEV)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A cloud-native, microservices-based B2B SaaS platform for managing electric vehicle fleets in India.
 
 ## Project Overview
