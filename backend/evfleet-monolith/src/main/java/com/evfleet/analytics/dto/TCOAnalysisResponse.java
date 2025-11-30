@@ -11,9 +11,15 @@ import java.time.LocalDate;
 
 /**
  * Total Cost of Ownership Analysis Response
+ * 
+ * Enhanced with:
+ * - Multi-fuel support fields
+ * - Carbon emissions and costs
+ * - 5-year projections
+ * - Current vehicle value
  *
  * @author SEV Platform Team
- * @version 1.0.0
+ * @version 2.0.0
  */
 @Data
 @NoArgsConstructor
@@ -31,6 +37,7 @@ public class TCOAnalysisResponse {
     // Acquisition costs
     private BigDecimal purchasePrice;
     private BigDecimal depreciation;
+    private BigDecimal currentValue;
     private Integer ageMonths;
 
     // Operating costs (lifetime)
@@ -40,6 +47,10 @@ public class TCOAnalysisResponse {
     private BigDecimal taxesFees;
     private BigDecimal otherCosts;
 
+    // Carbon/ESG costs
+    private BigDecimal carbonEmissionsKg;
+    private BigDecimal carbonCost;
+
     // Totals and metrics
     private BigDecimal totalCost;
     private BigDecimal costPerKm;
@@ -47,7 +58,13 @@ public class TCOAnalysisResponse {
     private Integer analysisPeriodYears;
     private BigDecimal totalDistanceKm;
 
-    // ICE comparison (for EVs)
+    // 5-year projections
+    private BigDecimal projected5YrTotalCost;
+    private BigDecimal projected5YrEnergyCost;
+    private BigDecimal projected5YrMaintenanceCost;
+    private BigDecimal projected5YrCarbonCost;
+
+    // ICE comparison (for EVs/non-ICE)
     private ComparisonWithICE comparisonWithICE;
 
     @Data
