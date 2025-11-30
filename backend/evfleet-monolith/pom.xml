@@ -168,6 +168,13 @@
             <version>3.6.1</version>
         </dependency>
 
+        <!-- Razorpay SDK for Payment Gateway Integration -->
+        <dependency>
+            <groupId>com.razorpay</groupId>
+            <artifactId>razorpay-java</artifactId>
+            <version>1.4.6</version>
+        </dependency>
+
         <!-- Testing Dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

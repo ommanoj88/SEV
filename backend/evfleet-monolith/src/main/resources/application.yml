@@ -244,3 +244,19 @@ evfleet:
       enabled: true
       interval-seconds: 60  # Fetch telemetry every 60 seconds for all vehicles
       batch-size: 50  # Process 50 vehicles per batch
+
+# Razorpay Payment Gateway Configuration
+razorpay:
+  enabled: ${RAZORPAY_ENABLED:false}
+  key-id: ${RAZORPAY_KEY_ID:}
+  key-secret: ${RAZORPAY_KEY_SECRET:}
+  webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:}
+  test-mode: ${RAZORPAY_TEST_MODE:true}
+  currency: INR
+  payment-link-expiry-minutes: 60
+  max-retries: 3
+  api-timeout-ms: 30000
+  callback-url: ${RAZORPAY_CALLBACK_URL:http://localhost:3000/payment/callback}
+  webhook-url: ${RAZORPAY_WEBHOOK_URL:http://localhost:8080/api/v1/webhooks/razorpay}
+  company-name: SEV Fleet Management
+  order-description-prefix: "SEV Invoice Payment - "
