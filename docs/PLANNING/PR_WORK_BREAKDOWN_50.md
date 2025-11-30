@@ -511,20 +511,49 @@ After completion, Copilot Coding Agent should update each PR entry with:
 ---
 
 ### PR #18: Create Invoice Payment Workflow
+✅ **PR #18 DONE - November 30, 2025**
+
 **Files to Work On:** `backend/evfleet-monolith/src/main/java/com/evfleet/billing/service/InvoicePaymentService.java`  
 **Scope:** Complete invoice-to-payment workflow
 **Tasks:**
-1. Create InvoicePaymentService.java with:
+1. ✅ Create InvoicePaymentService.java with:
    - initiatePayment(invoiceId) - creates Razorpay order
    - handlePaymentSuccess(webhookPayload)
    - handlePaymentFailure(webhookPayload)
-2. Add payment status tracking (PENDING, PROCESSING, COMPLETED, FAILED)
-3. Add email notification on payment success
-4. Create payment receipt generation
-5. Add partial payment support
-6. Add unit tests
+2. ✅ Add payment status tracking (PENDING, PROCESSING, COMPLETED, FAILED)
+3. ✅ Add email notification on payment success
+4. ✅ Create payment receipt generation
+5. ✅ Add partial payment support
+6. ✅ Add unit tests
 
-**Success Criteria:** Complete payment workflow from invoice to receipt
+**Success Criteria:** ✅ Complete payment workflow from invoice to receipt
+
+**Implementation Details:**
+| Component | Lines | Key Features |
+|-----------|-------|--------------|
+| InvoicePaymentService.java | 490 | initiatePayment, handlePaymentSuccess/Failure, retryPayment |
+| PaymentEmailService.java | 290 | HTML email templates for success/failure/reminder |
+| InvoicePaymentRequest.java | 60 | Payment initiation request with partial payment support |
+| PaymentInitiationResponse.java | 75 | Checkout details for frontend integration |
+| PaymentReceiptResponse.java | 125 | Comprehensive receipt with formatted helpers |
+| PaymentSuccessRequest.java | 35 | Razorpay callback handling |
+| PaymentFailureRequest.java | 45 | Error details from Razorpay |
+| InvoicePaymentStatusResponse.java | 85 | Current payment status with progress |
+| InvoicePaymentHistoryResponse.java | 70 | Payment history records |
+| InvoicePaymentServiceTest.java | 510 | 15+ test cases covering all scenarios |
+
+| Feature | Status | Details |
+|---------|--------|---------|
+| Payment initiation | ✅ | Creates Razorpay order via RazorpayPaymentService |
+| Payment verification | ✅ | Signature verification and status update |
+| Partial payments | ✅ | Support multiple payments per invoice |
+| Payment receipts | ✅ | Generates receipt with all transaction details |
+| Email notifications | ✅ | Async HTML emails via PaymentEmailService |
+| In-app notifications | ✅ | Via NotificationRepository |
+| Payment status | ✅ | getPaymentStatus() with progress tracking |
+| Payment history | ✅ | getPaymentHistory() for all invoice payments |
+| Retry payments | ✅ | Expires old order, creates new one |
+| Metrics | ✅ | Micrometer counters for tracking |
 
 ---
 
