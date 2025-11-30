@@ -10,6 +10,8 @@ import com.evfleet.fleet.repository.VehicleRepository;
 import com.evfleet.telematics.dto.DrivingEventResponse;
 import com.evfleet.telematics.dto.TelematicsEventRequest;
 import com.evfleet.telematics.model.DrivingEvent;
+import com.evfleet.telematics.provider.FlespiTelematicsProvider;
+import com.evfleet.telematics.provider.TelemetryProvider;
 import com.evfleet.telematics.repository.DrivingEventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +19,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -37,6 +42,8 @@ public class TelematicsService {
     private final VehicleRepository vehicleRepository;
     private final DriverRepository driverRepository;
     private final TripRepository tripRepository;
+    private final List<TelemetryProvider> telemetryProviders;
+    private final Optional<FlespiTelematicsProvider> flespiProvider;
 
     /**
      * Ingest a telematics event from vehicle sensors
@@ -171,5 +178,64 @@ public class TelematicsService {
         public long getTotalEvents() {
             return harshBrakingCount + harshAccelerationCount + speedingCount + idlingCount;
         }
+    }
+
+    // ================ Provider Management Methods ================
+
+    /**
+     * Get health status of all configured telematics providers
+     */
+    @Transactional(readOnly = true)
+    public Map<String, Object> getProviderHealthStatus() {
+        log.info("Getting health status for all telematics providers");
+        
+        Map<String, Object> healthStatus = new HashMap<>();
+        healthStatus.put("timestamp", LocalDateTime.now());
+        healthStatus.put("totalProviders", telemetryProviders.size());
+        
+        Map<String, Object> providerStatuses = new HashMap<>();
+        for (TelemetryProvider provider : telemetryProviders) {
+            Map<String, Object> status = new HashMap<>();
+            status.put("name", provider.getProviderName());
+            status.put("sourceType", provider.getSourceType());
+            status.put("connected", provider.testConnection());
+            status.put("updateIntervalSeconds", provider.getUpdateIntervalSeconds());
+            status.put("supportedFields", provider.getSupportedDataFields());
+            providerStatuses.put(provider.getProviderId(), status);
+        }
+        
+        // Add flespi-specific health if available
+        if (flespiProvider.isPresent()) {
+            FlespiTelematicsProvider flespi = flespiProvider.get();
+            providerStatuses.put("flespi_detailed", flespi.getHealthStatus());
+        }
+        
+        healthStatus.put("providers", providerStatuses);
+        return healthStatus;
+    }
+
+    /**
+     * Get list of available telematics providers
+     */
+    @Transactional(readOnly = true)
+    public List<String> getAvailableProviders() {
+        log.info("Listing available telematics providers");
+        return telemetryProviders.stream()
+            .map(p -> p.getProviderId() + " (" + p.getProviderName() + ")")
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Test connection to a specific provider
+     */
+    @Transactional(readOnly = true)
+    public boolean testProviderConnection(String providerId) {
+        log.info("Testing connection to provider: {}", providerId);
+        
+        return telemetryProviders.stream()
+            .filter(p -> p.getProviderId().equals(providerId))
+            .findFirst()
+            .map(TelemetryProvider::testConnection)
+            .orElseThrow(() -> new ResourceNotFoundException("TelemetryProvider", "id", providerId));
     }
 }

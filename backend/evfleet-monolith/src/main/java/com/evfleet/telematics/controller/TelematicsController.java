@@ -88,4 +88,32 @@ public class TelematicsController {
         TelematicsService.DriverEventStats stats = telematicsService.getDriverEventStats(driverId, start, end);
         return ResponseEntity.ok(ApiResponse.success("Statistics retrieved successfully", stats));
     }
+
+    @GetMapping("/health")
+    @Operation(summary = "Get telematics provider health status")
+    public ResponseEntity<ApiResponse<Object>> getHealthStatus() {
+        log.info("GET /api/v1/telematics/health");
+        
+        Object healthStatus = telematicsService.getProviderHealthStatus();
+        return ResponseEntity.ok(ApiResponse.success("Health status retrieved", healthStatus));
+    }
+
+    @GetMapping("/providers")
+    @Operation(summary = "List all available telematics providers")
+    public ResponseEntity<ApiResponse<List<String>>> listProviders() {
+        log.info("GET /api/v1/telematics/providers");
+        
+        List<String> providers = telematicsService.getAvailableProviders();
+        return ResponseEntity.ok(ApiResponse.success("Providers listed", providers));
+    }
+
+    @PostMapping("/providers/{providerId}/test")
+    @Operation(summary = "Test connection to a specific telematics provider")
+    public ResponseEntity<ApiResponse<Boolean>> testProviderConnection(@PathVariable String providerId) {
+        log.info("POST /api/v1/telematics/providers/{}/test", providerId);
+        
+        boolean connected = telematicsService.testProviderConnection(providerId);
+        String message = connected ? "Provider connection successful" : "Provider connection failed";
+        return ResponseEntity.ok(ApiResponse.success(message, connected));
+    }
 }
