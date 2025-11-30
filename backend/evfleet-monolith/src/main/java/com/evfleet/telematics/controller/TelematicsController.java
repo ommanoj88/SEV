@@ -3,6 +3,7 @@ package com.evfleet.telematics.controller;
 import com.evfleet.common.dto.ApiResponse;
 import com.evfleet.telematics.dto.DrivingEventResponse;
 import com.evfleet.telematics.dto.TelematicsEventRequest;
+import com.evfleet.telematics.scheduler.TelemetrySyncScheduler;
 import com.evfleet.telematics.service.TelematicsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,6 +33,7 @@ import java.util.List;
 public class TelematicsController {
 
     private final TelematicsService telematicsService;
+    private final TelemetrySyncScheduler syncScheduler;
 
     @PostMapping("/events")
     @Operation(summary = "Ingest telematics event from vehicle sensors")
@@ -115,5 +117,44 @@ public class TelematicsController {
         boolean connected = telematicsService.testProviderConnection(providerId);
         String message = connected ? "Provider connection successful" : "Provider connection failed";
         return ResponseEntity.ok(ApiResponse.success(message, connected));
+    }
+
+    // ===== TELEMETRY SYNC ENDPOINTS =====
+
+    @PostMapping("/sync")
+    @Operation(summary = "Trigger a full telemetry sync for all vehicles")
+    public ResponseEntity<ApiResponse<String>> triggerFullSync() {
+        log.info("POST /api/v1/telematics/sync - Triggering full telemetry sync");
+        
+        syncScheduler.syncAllVehicleTelemetry();
+        return ResponseEntity.ok(ApiResponse.success("Telemetry sync triggered", "Sync completed"));
+    }
+
+    @PostMapping("/sync/vehicle/{vehicleId}")
+    @Operation(summary = "Trigger telemetry sync for a specific vehicle")
+    public ResponseEntity<ApiResponse<Boolean>> syncVehicle(@PathVariable Long vehicleId) {
+        log.info("POST /api/v1/telematics/sync/vehicle/{}", vehicleId);
+        
+        boolean success = syncScheduler.syncVehicleById(vehicleId);
+        String message = success ? "Vehicle telemetry synced successfully" : "Failed to sync vehicle telemetry";
+        return ResponseEntity.ok(ApiResponse.success(message, success));
+    }
+
+    @GetMapping("/sync/stats")
+    @Operation(summary = "Get telemetry sync statistics")
+    public ResponseEntity<ApiResponse<TelemetrySyncScheduler.SyncStatistics>> getSyncStats() {
+        log.info("GET /api/v1/telematics/sync/stats");
+        
+        TelemetrySyncScheduler.SyncStatistics stats = syncScheduler.getStatistics();
+        return ResponseEntity.ok(ApiResponse.success("Sync statistics retrieved", stats));
+    }
+
+    @PostMapping("/sync/vehicle/{vehicleId}/reset-backoff")
+    @Operation(summary = "Reset backoff state for a vehicle that was in error state")
+    public ResponseEntity<ApiResponse<String>> resetVehicleBackoff(@PathVariable Long vehicleId) {
+        log.info("POST /api/v1/telematics/sync/vehicle/{}/reset-backoff", vehicleId);
+        
+        syncScheduler.resetVehicleBackoff(vehicleId);
+        return ResponseEntity.ok(ApiResponse.success("Backoff reset", "Vehicle " + vehicleId + " backoff state cleared"));
     }
 }
