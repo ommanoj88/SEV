@@ -4,7 +4,7 @@ Welcome to the SEV project documentation! This folder contains all project docum
 
 ## 📁 Documentation Structure
 
-### 📊 ANALYSIS
+### 📊 ANALYSIS/
 Feature analysis documents organized by domain:
 - **CORE_FEATURES/** - Core fleet management features (1-9 series)
   - Multi-fuel support, vehicle registration, trip management
@@ -23,97 +23,70 @@ Feature analysis documents organized by domain:
   - Fleet summary, utilization, cost analytics, TCO
   - Energy tracking, PDF generation, historical data
 
-### 📐 ARCHITECTURE
+### 📐 ARCHITECTURE/
 Core system design documentation:
-- Microservices architecture design
-- Product concepts and enterprise architecture
-- Risk mitigation strategies
+- `emterprise_srchitechture.md` - Enterprise architecture overview
+- `Product_idea.md` - Product concepts and vision
+- `Risk_mitigation.md` - Risk mitigation strategies
+- `grooke_advice.md` - Technical guidance
 
-### 🔧 IMPLEMENTATION
-Implementation summaries and progress:
-- Feature implementation summaries
-- Bug fixes and improvements
-- Module completion reports
-
-### ✅ VERIFICATION
-Testing and verification reports:
-- Feature verification reports
-- Validation summaries
-- Multi-fuel validation documentation
-
-### 📖 GUIDES
-Implementation and operational guides:
-- Authentication flows
-- Backend integration
-- Chaos testing documentation
-- Service implementation guides
-- Telemetry implementation
-
-### 📋 PLANNING
-Strategic and planning documents:
-- Product concept documentation
-- Project roadmaps
-
-### 🎯 STRATEGIES
-Strategic documents for specific implementations:
-- 2-Wheeler GPS-only strategy
-
-### 📝 SESSION_NOTES
-Development session notes and progress:
-- Session summaries
-- Completion reports
-- Visual summaries
-- Testing guides
-
-### 🔗 MCP
-MCP (Model Context Protocol) documentation:
-- Quick start guides
-- Setup instructions
-- Command references
-- Service workflows
-
-### 📚 ARCHIVES
-Archived documentation and historical references:
-- Legacy guides and references
-
-### 🔧 BACKEND
+### 🔧 BACKEND/
 Backend-specific documentation:
-- Microservices architecture
-- Migration guides and verification
-- Bug fixes and improvements
-- Deployment and optimization guides
-- Implementation summaries
+- `DEPLOYMENT_GUIDE.md` - Deployment and release guide
+- `OPTIMIZATION_PLAN.md` - Performance optimization strategies
 
-### 🎨 FRONTEND
+### 🎨 FRONTEND/
 Frontend-specific documentation:
-- UI/UX design system
-- Backend integration guide
-- Visual changes and modernization
-- Error fixes and troubleshooting
+- `UI_DESIGN_SYSTEM.md` - UI/UX design system and components
+
+### 📖 GUIDES/
+Implementation and operational guides:
+- `AUTHENTICATION_FLOW.md` - Authentication and authorization flows
+- `BACKEND_INTEGRATION_GUIDE.md` - Backend integration patterns
+- `DEVELOPER_GUIDE.md` - Developer onboarding and setup
+- `RUNBOOK.md` - Operations runbook for production
+- `TELEMETRY_IMPLEMENTATION_GUIDE.md` - Telemetry and monitoring setup
+- `USER_GUIDE.md` - End-user documentation
+
+### 📋 PLANNING/
+Strategic and planning documents:
+- `PRODUCT_CONCEPT_DOCUMENTATION.md` - Product concept and roadmap
+- `PR_WORK_BREAKDOWN_50.md` - PR work breakdown (50 PRs)
+- `PR_QUICK_REFERENCE.md` - Quick reference for PRs
+
+### ✅ VERIFICATION/
+Testing and verification reports:
+- `MASTER_GAP_ANALYSIS.md` - Master gap analysis
+- `RESEARCH_VALIDATION_FINDINGS.md` - Research validation findings
+
+### 📄 Root Files
+- `APPLICATION_OVERVIEW.md` - Complete application overview
+- `OFFLINE_MODE_TROUBLESHOOTING.md` - Offline mode troubleshooting guide
+- `README.md` - This file
 
 ---
 
 ## Quick Navigation
 
 ### For Developers
-1. Start with `BACKEND/MICROSERVICES_ARCHITECTURE.md`
-2. Review analysis documents in `ANALYSIS/`
-3. Check `FRONTEND/BACKEND_INTEGRATION_GUIDE.md`
+1. Start with `APPLICATION_OVERVIEW.md` for system overview
+2. Review `GUIDES/DEVELOPER_GUIDE.md` for setup
+3. Check analysis documents in `ANALYSIS/` for feature details
+4. Review `GUIDES/BACKEND_INTEGRATION_GUIDE.md` for API integration
 
 ### For DevOps
-1. Read `BACKEND/DEPLOYMENT_GUIDE.md`
-2. Check `MCP/GUIDES/SETUP_GUIDE.md`
-3. Review `OFFLINE_MODE_TROUBLESHOOTING.md`
+1. Read `BACKEND/DEPLOYMENT_GUIDE.md` for deployment
+2. Check `GUIDES/RUNBOOK.md` for operations
+3. Review `GUIDES/TELEMETRY_IMPLEMENTATION_GUIDE.md` for monitoring
 
 ### For QA/Testing
-1. Read `GUIDES/CHAOS_TESTING_DOCUMENTATION.md`
-2. Check `VERIFICATION/` for test results
-3. Review `SESSION_NOTES/FLEET_FEATURE_TESTING_GUIDE.md`
+1. Check `VERIFICATION/` for test results and gaps
+2. Review analysis docs for expected behavior
 
 ### For Product/Management
-1. Check `APPLICATION_OVERVIEW.md`
-2. Review `PLANNING/PRODUCT_CONCEPT_DOCUMENTATION.md`
-3. Check implementation progress in `IMPLEMENTATION/`
+1. Check `APPLICATION_OVERVIEW.md` for system overview
+2. Review `PLANNING/PRODUCT_CONCEPT_DOCUMENTATION.md` for roadmap
+3. Check `ARCHITECTURE/` for system design
 
 ---
 
@@ -124,10 +97,7 @@ Frontend-specific documentation:
 | Document Type | Location | Naming Convention |
 |---------------|----------|-------------------|
 | Feature Analysis | `ANALYSIS/<CATEGORY>/` | `<NUMBER>.<FEATURE_NAME>_ANALYSIS.md` |
-| Implementation Summary | `IMPLEMENTATION/` | `IMPLEMENTATION_<FEATURE>_SUMMARY.md` |
-| Verification Report | `VERIFICATION/` | `VERIFICATION_<FEATURE>.md` |
-| Strategy Document | `STRATEGIES/` | `<FEATURE>_STRATEGY.md` |
-| Session Notes | `SESSION_NOTES/` | `SESSION_SUMMARY_<DATE>.md` |
+| Verification Report | `VERIFICATION/` | `<FEATURE>_VERIFICATION.md` |
 | Backend-specific | `BACKEND/` | Descriptive name |
 | Frontend-specific | `FRONTEND/` | Descriptive name |
 | Guides/How-to | `GUIDES/` | `<TOPIC>_GUIDE.md` |
@@ -137,8 +107,8 @@ Frontend-specific documentation:
 - Include creation/update dates in document headers
 - Use markdown formatting consistently
 - Keep technical documentation close to the code it documents
-- Archive outdated documentation to `ARCHIVES/`
 
 ---
 
-**Last Updated:** November 25, 2025
+**Last Updated:** November 30, 2025
+**Architecture:** Modular Monolith
