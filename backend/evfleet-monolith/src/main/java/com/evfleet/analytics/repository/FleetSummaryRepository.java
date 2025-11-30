@@ -2,6 +2,7 @@ package com.evfleet.analytics.repository;
 
 import com.evfleet.analytics.model.FleetSummary;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -13,4 +14,7 @@ public interface FleetSummaryRepository extends JpaRepository<FleetSummary, Long
     List<FleetSummary> findByCompanyId(Long companyId);
     Optional<FleetSummary> findByCompanyIdAndSummaryDate(Long companyId, LocalDate summaryDate);
     List<FleetSummary> findByCompanyIdAndSummaryDateBetween(Long companyId, LocalDate startDate, LocalDate endDate);
+    
+    @Query("SELECT DISTINCT f.companyId FROM FleetSummary f")
+    List<Long> findDistinctCompanyIds();
 }
