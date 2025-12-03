@@ -56,7 +56,7 @@ import {
   ArrowDownward as ArrowDownIcon,
   Compare as CompareIcon,
   Assessment as ReportIcon,
-  Eco as EcoIcon,
+  EnergySavingsLeaf as EcoIcon,
   Speed as SpeedIcon,
   Route as RouteIcon,
   AccountBalance as BudgetIcon,
@@ -270,25 +270,28 @@ const AnomalyItem: React.FC<AnomalyItemProps> = ({ anomaly }) => {
       case 'high': return 'error';
       case 'medium': return 'warning';
       case 'low': return 'info';
-      default: return 'default';
+      default: return 'grey';
     }
   };
+
+  const severityColor = getSeverityColor();
+  const paletteColor = theme.palette[severityColor as keyof typeof theme.palette] as { main: string };
 
   return (
     <ListItem
       sx={{
         borderRadius: 1,
         mb: 1,
-        bgcolor: alpha(theme.palette[getSeverityColor()].main, 0.05),
+        bgcolor: alpha(paletteColor?.main || theme.palette.grey[500], 0.05),
         border: '1px solid',
-        borderColor: alpha(theme.palette[getSeverityColor()].main, 0.2),
+        borderColor: alpha(paletteColor?.main || theme.palette.grey[500], 0.2),
       }}
     >
       <ListItemIcon>
         <Avatar
           sx={{
-            bgcolor: alpha(theme.palette[getSeverityColor()].main, 0.15),
-            color: `${getSeverityColor()}.main`,
+            bgcolor: alpha(paletteColor?.main || theme.palette.grey[500], 0.15),
+            color: `${severityColor}.main`,
           }}
         >
           <WarningIcon />
@@ -298,7 +301,7 @@ const AnomalyItem: React.FC<AnomalyItemProps> = ({ anomaly }) => {
         primary={
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Typography fontWeight={600}>{anomaly.category}</Typography>
-            <Chip size="small" label={anomaly.type.replace('_', ' ')} color={getSeverityColor()} variant="outlined" />
+            <Chip size="small" label={anomaly.type.replace('_', ' ')} color={severityColor === 'grey' ? 'default' : severityColor as 'error' | 'warning' | 'info'} variant="outlined" />
           </Box>
         }
         secondary={

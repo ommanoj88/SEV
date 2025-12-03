@@ -21,7 +21,7 @@ export default defineConfig({
     baseURL: process.env.BASE_URL || 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
-    video: 'on-first-retry',
+    video: 'retain-on-failure', // Keep videos for failed tests
     actionTimeout: 10000,
     navigationTimeout: 30000,
   },
@@ -40,6 +40,30 @@ export default defineConfig({
       },
       dependencies: ['setup'],
     },
+    // UI tests - uses browser with authentication - RECORDS VIDEO
+    {
+      name: 'ui',
+      testMatch: /ui\/.*\.spec\.ts/,
+      use: { 
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/user.json',
+        video: 'on', // Always record video for UI tests
+        viewport: { width: 1280, height: 720 },
+      },
+      dependencies: ['setup'],
+    },
+    // E2E tests - full user journeys - RECORDS VIDEO
+    {
+      name: 'e2e',
+      testMatch: /e2e\/.*\.spec\.ts/,
+      use: { 
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/user.json',
+        video: 'on', // Always record video for E2E tests
+        viewport: { width: 1280, height: 720 },
+      },
+      dependencies: ['setup'],
+    },
     {
       name: 'api',
       testMatch: /api\/.*\.spec\.ts/,
@@ -47,10 +71,12 @@ export default defineConfig({
     },
   ],
 
-  webServer: {
-    command: 'cd ../frontend && npm start',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120000,
-  },
+  // WebServer is optional - only used for UI tests, not API tests
+  // Backend should be started separately before running tests
+  // webServer: {
+  //   command: 'cd ../frontend && npm start',
+  //   url: 'http://localhost:3000',
+  //   reuseExistingServer: !process.env.CI,
+  //   timeout: 120000,
+  // },
 });

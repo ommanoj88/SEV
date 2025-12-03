@@ -169,7 +169,7 @@ public class PaymentWebhookController {
             webhookDuplicateCounter.increment();
             
             // If already processed successfully, return success
-            if (existing.getStatus() == WebhookStatus.COMPLETED) {
+            if (existing.getStatus() == WebhookStatus.PROCESSED) {
                 return ResponseEntity.ok(Map.of(
                         "status", "success",
                         "message", "Event already processed",
@@ -203,7 +203,7 @@ public class PaymentWebhookController {
         if (!signatureValid) {
             log.warn("Invalid webhook signature for event: {}", eventId);
             signatureInvalidCounter.increment();
-            webhookEvent.markAsFailed("Signature verification failed");
+            webhookEvent.markFailed("Signature verification failed");
             webhookEventRepository.save(webhookEvent);
             
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -212,12 +212,12 @@ public class PaymentWebhookController {
 
         // Process the event
         try {
-            webhookEvent.markAsProcessing();
+            webhookEvent.startProcessing();
             webhookEventRepository.save(webhookEvent);
 
             processEvent(eventType, payloadNode);
 
-            webhookEvent.markAsCompleted();
+            webhookEvent.markProcessed();
             webhookEventRepository.save(webhookEvent);
             webhookProcessedCounter.increment();
 
@@ -231,7 +231,7 @@ public class PaymentWebhookController {
 
         } catch (Exception e) {
             log.error("Failed to process webhook event {}: {}", eventId, e.getMessage(), e);
-            webhookEvent.markAsFailed(e.getMessage());
+            webhookEvent.markFailed(e.getMessage());
             webhookEventRepository.save(webhookEvent);
             webhookFailedCounter.increment();
 

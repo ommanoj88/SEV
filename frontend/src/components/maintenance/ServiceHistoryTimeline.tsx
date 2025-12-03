@@ -84,7 +84,7 @@ import {
   Receipt,
   Speed,
   BatteryChargingFull,
-  Tire,
+  TireRepair,
   AcUnit,
   Settings,
   LocalShipping,
@@ -170,7 +170,7 @@ const serviceTypeConfig: Record<ServiceType, { icon: React.ReactNode; label: str
   routine: { icon: <Build />, label: 'Routine Service', color: '#4CAF50' },
   repair: { icon: <Settings />, label: 'Repair', color: '#F44336' },
   battery: { icon: <BatteryChargingFull />, label: 'Battery Service', color: '#2196F3' },
-  tire: { icon: <Tire />, label: 'Tire Service', color: '#795548' },
+  tire: { icon: <TireRepair />, label: 'Tire Service', color: '#795548' },
   brake: { icon: <Speed />, label: 'Brake Service', color: '#FF9800' },
   hvac: { icon: <AcUnit />, label: 'HVAC', color: '#00BCD4' },
   recall: { icon: <Warning />, label: 'Recall', color: '#9C27B0' },
@@ -619,7 +619,7 @@ export const ServiceHistoryTimeline: React.FC = () => {
         <Timeline position="alternate">
           {filteredEvents.map((event, index) => (
             <TimelineItem key={event.id}>
-              <TimelineOppositeContent color="text.secondary">
+              <TimelineOppositeContent sx={{ color: 'text.secondary' }}>
                 <Typography variant="body2">
                   {format(event.date, 'MMM dd, yyyy')}
                 </Typography>

@@ -3,9 +3,6 @@ package com.evfleet.billing.config;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.validation.annotation.Validated;
-
-import jakarta.validation.constraints.NotBlank;
 
 /**
  * Razorpay Configuration Properties
@@ -23,22 +20,24 @@ import jakarta.validation.constraints.NotBlank;
 @Configuration
 @ConfigurationProperties(prefix = "razorpay")
 @Data
-@Validated
 public class RazorpayConfig {
+    
+    /**
+     * Whether Razorpay integration is enabled
+     */
+    private boolean enabled = false;
     
     /**
      * Razorpay API Key ID
      * Get from: https://dashboard.razorpay.com/app/keys
      */
-    @NotBlank(message = "Razorpay Key ID is required")
-    private String keyId;
+    private String keyId = "";
     
     /**
      * Razorpay API Key Secret
      * Get from: https://dashboard.razorpay.com/app/keys
      */
-    @NotBlank(message = "Razorpay Key Secret is required")
-    private String keySecret;
+    private String keySecret = "";
     
     /**
      * Webhook Secret for signature verification
@@ -81,11 +80,6 @@ public class RazorpayConfig {
      * Webhook URL for payment events
      */
     private String webhookUrl;
-    
-    /**
-     * Whether Razorpay integration is enabled
-     */
-    private boolean enabled = false;
     
     /**
      * Company name to display on Razorpay checkout

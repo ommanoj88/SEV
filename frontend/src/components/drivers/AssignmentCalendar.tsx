@@ -40,7 +40,7 @@ import {
   Refresh,
 } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '@redux/hooks';
-import { fetchDrivers } from '@redux/slices/driverSlice';
+import { fetchAllDrivers as fetchDrivers } from '@redux/slices/driverSlice';
 import { fetchVehicles } from '@redux/slices/vehicleSlice';
 import { formatDate } from '@utils/formatters';
 
@@ -159,7 +159,7 @@ const AssignmentCalendar: React.FC = () => {
   });
 
   useEffect(() => {
-    dispatch(fetchDrivers());
+    dispatch(fetchDrivers(undefined));
     dispatch(fetchVehicles());
   }, [dispatch]);
 
@@ -300,7 +300,7 @@ const AssignmentCalendar: React.FC = () => {
         driverId: formData.driverId,
         driverName: `${driver.firstName} ${driver.lastName}`,
         vehicleId: formData.vehicleId,
-        vehicleNumber: vehicle.vehicleNumber,
+        vehicleNumber: vehicle.licensePlate,
         vehicleType: vehicle.type || 'SEDAN',
         startDate: formData.startDate,
         endDate: formData.endDate,

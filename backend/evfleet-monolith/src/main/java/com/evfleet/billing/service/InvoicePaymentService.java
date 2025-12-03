@@ -18,8 +18,8 @@ import com.evfleet.notification.repository.NotificationRepository;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +52,6 @@ import java.util.UUID;
  */
 @Service
 @Slf4j
-@RequiredArgsConstructor
 @Transactional
 public class InvoicePaymentService {
 
@@ -63,6 +62,23 @@ public class InvoicePaymentService {
     private final PaymentOrderRepository paymentOrderRepository;
     private final NotificationRepository notificationRepository;
     private final MeterRegistry meterRegistry;
+
+    public InvoicePaymentService(
+            RazorpayPaymentService razorpayPaymentService,
+            @Autowired(required = false) PaymentEmailService paymentEmailService,
+            InvoiceRepository invoiceRepository,
+            PaymentRepository paymentRepository,
+            PaymentOrderRepository paymentOrderRepository,
+            NotificationRepository notificationRepository,
+            MeterRegistry meterRegistry) {
+        this.razorpayPaymentService = razorpayPaymentService;
+        this.paymentEmailService = paymentEmailService;
+        this.invoiceRepository = invoiceRepository;
+        this.paymentRepository = paymentRepository;
+        this.paymentOrderRepository = paymentOrderRepository;
+        this.notificationRepository = notificationRepository;
+        this.meterRegistry = meterRegistry;
+    }
 
     private Counter paymentInitiatedCounter;
     private Counter paymentCompletedCounter;
@@ -202,7 +218,7 @@ public class InvoicePaymentService {
         sendPaymentSuccessNotification(invoice, payment, isPartialPayment);
 
         // Send email notification with receipt (async)
-        if (paymentOrder.getCustomerEmail() != null) {
+        if (paymentEmailService != null && paymentOrder.getCustomerEmail() != null) {
             paymentEmailService.sendPaymentSuccessEmail(paymentOrder.getCustomerEmail(), receipt);
         }
 
@@ -255,7 +271,7 @@ public class InvoicePaymentService {
         sendPaymentFailureNotification(invoice, errorDescription);
 
         // Send email notification (async)
-        if (paymentOrder.getCustomerEmail() != null) {
+        if (paymentEmailService != null && paymentOrder.getCustomerEmail() != null) {
             paymentEmailService.sendPaymentFailureEmail(
                     paymentOrder.getCustomerEmail(),
                     invoice.getInvoiceNumber(),

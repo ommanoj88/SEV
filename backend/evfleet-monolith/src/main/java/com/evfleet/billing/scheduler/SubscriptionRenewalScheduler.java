@@ -60,7 +60,7 @@ public class SubscriptionRenewalScheduler {
             InvoiceRepository invoiceRepository,
             BillingAddressRepository billingAddressRepository,
             BillingService billingService,
-            PaymentEmailService paymentEmailService,
+            @Autowired(required = false) PaymentEmailService paymentEmailService,
             MeterRegistry meterRegistry,
             @Autowired(required = false) Clock clock) {
         this.subscriptionRepository = subscriptionRepository;
@@ -285,6 +285,10 @@ public class SubscriptionRenewalScheduler {
     // ==================== Helper Methods ====================
 
     private void sendReminderEmail(Subscription subscription) {
+        if (paymentEmailService == null) {
+            log.debug("PaymentEmailService not available, skipping reminder email");
+            return;
+        }
         String email = getCompanyEmail(subscription.getCompanyId());
         if (email == null) {
             log.warn("No email found for company {}", subscription.getCompanyId());
@@ -305,6 +309,10 @@ public class SubscriptionRenewalScheduler {
     }
 
     private void sendGracePeriodWarning(Subscription subscription, LocalDate today) {
+        if (paymentEmailService == null) {
+            log.debug("PaymentEmailService not available, skipping grace period warning");
+            return;
+        }
         String email = getCompanyEmail(subscription.getCompanyId());
         if (email == null) return;
 
@@ -321,6 +329,10 @@ public class SubscriptionRenewalScheduler {
     }
 
     private void sendSuspensionNotification(Subscription subscription) {
+        if (paymentEmailService == null) {
+            log.debug("PaymentEmailService not available, skipping suspension notification");
+            return;
+        }
         String email = getCompanyEmail(subscription.getCompanyId());
         if (email == null) return;
 
@@ -332,6 +344,10 @@ public class SubscriptionRenewalScheduler {
     }
 
     private void sendInvoiceNotification(Subscription subscription, Invoice invoice) {
+        if (paymentEmailService == null) {
+            log.debug("PaymentEmailService not available, skipping invoice notification");
+            return;
+        }
         String email = getCompanyEmail(subscription.getCompanyId());
         if (email == null) return;
 

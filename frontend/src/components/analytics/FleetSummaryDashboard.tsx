@@ -59,7 +59,7 @@ import {
   BatteryChargingFull as BatteryIcon,
   Speed as SpeedIcon,
   AttachMoney as MoneyIcon,
-  Eco as EcoIcon,
+  EnergySavingsLeaf as EcoIcon,
   LocationOn as LocationIcon,
   NotificationsActive as AlertIcon,
   Close as CloseIcon,

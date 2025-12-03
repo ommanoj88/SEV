@@ -55,8 +55,8 @@ import {
   Map as MapIcon,
   Satellite as SatelliteIcon,
 } from '@mui/icons-material';
-import { useAppSelector } from '../../store/hooks';
-import { selectChargingStations } from '../../store/slices/chargingSlice';
+import { useAppSelector } from '../../redux/hooks';
+import { selectStations as selectChargingStations } from '../../redux/slices/chargingSlice';
 
 // Types for charging station with real-time status
 interface ChargingPort {

@@ -56,7 +56,7 @@ import {
   TableRow,
 } from '@mui/material';
 import {
-  Eco as EcoIcon,
+  EnergySavingsLeaf as EcoIcon,
   Co2 as Co2Icon,
   Assessment as ReportIcon,
   Download as DownloadIcon,

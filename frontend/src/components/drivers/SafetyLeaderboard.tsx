@@ -36,8 +36,8 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@redux/hooks';
-import { fetchDriverLeaderboard, selectDriverLeaderboard } from '@redux/slices/driverSlice';
-import { DriverLeaderboard as DriverLeaderboardType } from '@/types';
+import { fetchLeaderboard as fetchDriverLeaderboard, selectLeaderboard as selectDriverLeaderboard } from '@redux/slices/driverSlice';
+import { DriverLeaderboard as DriverLeaderboardType } from '../../types';
 
 /**
  * Safety Leaderboard Component
@@ -143,14 +143,14 @@ const SafetyLeaderboard: React.FC = () => {
   const dispatch = useAppDispatch();
   
   const { loading } = useAppSelector((state) => state.drivers);
-  const leaderboardData = useAppSelector(selectDriverLeaderboard);
+  const leaderboardData = useAppSelector(selectDriverLeaderboard) as DriverLeaderboardType[];
   
   const [timePeriod, setTimePeriod] = useState<'week' | 'month' | 'quarter' | 'year'>('month');
   const [refreshing, setRefreshing] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchDriverLeaderboard({ period: timePeriod }));
+    dispatch(fetchDriverLeaderboard(10));
     // Trigger animation after data loads
     setTimeout(() => setShowAnimation(true), 100);
   }, [dispatch, timePeriod]);
@@ -206,7 +206,7 @@ const SafetyLeaderboard: React.FC = () => {
   const handleRefresh = async () => {
     setRefreshing(true);
     setShowAnimation(false);
-    await dispatch(fetchDriverLeaderboard({ period: timePeriod }));
+    await dispatch(fetchDriverLeaderboard(10));
     setTimeout(() => {
       setShowAnimation(true);
       setRefreshing(false);

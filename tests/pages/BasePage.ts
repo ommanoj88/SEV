@@ -13,9 +13,35 @@ export class BasePage {
     this.errorMessage = page.locator('.error-message, .MuiAlert-root');
   }
 
+  /**
+   * Remove webpack dev server overlay that may intercept clicks
+   */
+  async removeDevOverlays() {
+    await this.page.evaluate(() => {
+      // Remove webpack dev server overlay
+      const overlay = document.getElementById('webpack-dev-server-client-overlay');
+      if (overlay) overlay.remove();
+      
+      // Remove any error overlays or iframes that might block interactions
+      const iframes = document.querySelectorAll('iframe[id*="webpack"], iframe[src="about:blank"]');
+      iframes.forEach(el => el.remove());
+      
+      // Remove any full-screen overlays
+      const overlays = document.querySelectorAll('[id*="overlay"]:not([role])');
+      overlays.forEach(el => {
+        if ((el as HTMLElement).style.position === 'fixed' || 
+            (el as HTMLElement).style.position === 'absolute') {
+          el.remove();
+        }
+      });
+    });
+  }
+
   async waitForPageLoad() {
     await this.page.waitForLoadState('networkidle');
     await this.loadingSpinner.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {});
+    // Remove any dev overlays after page load
+    await this.removeDevOverlays();
   }
 
   async waitForSpinnerToDisappear() {

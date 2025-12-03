@@ -24,20 +24,29 @@ export class LoginPage extends BasePage {
   async goto() {
     await this.page.goto('/login');
     await this.waitForPageLoad();
+    await this.removeDevOverlays();
   }
 
   async login(email: string, password: string) {
+    await this.removeDevOverlays();
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
-    await this.loginButton.click();
+    await this.removeDevOverlays();
+    await this.loginButton.click({ force: true });
     await this.waitForSpinnerToDisappear();
   }
 
   async loginWithRememberMe(email: string, password: string) {
+    await this.removeDevOverlays();
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
-    await this.rememberMeCheckbox.check();
-    await this.loginButton.click();
+    // Check if remember me checkbox exists
+    const hasRememberMe = await this.rememberMeCheckbox.isVisible().catch(() => false);
+    if (hasRememberMe) {
+      await this.rememberMeCheckbox.check({ force: true });
+    }
+    await this.removeDevOverlays();
+    await this.loginButton.click({ force: true });
     await this.waitForSpinnerToDisappear();
   }
 

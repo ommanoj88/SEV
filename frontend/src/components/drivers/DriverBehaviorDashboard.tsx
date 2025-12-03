@@ -57,7 +57,7 @@ import {
   BarChart,
   Bar,
 } from 'recharts';
-import { DriverBehavior } from '@/types';
+import { DriverBehavior } from '../../types';
 
 /**
  * Driver Behavior Dashboard Component

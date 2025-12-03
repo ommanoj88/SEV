@@ -73,7 +73,7 @@ import {
   AutoGraph,
   Timer,
   Speed,
-  Tire,
+  TireRepair,
   Thermostat,
   Memory,
   Settings,
@@ -305,7 +305,7 @@ const componentConfig: Record<ComponentType, { icon: React.ReactNode; label: str
   battery: { icon: <BatteryAlert />, label: 'Battery', color: '#4CAF50' },
   motor: { icon: <Speed />, label: 'Motor', color: '#2196F3' },
   brakes: { icon: <Warning />, label: 'Brakes', color: '#F44336' },
-  tires: { icon: <Tire />, label: 'Tires', color: '#795548' },
+  tires: { icon: <TireRepair />, label: 'Tires', color: '#795548' },
   hvac: { icon: <Thermostat />, label: 'HVAC', color: '#00BCD4' },
   suspension: { icon: <DirectionsCar />, label: 'Suspension', color: '#9C27B0' },
   charging_port: { icon: <Memory />, label: 'Charging Port', color: '#FF9800' },
@@ -752,7 +752,7 @@ export const PredictiveAlerts: React.FC = () => {
         <DialogContent>
           {selectedAlert && (
             <Box sx={{ mt: 1 }}>
-              <Alert severity={selectedAlert.severity} sx={{ mb: 2 }}>
+              <Alert severity={selectedAlert.severity === 'critical' ? 'error' : selectedAlert.severity} sx={{ mb: 2 }}>
                 <AlertTitle>{selectedAlert.title}</AlertTitle>
                 {selectedAlert.vehicleName} - {componentConfig[selectedAlert.component].label}
               </Alert>

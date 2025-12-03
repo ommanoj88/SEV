@@ -4,6 +4,7 @@ import com.evfleet.billing.dto.PaymentReceiptResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -27,6 +28,7 @@ import java.math.BigDecimal;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "spring.mail.host")
 public class PaymentEmailService {
 
     private final JavaMailSender mailSender;

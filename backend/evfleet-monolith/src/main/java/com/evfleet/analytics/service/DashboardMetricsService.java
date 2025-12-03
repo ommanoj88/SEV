@@ -463,7 +463,7 @@ public class DashboardMetricsService {
         // Count vehicles with low battery
         long lowBatteryCount = vehicles.stream()
                 .filter(v -> v.getFuelType() == FuelType.EV || v.getFuelType() == FuelType.HYBRID)
-                .filter(v -> v.getBatteryLevel() != null && v.getBatteryLevel().compareTo(BATTERY_LOW) < 0)
+                .filter(v -> v.getCurrentBatterySoc() != null && new BigDecimal(v.getCurrentBatterySoc()).compareTo(BATTERY_LOW) < 0)
                 .count();
 
         if (lowBatteryCount > 0) {

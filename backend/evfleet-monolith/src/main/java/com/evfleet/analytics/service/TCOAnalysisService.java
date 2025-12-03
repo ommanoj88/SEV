@@ -428,8 +428,8 @@ public class TCOAnalysisService {
         List<ChargingSession> sessions = chargingSessionRepository.findByVehicleId(vehicle.getId());
         
         BigDecimal actualCost = sessions.stream()
-                .filter(s -> s.getTotalCost() != null)
-                .map(ChargingSession::getTotalCost)
+                .filter(s -> s.getCost() != null)
+                .map(ChargingSession::getCost)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         
         if (actualCost.compareTo(BigDecimal.ZERO) == 0 && totalDistance > 0) {
@@ -461,8 +461,8 @@ public class TCOAnalysisService {
         List<MaintenanceRecord> records = maintenanceRecordRepository.findByVehicleId(vehicle.getId());
         
         return records.stream()
-                .filter(m -> m.getActualCost() != null)
-                .map(MaintenanceRecord::getActualCost)
+                .filter(m -> m.getCost() != null)
+                .map(MaintenanceRecord::getCost)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 

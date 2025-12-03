@@ -45,7 +45,7 @@ import {
   Savings as SavingsIcon,
   Co2 as Co2Icon,
   Analytics as AnalyticsIcon,
-  Eco as EcoIcon,
+  EnergySavingsLeaf as EcoIcon,
   Timer as TimerIcon,
 } from '@mui/icons-material';
 import {

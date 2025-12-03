@@ -34,5 +34,26 @@ public enum FuelType {
      * Requires: Both batteryCapacity+currentBatterySoc AND fuelTankCapacity+fuelLevel
      * Features: All features from both ICE and EV
      */
-    HYBRID
+    HYBRID,
+
+    /**
+     * Compressed Natural Gas vehicles
+     * Requires: cngTankCapacity, cngLevel
+     * Features: CNG consumption tracking
+     */
+    CNG,
+
+    /**
+     * Liquefied Petroleum Gas vehicles
+     * Requires: lpgTankCapacity, lpgLevel
+     * Features: LPG consumption tracking
+     */
+    LPG,
+
+    /**
+     * Diesel fuel vehicles
+     * Requires: fuelTankCapacity, fuelLevel
+     * Features: Diesel consumption tracking
+     */
+    DIESEL
 }
