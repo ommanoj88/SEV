@@ -33,7 +33,7 @@ This is a **Spring Modulith-based** modular monolith consolidating 11 microservi
 
 ```bash
 # Start infrastructure
-docker-compose up -d postgres redis rabbitmq
+docker-compose up -d postgres redis
 
 # Run application
 mvn spring-boot:run

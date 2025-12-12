@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 
 # Final Service Files Generator - Creates all remaining essential files
 
@@ -45,29 +45,29 @@ package com.evfleet.maintenance.infrastructure.messaging.publisher;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+// RabbitMQ removed - using Spring Modulith ApplicationEvents
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class MaintenanceEventPublisher {
-    private final RabbitTemplate rabbitTemplate;
+    private final ApplicationEventPublisher ApplicationEventPublisher;
     private static final String EXCHANGE = "maintenance.events";
 
     public void publishMaintenanceScheduled(Object event) {
         log.info("Publishing MaintenanceScheduled event");
-        rabbitTemplate.convertAndSend(EXCHANGE, "maintenance.scheduled", event);
+        ApplicationEventPublisher.convertAndSend(EXCHANGE, "maintenance.scheduled", event);
     }
 
     public void publishMaintenanceCompleted(Object event) {
         log.info("Publishing MaintenanceCompleted event");
-        rabbitTemplate.convertAndSend(EXCHANGE, "maintenance.completed", event);
+        ApplicationEventPublisher.convertAndSend(EXCHANGE, "maintenance.completed", event);
     }
 
     public void publishBatteryHealthDegraded(Object event) {
         log.info("Publishing BatteryHealthDegraded event");
-        rabbitTemplate.convertAndSend(EXCHANGE, "battery.health.degraded", event);
+        ApplicationEventPublisher.convertAndSend(EXCHANGE, "battery.health.degraded", event);
     }
 }
 EOF
@@ -158,24 +158,24 @@ package com.evfleet.driver.infrastructure.messaging.publisher;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+// RabbitMQ removed - using Spring Modulith ApplicationEvents
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class DriverEventPublisher {
-    private final RabbitTemplate rabbitTemplate;
+    private final ApplicationEventPublisher ApplicationEventPublisher;
     private static final String EXCHANGE = "driver.events";
 
     public void publishDriverRegistered(Object event) {
         log.info("Publishing DriverRegistered event");
-        rabbitTemplate.convertAndSend(EXCHANGE, "driver.registered", event);
+        ApplicationEventPublisher.convertAndSend(EXCHANGE, "driver.registered", event);
     }
 
     public void publishDriverAssigned(Object event) {
         log.info("Publishing DriverAssigned event");
-        rabbitTemplate.convertAndSend(EXCHANGE, "driver.assigned", event);
+        ApplicationEventPublisher.convertAndSend(EXCHANGE, "driver.assigned", event);
     }
 }
 EOF
@@ -248,7 +248,7 @@ package com.evfleet.analytics.infrastructure.messaging.consumer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
+// RabbitMQ removed - using Spring Modulith ApplicationEvents
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -256,19 +256,19 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AnalyticsEventConsumer {
 
-    @RabbitListener(queues = "analytics.trip.completed.queue")
+    @EventListener(queues = "analytics.trip.completed.queue")
     public void handleTripCompleted(String message) {
         log.info("Received trip completed event: {}", message);
         // Update analytics
     }
 
-    @RabbitListener(queues = "analytics.charging.completed.queue")
+    @EventListener(queues = "analytics.charging.completed.queue")
     public void handleChargingCompleted(String message) {
         log.info("Received charging completed event: {}", message);
         // Update energy cost analytics
     }
 
-    @RabbitListener(queues = "analytics.maintenance.completed.queue")
+    @EventListener(queues = "analytics.maintenance.completed.queue")
     public void handleMaintenanceCompleted(String message) {
         log.info("Received maintenance completed event: {}", message);
         // Update maintenance cost analytics
@@ -333,7 +333,7 @@ package com.evfleet.notification.infrastructure.messaging.consumer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
+// RabbitMQ removed - using Spring Modulith ApplicationEvents
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -341,25 +341,25 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class NotificationEventConsumer {
 
-    @RabbitListener(queues = "notification.battery.low.queue")
+    @EventListener(queues = "notification.battery.low.queue")
     public void handleBatteryLow(String message) {
         log.info("Received battery low event: {}", message);
         // Send battery low notification
     }
 
-    @RabbitListener(queues = "notification.maintenance.due.queue")
+    @EventListener(queues = "notification.maintenance.due.queue")
     public void handleMaintenanceDue(String message) {
         log.info("Received maintenance due event: {}", message);
         // Send maintenance reminder
     }
 
-    @RabbitListener(queues = "notification.charging.completed.queue")
+    @EventListener(queues = "notification.charging.completed.queue")
     public void handleChargingCompleted(String message) {
         log.info("Received charging completed event: {}", message);
         // Send charging receipt
     }
 
-    @RabbitListener(queues = "notification.trip.completed.queue")
+    @EventListener(queues = "notification.trip.completed.queue")
     public void handleTripCompleted(String message) {
         log.info("Received trip completed event: {}", message);
         // Send trip summary

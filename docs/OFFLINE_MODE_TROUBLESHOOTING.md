@@ -219,7 +219,7 @@ If issues persist:
 
 1. Check the `run_app.py` output for service startup errors
 2. Verify all required ports are available
-3. Ensure Docker services are running (PostgreSQL, Redis, RabbitMQ)
+3. Ensure Docker services are running (PostgreSQL, Redis)
 4. Review browser console for specific error messages
 5. Check backend service logs in Docker Compose output
 

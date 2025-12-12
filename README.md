@@ -106,7 +106,6 @@ This platform provides end-to-end visibility and control over commercial electri
 - **Microservices**: Spring Cloud (Gateway, Eureka, Config)
 - **Database**: PostgreSQL 15+
 - **Cache**: Redis 7+
-- **Message Queue**: RabbitMQ 3.12+
 - **Authentication**: Firebase Admin SDK
 
 ### Frontend
@@ -144,9 +143,8 @@ The application follows a microservices architecture with the following componen
 11. **Billing Service** (Port 8088) - Cost Tracking & Invoicing
 
 ### Data Stores
-- **PostgreSQL**: Separate database for each microservice
+- **PostgreSQL**: Separate database for each module
 - **Redis**: Caching and session management
-- **RabbitMQ**: Event-driven communication
 
 ### Frontend
 - **React App** (Port 3000) - Web Application
@@ -268,17 +266,13 @@ FIREBASE_PROJECT_ID=your_project_id
 # Database Configuration
 POSTGRES_USER=evfleet
 POSTGRES_PASSWORD=evfleet123
-
-# RabbitMQ Configuration
-RABBITMQ_USER=evfleet
-RABBITMQ_PASSWORD=evfleet123
 ```
 
 ### 5. Start Infrastructure Services with Docker Compose
 
 ```bash
 cd docker
-docker-compose up -d postgres redis rabbitmq
+docker-compose up -d postgres redis
 ```
 
 Wait for all services to be healthy:
@@ -322,7 +316,6 @@ docker-compose up -d
 
 - **Eureka Dashboard**: http://localhost:8761
 - **API Gateway**: http://localhost:8080
-- **RabbitMQ Management**: http://localhost:15672 (user: evfleet, pass: evfleet123)
 - **React Frontend**: http://localhost:3000
 
 ---
@@ -334,7 +327,7 @@ docker-compose up -d
 1. **Start Infrastructure**:
 ```bash
 cd docker
-docker-compose up -d postgres redis rabbitmq
+docker-compose up -d postgres redis
 ```
 
 2. **Start Eureka Server**:
@@ -502,7 +495,7 @@ docker push your-registry/evfleet-auth-service:latest
    - Check database credentials in application.yml
 
 3. **Port conflicts**
-   - Ensure no other services are running on ports 8080-8088, 5432, 6379, 5672
+   - Ensure no other services are running on ports 8080-8088, 5432, 6379
 
 4. **Firebase authentication failing**
    - Verify firebase-service-account-test.json is in the correct location

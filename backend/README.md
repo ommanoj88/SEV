@@ -50,7 +50,6 @@ backend/
 │   │   │   │   └── service/          # Saga Orchestrator
 │   │   │   ├── infrastructure/       # Technical Implementation
 │   │   │   │   ├── persistence/      # JPA Repositories
-│   │   │   │   ├── messaging/        # RabbitMQ
 │   │   │   │   ├── config/           # Configuration
 │   │   │   │   └── adapter/          # External APIs
 │   │   │   └── presentation/         # API Layer
@@ -186,7 +185,7 @@ public String executeStartSessionSaga(StartChargingSessionCommand command) {
                │
 ┌──────────────▼──────────────────────────┐
 │  Infrastructure Layer (Adapters)        │
-│  JPA, RabbitMQ, Redis, External APIs    │
+│  JPA, Redis, External APIs              │
 └──────────────┬──────────────────────────┘
                │
 ┌──────────────▼──────────────────────────┐
@@ -210,7 +209,7 @@ public String executeStartSessionSaga(StartChargingSessionCommand command) {
 - **Flyway**: Database migrations
 
 ### Messaging
-- **RabbitMQ**: 3.12+ (event-driven communication)
+- **External broker**: Not used (monolith eventing stays in-process)
 
 ### Resilience
 - **Resilience4j**: Circuit breaker, retry, bulkhead, rate limiter
@@ -261,15 +260,14 @@ public String executeStartSessionSaga(StartChargingSessionCommand command) {
 - Maven 3.9+
 - Docker & Docker Compose
 - PostgreSQL 15+
-- RabbitMQ 3.12+
 - Redis 7+ (optional, for caching)
 ```
 
 ### 1. Start Infrastructure
 
 ```bash
-# Start PostgreSQL, RabbitMQ, Redis
-docker-compose up -d postgres rabbitmq redis
+# Start PostgreSQL and Redis
+docker-compose up -d postgres redis
 
 # Start Eureka Server (Service Discovery)
 cd eureka-server
@@ -403,22 +401,6 @@ spring:
     url: jdbc:postgresql://localhost:5432/charging_db
     username: postgres
     password: postgres
-```
-
-### RabbitMQ Configuration
-
-```yaml
-spring:
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
-    listener:
-      simple:
-        retry:
-          enabled: true
-          max-attempts: 3
 ```
 
 ### Resilience4j Configuration
@@ -583,7 +565,6 @@ Copyright © 2025 EV Fleet Management Platform
 
 ### Default Credentials
 - PostgreSQL: postgres/postgres
-- RabbitMQ: guest/guest
 
 ---
 

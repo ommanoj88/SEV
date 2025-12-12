@@ -4,7 +4,7 @@ EV Fleet Management Platform - Monolith Application Launcher
 Updated for Modular Monolith Architecture (Nov 2025)
 
 This script provides a comprehensive solution to start/stop the application:
-- Checks all prerequisites (PostgreSQL, Redis, RabbitMQ, Node.js, Java)
+- Checks all prerequisites (PostgreSQL, Redis, Node.js, Java)
 - Initializes PostgreSQL databases if needed
 - Kills processes on required ports
 - Starts backend monolith and frontend
@@ -46,7 +46,6 @@ class Colors:
 PORTS = {
     'postgres': [5432],
     'redis': [6379],
-    'rabbitmq': [5672, 15672],
     'backend': [8080],  # Monolith backend
     'frontend': [3000],
 }
@@ -311,7 +310,7 @@ def check_redis_running() -> bool:
 
 
 def start_infrastructure():
-    """Start infrastructure services (PostgreSQL, Redis, RabbitMQ)"""
+    """Start infrastructure services (PostgreSQL, Redis)"""
     print_header("Starting Infrastructure Services")
 
     # Check PostgreSQL
@@ -333,9 +332,6 @@ def start_infrastructure():
     else:
         print_warning("Redis is not running on localhost:6379")
         print_info("Application will attempt to use Redis at configured address")
-
-    # RabbitMQ check (optional)
-    print_info("RabbitMQ check skipped (optional for basic operations)")
 
     return True
 
@@ -477,12 +473,12 @@ def start_backend():
                             else:
                                 raise
 
-                        # Check if we got a valid response (even if status is DOWN due to Redis/RabbitMQ)
+                        # Check if we got a valid response (even if status is DOWN due to Redis)
                         # The important thing is that Spring Boot is responding
                         if 'status' in health_data:
                             print_success(f"Backend is ready on http://localhost:8080 (Health: {health_data['status']})")
                             if health_data['status'] == 'DOWN':
-                                print_warning("Some components are DOWN (likely Redis/RabbitMQ), but core app is running")
+                                print_warning("Some components are DOWN (likely Redis), but core app is running")
                             log_file.close()
                             return True
                     except urllib.error.URLError as e:
@@ -609,8 +605,6 @@ def show_status():
     services = {
         'PostgreSQL': 5432,
         'Redis': 6379,
-        'RabbitMQ': 5672,
-        'RabbitMQ Management': 15672,
         'Backend Monolith': 8080,
         'Frontend': 3000,
     }
@@ -637,7 +631,6 @@ def show_status():
     print(f"  • Backend API:           http://localhost:8080")
     print(f"  • API Health Check:      http://localhost:8080/actuator/health")
     print(f"  • Swagger UI:            http://localhost:8080/swagger-ui.html")
-    print(f"  • RabbitMQ Management:   http://localhost:15672 (user: evfleet, pass: evfleet123)")
     print("="*80 + "\n")
 
 

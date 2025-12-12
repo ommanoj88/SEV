@@ -1,4 +1,4 @@
-# Enterprise Microservices Architecture - EV Fleet Management Platform
+﻿# Enterprise Microservices Architecture - EV Fleet Management Platform
 ## World-Class Architecture Following Industry Best Practices 2025
 
 **Version**: 2.0 (Enterprise Edition)
@@ -7,7 +7,7 @@
 
 ---
 
-## ðŸ—ï¸ Architecture Philosophy
+## Ã°Å¸Ââ€”Ã¯Â¸Â Architecture Philosophy
 
 This architecture follows **12-Factor App** principles and implements:
 
@@ -24,7 +24,7 @@ This architecture follows **12-Factor App** principles and implements:
 
 ---
 
-## ðŸŽ¯ Strategic Architecture Patterns
+## Ã°Å¸Å½Â¯ Strategic Architecture Patterns
 
 ### 1. Domain-Driven Design (DDD) Implementation
 
@@ -32,25 +32,25 @@ Each microservice is organized around a **Bounded Context** with:
 
 #### **Layered Architecture** (per service):
 ```
-â”œâ”€â”€ domain/                      # Core business logic (framework-independent)
-â”‚   â”œâ”€â”€ model/                   # Entities, Value Objects, Aggregates
-â”‚   â”œâ”€â”€ service/                 # Domain Services
-â”‚   â”œâ”€â”€ repository/              # Repository interfaces (ports)
-â”‚   â””â”€â”€ event/                   # Domain Events
-â”œâ”€â”€ application/                 # Use cases and orchestration
-â”‚   â”œâ”€â”€ command/                 # Commands (CQRS write)
-â”‚   â”œâ”€â”€ query/                   # Queries (CQRS read)
-â”‚   â”œâ”€â”€ dto/                     # Data Transfer Objects
-â”‚   â””â”€â”€ service/                 # Application Services
-â”œâ”€â”€ infrastructure/              # Technical implementations (adapters)
-â”‚   â”œâ”€â”€ persistence/             # JPA repositories, database
-â”‚   â”œâ”€â”€ messaging/               # RabbitMQ, Kafka adapters
-â”‚   â”œâ”€â”€ external/                # Third-party integrations
-â”‚   â””â”€â”€ config/                  # Spring configurations
-â””â”€â”€ presentation/                # API layer
-    â”œâ”€â”€ rest/                    # REST controllers
-    â”œâ”€â”€ graphql/                 # GraphQL resolvers (optional)
-    â””â”€â”€ websocket/               # WebSocket handlers
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ domain/                      # Core business logic (framework-independent)
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ model/                   # Entities, Value Objects, Aggregates
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ service/                 # Domain Services
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ repository/              # Repository interfaces (ports)
+Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ event/                   # Domain Events
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ application/                 # Use cases and orchestration
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ command/                 # Commands (CQRS write)
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ query/                   # Queries (CQRS read)
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ dto/                     # Data Transfer Objects
+Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ service/                 # Application Services
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ infrastructure/              # Technical implementations (adapters)
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ persistence/             # JPA repositories, database
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ messaging/               # Spring Modulith event adapters
+Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ external/                # Third-party integrations
+Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ config/                  # Spring configurations
+Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ presentation/                # API layer
+    Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ rest/                    # REST controllers
+    Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ graphql/                 # GraphQL resolvers (optional)
+    Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ websocket/               # WebSocket handlers
 ```
 
 #### **Core DDD Concepts**:
@@ -95,15 +95,15 @@ Each microservice is organized around a **Bounded Context** with:
 
 #### **Implementation**:
 ```
-Command: CreateVehicleCommand â†’ VehicleCommandHandler â†’ Vehicle Aggregate â†’ Event Published
-Event: VehicleCreatedEvent â†’ EventHandler â†’ Update Read Model (materialized view)
-Query: GetVehicleByIdQuery â†’ QueryHandler â†’ Read from optimized read model
+Command: CreateVehicleCommand Ã¢â€ â€™ VehicleCommandHandler Ã¢â€ â€™ Vehicle Aggregate Ã¢â€ â€™ Event Published
+Event: VehicleCreatedEvent Ã¢â€ â€™ EventHandler Ã¢â€ â€™ Update Read Model (materialized view)
+Query: GetVehicleByIdQuery Ã¢â€ â€™ QueryHandler Ã¢â€ â€™ Read from optimized read model
 ```
 
 **Services Using CQRS**:
-- âœ… **Analytics Service** - Heavy read operations
-- âœ… **Fleet Service** - Real-time queries + complex writes
-- âœ… **Driver Service** - Performance dashboards
+- Ã¢Å“â€¦ **Analytics Service** - Heavy read operations
+- Ã¢Å“â€¦ **Fleet Service** - Real-time queries + complex writes
+- Ã¢Å“â€¦ **Driver Service** - Performance dashboards
 
 ---
 
@@ -134,9 +134,9 @@ CREATE TABLE event_store (
 ```
 
 #### **Services Using Event Sourcing**:
-- âœ… **Trip Service** - Full trip history and replay
-- âœ… **Maintenance Service** - Audit trail for compliance
-- âœ… **Billing Service** - Financial audit requirements
+- Ã¢Å“â€¦ **Trip Service** - Full trip history and replay
+- Ã¢Å“â€¦ **Maintenance Service** - Audit trail for compliance
+- Ã¢Å“â€¦ **Billing Service** - Financial audit requirements
 
 ---
 
@@ -149,24 +149,24 @@ CREATE TABLE event_store (
 #### **Choreography-based Saga** (Event-driven):
 ```
 Trip Completion Flow:
-1. Fleet Service: Trip Ends â†’ TripCompletedEvent
-2. Driver Service: Updates driver stats â†’ DriverStatsUpdatedEvent
-3. Analytics Service: Calculates metrics â†’ MetricsCalculatedEvent
-4. Billing Service: Generates charges â†’ ChargesGeneratedEvent
+1. Fleet Service: Trip Ends Ã¢â€ â€™ TripCompletedEvent
+2. Driver Service: Updates driver stats Ã¢â€ â€™ DriverStatsUpdatedEvent
+3. Analytics Service: Calculates metrics Ã¢â€ â€™ MetricsCalculatedEvent
+4. Billing Service: Generates charges Ã¢â€ â€™ ChargesGeneratedEvent
 
 Compensation:
-If Billing fails â†’ BillingFailedEvent â†’ Rollback driver stats, analytics
+If Billing fails Ã¢â€ â€™ BillingFailedEvent Ã¢â€ â€™ Rollback driver stats, analytics
 ```
 
 #### **Orchestration-based Saga** (Centralized):
 ```
 Charging Session Saga Orchestrator:
-1. Reserve Charging Slot â†’ Success/Failure
-2. Start Charging Session â†’ Success/Failure
-3. Deduct Credits â†’ Success/Failure
-4. Complete Session â†’ Success/Failure
+1. Reserve Charging Slot Ã¢â€ â€™ Success/Failure
+2. Start Charging Session Ã¢â€ â€™ Success/Failure
+3. Deduct Credits Ã¢â€ â€™ Success/Failure
+4. Complete Session Ã¢â€ â€™ Success/Failure
 
-If any step fails â†’ Execute compensating transactions in reverse
+If any step fails Ã¢â€ â€™ Execute compensating transactions in reverse
 ```
 
 #### **Implementation Libraries**:
@@ -175,10 +175,10 @@ If any step fails â†’ Execute compensating transactions in reverse
 - **Eventuate Tram** - Messaging-based sagas
 
 **Key Sagas in Platform**:
-- âœ… **Trip Completion Saga**
-- âœ… **Charging Session Saga**
-- âœ… **Vehicle Onboarding Saga**
-- âœ… **Subscription Management Saga**
+- Ã¢Å“â€¦ **Trip Completion Saga**
+- Ã¢Å“â€¦ **Charging Session Saga**
+- Ã¢Å“â€¦ **Vehicle Onboarding Saga**
+- Ã¢Å“â€¦ **Subscription Management Saga**
 
 ---
 
@@ -187,26 +187,26 @@ If any step fails â†’ Execute compensating transactions in reverse
 **Goal**: Isolate core business logic from external dependencies
 
 ```
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚                   Presentation Layer                 â”‚
-â”‚         (REST API, GraphQL, WebSocket)              â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                       â”‚
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚              Application Layer (Use Cases)           â”‚
-â”‚        Commands, Queries, DTOs, Validators          â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                       â”‚
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚                  Domain Layer                        â”‚
-â”‚    Entities, Aggregates, Value Objects, Events      â”‚
-â”‚           (NO framework dependencies)                â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                       â”‚
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚           Infrastructure Layer (Adapters)            â”‚
-â”‚   JPA, RabbitMQ, Redis, External APIs, Config       â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+Ã¢â€Å’Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Â
+Ã¢â€â€š                   Presentation Layer                 Ã¢â€â€š
+Ã¢â€â€š         (REST API, GraphQL, WebSocket)              Ã¢â€â€š
+Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Â¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Ëœ
+                       Ã¢â€â€š
+Ã¢â€Å’Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€“Â¼Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Â
+Ã¢â€â€š              Application Layer (Use Cases)           Ã¢â€â€š
+Ã¢â€â€š        Commands, Queries, DTOs, Validators          Ã¢â€â€š
+Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Â¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Ëœ
+                       Ã¢â€â€š
+Ã¢â€Å’Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€“Â¼Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Â
+Ã¢â€â€š                  Domain Layer                        Ã¢â€â€š
+Ã¢â€â€š    Entities, Aggregates, Value Objects, Events      Ã¢â€â€š
+Ã¢â€â€š           (NO framework dependencies)                Ã¢â€â€š
+Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Â¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Ëœ
+                       Ã¢â€â€š
+Ã¢â€Å’Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€“Â¼Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Â
+Ã¢â€â€š           Infrastructure Layer (Adapters)            Ã¢â€â€š
+Ã¢â€â€š   JPA, Spring Events, Redis, External APIs, Config       Ã¢â€â€š
+Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Ëœ
 ```
 
 **Benefits**:
@@ -216,7 +216,7 @@ If any step fails â†’ Execute compensating transactions in reverse
 
 ---
 
-## ðŸ”„ Event-Driven Architecture
+## Ã°Å¸â€â€ž Event-Driven Architecture
 
 ### Event Types
 
@@ -262,23 +262,23 @@ If any step fails â†’ Execute compensating transactions in reverse
 ### Event Flow Architecture
 
 ```
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚                   Event Backbone                         â”‚
-â”‚              (RabbitMQ + Kafka Hybrid)                   â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-         â–²                    â”‚                    â–²
-         â”‚                    â”‚                    â”‚
-         â”‚ Publish            â”‚ Subscribe          â”‚
-         â”‚                    â–¼                    â”‚
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”   â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”   â”Œâ”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚  Fleet Service  â”‚   â”‚   Analytics  â”‚   â”‚ Notification   â”‚
-â”‚   (Producer)    â”‚   â”‚   (Consumer) â”‚   â”‚   (Consumer)   â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜   â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜   â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+Ã¢â€Å’Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Â
+Ã¢â€â€š                   Event Backbone                         Ã¢â€â€š
+Ã¢â€â€š              (Spring Events + Kafka Hybrid)                   Ã¢â€â€š
+Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Ëœ
+         Ã¢â€“Â²                    Ã¢â€â€š                    Ã¢â€“Â²
+         Ã¢â€â€š                    Ã¢â€â€š                    Ã¢â€â€š
+         Ã¢â€â€š Publish            Ã¢â€â€š Subscribe          Ã¢â€â€š
+         Ã¢â€â€š                    Ã¢â€“Â¼                    Ã¢â€â€š
+Ã¢â€Å’Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Â´Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Â   Ã¢â€Å’Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Â   Ã¢â€Å’Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Â´Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Â
+Ã¢â€â€š  Fleet Service  Ã¢â€â€š   Ã¢â€â€š   Analytics  Ã¢â€â€š   Ã¢â€â€š Notification   Ã¢â€â€š
+Ã¢â€â€š   (Producer)    Ã¢â€â€š   Ã¢â€â€š   (Consumer) Ã¢â€â€š   Ã¢â€â€š   (Consumer)   Ã¢â€â€š
+Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Ëœ   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Ëœ   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Ëœ
 ```
 
-### RabbitMQ + Kafka Strategy
+### Spring Events + Kafka Strategy
 
-**RabbitMQ**: Real-time events (low latency)
+**Spring Events**: Real-time events (low latency)
 - Vehicle location updates
 - Alert notifications
 - Command/Response patterns
@@ -290,7 +290,7 @@ If any step fails â†’ Execute compensating transactions in reverse
 
 ---
 
-## ðŸ›¡ï¸ Resilience & Fault Tolerance
+## Ã°Å¸â€ºÂ¡Ã¯Â¸Â Resilience & Fault Tolerance
 
 ### Circuit Breaker Pattern (Resilience4j)
 
@@ -340,12 +340,12 @@ resilience4j:
 |----------------|---------|-------|----------|
 | Database Query | 5s | 3 | Exponential backoff |
 | External API | 10s | 2 | Linear |
-| RabbitMQ Publish | 3s | 5 | Exponential |
+| Event Publish | 3s | 5 | Exponential |
 | Redis Cache | 1s | 2 | Immediate |
 
 ---
 
-## ðŸ“Š Observability (3 Pillars)
+## Ã°Å¸â€œÅ  Observability (3 Pillars)
 
 ### 1. Distributed Tracing (OpenTelemetry + Zipkin)
 
@@ -410,7 +410,7 @@ public class FleetMetrics {
 ### 3. Centralized Logging (ELK Stack)
 
 ```
-Application â†’ Logback â†’ Logstash â†’ Elasticsearch â†’ Kibana
+Application Ã¢â€ â€™ Logback Ã¢â€ â€™ Logstash Ã¢â€ â€™ Elasticsearch Ã¢â€ â€™ Kibana
 ```
 
 **Structured Logging**:
@@ -433,13 +433,13 @@ log.info("Trip completed",
 
 ---
 
-## ðŸ” Security Architecture
+## Ã°Å¸â€Â Security Architecture
 
 ### Authentication & Authorization
 
 #### 1. **OAuth 2.0 + OpenID Connect**
 ```
-User â†’ Firebase Auth â†’ JWT Token â†’ API Gateway â†’ Validate Token â†’ Microservice
+User Ã¢â€ â€™ Firebase Auth Ã¢â€ â€™ JWT Token Ã¢â€ â€™ API Gateway Ã¢â€ â€™ Validate Token Ã¢â€ â€™ Microservice
 ```
 
 #### 2. **JWT Structure**:
@@ -469,17 +469,17 @@ User â†’ Firebase Auth â†’ JWT Token â†’ API Gateway â†’ Val
 
 ### Security Best Practices
 
-âœ… **Secrets Management**: HashiCorp Vault / AWS Secrets Manager
-âœ… **Data Encryption**: At-rest (AES-256) and in-transit (TLS 1.3)
-âœ… **Input Validation**: Bean Validation (JSR-303)
-âœ… **SQL Injection Protection**: Parameterized queries (JPA)
-âœ… **Rate Limiting**: API Gateway + Redis
-âœ… **CORS**: Configured per environment
-âœ… **OWASP Top 10**: Regular security audits
+Ã¢Å“â€¦ **Secrets Management**: HashiCorp Vault / AWS Secrets Manager
+Ã¢Å“â€¦ **Data Encryption**: At-rest (AES-256) and in-transit (TLS 1.3)
+Ã¢Å“â€¦ **Input Validation**: Bean Validation (JSR-303)
+Ã¢Å“â€¦ **SQL Injection Protection**: Parameterized queries (JPA)
+Ã¢Å“â€¦ **Rate Limiting**: API Gateway + Redis
+Ã¢Å“â€¦ **CORS**: Configured per environment
+Ã¢Å“â€¦ **OWASP Top 10**: Regular security audits
 
 ---
 
-## ðŸ“¡ API Design Standards
+## Ã°Å¸â€œÂ¡ API Design Standards
 
 ### RESTful API Best Practices
 
@@ -491,7 +491,7 @@ Header Versioning: Accept: application/vnd.evfleet.v1+json
 
 #### **Resource Naming**:
 ```
-âœ… Correct:
+Ã¢Å“â€¦ Correct:
 GET    /api/v1/vehicles
 GET    /api/v1/vehicles/{id}
 POST   /api/v1/vehicles
@@ -499,7 +499,7 @@ PUT    /api/v1/vehicles/{id}
 PATCH  /api/v1/vehicles/{id}
 DELETE /api/v1/vehicles/{id}
 
-âŒ Incorrect:
+Ã¢ÂÅ’ Incorrect:
 GET /api/v1/getVehicles
 POST /api/v1/createVehicle
 ```
@@ -571,7 +571,7 @@ type Subscription {
 
 ---
 
-## ðŸ—„ï¸ Data Management Strategies
+## Ã°Å¸â€”â€žÃ¯Â¸Â Data Management Strategies
 
 ### Database per Service Pattern
 
@@ -607,7 +607,7 @@ type Subscription {
 
 ---
 
-## ðŸš€ Deployment Architecture
+## Ã°Å¸Å¡â‚¬ Deployment Architecture
 
 ### Container Orchestration (Kubernetes)
 
@@ -661,24 +661,24 @@ spec:
 ### CI/CD Pipeline
 
 ```
-Developer â†’ Git Push â†’ GitHub Actions
-  â†“
-Build (Maven) â†’ Unit Tests â†’ Integration Tests
-  â†“
-SonarQube (Code Quality) â†’ Security Scan (Snyk)
-  â†“
-Docker Build â†’ Push to Registry (ECR/GCR/ACR)
-  â†“
-Deploy to Dev â†’ Automated Tests
-  â†“
-Deploy to Staging â†’ Manual Approval
-  â†“
+Developer Ã¢â€ â€™ Git Push Ã¢â€ â€™ GitHub Actions
+  Ã¢â€ â€œ
+Build (Maven) Ã¢â€ â€™ Unit Tests Ã¢â€ â€™ Integration Tests
+  Ã¢â€ â€œ
+SonarQube (Code Quality) Ã¢â€ â€™ Security Scan (Snyk)
+  Ã¢â€ â€œ
+Docker Build Ã¢â€ â€™ Push to Registry (ECR/GCR/ACR)
+  Ã¢â€ â€œ
+Deploy to Dev Ã¢â€ â€™ Automated Tests
+  Ã¢â€ â€œ
+Deploy to Staging Ã¢â€ â€™ Manual Approval
+  Ã¢â€ â€œ
 Deploy to Production (Blue-Green)
 ```
 
 ---
 
-## ðŸ“ˆ Scalability Strategy
+## Ã°Å¸â€œË† Scalability Strategy
 
 ### Horizontal Scaling
 
@@ -711,12 +711,12 @@ Deploy to Production (Blue-Green)
 
 ---
 
-## ðŸ§ª Testing Strategy
+## Ã°Å¸Â§Âª Testing Strategy
 
 ### Test Pyramid
 
 ```
-         â–²
+         Ã¢â€“Â²
         / \
        /   \        10% - E2E Tests (Selenium, Postman)
       /     \
@@ -769,7 +769,7 @@ class VehicleServiceIntegrationTest {
 
 ---
 
-## ðŸ“‹ Service Registry
+## Ã°Å¸â€œâ€¹ Service Registry
 
 ### Complete Service Catalog
 
@@ -789,14 +789,14 @@ class VehicleServiceIntegrationTest {
 
 ---
 
-## ðŸŽ¯ Performance Targets (SLA)
+## Ã°Å¸Å½Â¯ Performance Targets (SLA)
 
 | Metric | Target | Measurement |
-|--------|--------|-------------|
+|--------|--------|--------------|
 | API Response Time (p95) | < 200ms | Prometheus |
 | API Response Time (p99) | < 500ms | Prometheus |
 | Database Query Time | < 50ms | Slow query log |
-| Event Processing Latency | < 100ms | RabbitMQ metrics |
+| Event Processing Latency | < 100ms | Application metrics |
 | Service Availability | 99.9% | Uptime monitoring |
 | Error Rate | < 0.1% | Error logs |
 | Concurrent Users | 10,000+ | Load testing |
@@ -804,25 +804,25 @@ class VehicleServiceIntegrationTest {
 
 ---
 
-## ðŸ”® Future Enhancements
+## Ã°Å¸â€Â® Future Enhancements
 
 ### Phase 2 (6-12 months)
-- âœ… GraphQL Federation for unified API
-- âœ… Service Mesh (Istio) for advanced traffic management
-- âœ… Multi-region deployment for HA
-- âœ… Machine Learning pipeline integration
-- âœ… Mobile apps (React Native)
+- Ã¢Å“â€¦ GraphQL Federation for unified API
+- Ã¢Å“â€¦ Service Mesh (Istio) for advanced traffic management
+- Ã¢Å“â€¦ Multi-region deployment for HA
+- Ã¢Å“â€¦ Machine Learning pipeline integration
+- Ã¢Å“â€¦ Mobile apps (React Native)
 
 ### Phase 3 (12-24 months)
-- âœ… Edge computing for vehicle processing
-- âœ… Blockchain for charging settlements
-- âœ… AI-powered predictive analytics
-- âœ… Advanced fraud detection
-- âœ… Global expansion (multi-tenancy enhancements)
+- Ã¢Å“â€¦ Edge computing for vehicle processing
+- Ã¢Å“â€¦ Blockchain for charging settlements
+- Ã¢Å“â€¦ AI-powered predictive analytics
+- Ã¢Å“â€¦ Advanced fraud detection
+- Ã¢Å“â€¦ Global expansion (multi-tenancy enhancements)
 
 ---
 
-## ðŸ“š References & Resources
+## Ã°Å¸â€œÅ¡ References & Resources
 
 ### Books
 - "Domain-Driven Design" - Eric Evans

@@ -123,18 +123,6 @@ spring:
     baseline-on-migrate: true
     locations: classpath:db/migration
 
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
-    listener:
-      simple:
-        retry:
-          enabled: true
-          initial-interval: 1000ms
-          max-attempts: 3
-
 server:
   port: $port
 

@@ -117,21 +117,19 @@
 - **Eureka Server** - Service discovery
 
 ### Technology Stack
-- **Backend:** Java 17+, Spring Boot 3.x, Spring Cloud
+- **Backend:** Java 17+, Spring Boot 3.x, Spring Modulith
 - **Frontend:** React 18, TypeScript, Redux
-- **Database:** PostgreSQL (relational), TimescaleDB (time-series), Redis (caching)
-- **Message Queue:** RabbitMQ (event streaming)
-- **Search:** Elasticsearch (logs, analytics)
+- **Database:** PostgreSQL (relational), Redis (optional caching)
 - **Monitoring:** Prometheus, Grafana
 - **Infrastructure:** Docker, Kubernetes, AWS/Azure
 
 ### Data Flow
 ```
 IoT Devices (Telematics) 
-    → RabbitMQ 
-    → Fleet Service 
-    → PostgreSQL + TimescaleDB 
-    → Analytics Engine 
+    → API Gateway
+    → Fleet Module 
+    → PostgreSQL 
+    → Analytics Module 
     → Frontend Dashboard
 ```
 

@@ -23,6 +23,7 @@ import RouteOptimizationPage from './pages/RouteOptimizationPage';
 import SettingsPage from './pages/SettingsPage';
 import StationDiscoveryPage from './pages/StationDiscoveryPage';
 import VehicleReportPage from './pages/VehicleReportPage';
+import DeveloperDocsPage from './pages/DeveloperDocsPage';
 
 // Component to redirect authenticated users away from auth pages
 const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -42,6 +43,9 @@ const AppRoutes: React.FC = () => {
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
       <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
       <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
+      
+      {/* Developer documentation - no auth required */}
+      <Route path="/developer-docs" element={<DeveloperDocsPage />} />
 
       {/* Company onboarding - for users who logged in via Google without company info */}
       <Route

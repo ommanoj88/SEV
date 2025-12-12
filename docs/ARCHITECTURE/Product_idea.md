@@ -440,7 +440,7 @@ Driver assignment, behavior monitoring, performance incentives, trip logs, and a
 - Framework: Express.js / NestJS (Node) | FastAPI (Python)
 - API Gateway: Kong / AWS API Gateway
 - Authentication: OAuth 2.0, JWT, RBAC (Role-Based Access Control)
-- Message Queue: RabbitMQ / AWS SQS / Google Pub/Sub
+- Event Processing: Spring ApplicationEvents / AWS EventBridge
 - Background Jobs: Bull (Node.js) / Celery (Python)
 ```
 

@@ -8,12 +8,11 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
-  # Disable Redis and RabbitMQ Autoconfiguration (optional services - not installed)
+  # Disable Redis Autoconfiguration (optional service - not installed in monolith)
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
       - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
-      - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
 
   # Multiple DataSource Configuration
   datasource:
@@ -134,13 +133,6 @@ spring:
           max-idle: 10
           min-idle: 5
           max-wait: -1ms
-
-  # RabbitMQ Configuration (Optional)
-  rabbitmq:
-    host: ${RABBITMQ_HOST:localhost}
-    port: ${RABBITMQ_PORT:5672}
-    username: ${RABBITMQ_USER:evfleet}
-    password: ${RABBITMQ_PASSWORD:evfleet123}
 
   # Cache Configuration (using simple in-memory cache since Redis not installed)
   cache:

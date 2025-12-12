@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 
 # MASSIVE Enterprise-Grade File Generator
 # Generates ALL DDD, CQRS, Event Sourcing, and Saga Pattern files for all 5 services
@@ -9,7 +9,7 @@ BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 echo "=========================================================================="
 echo "GENERATING ALL ENTERPRISE-GRADE MICROSERVICE FILES"
-echo "Creating 40-50 files per service × 5 services = 200-250 files"
+echo "Creating 40-50 files per service Ã— 5 services = 200-250 files"
 echo "=========================================================================="
 
 #############################################################################
@@ -524,46 +524,46 @@ package com.evfleet.charging.infrastructure.messaging.publisher;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+// RabbitMQ removed - using Spring Modulith ApplicationEvents
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class ChargingEventPublisher {
-    private final RabbitTemplate rabbitTemplate;
+    private final ApplicationEventPublisher ApplicationEventPublisher;
     private static final String EXCHANGE = "charging.events";
 
     public void publishSessionStarted(Object event) {
         log.info("Publishing ChargingSessionStarted event");
-        rabbitTemplate.convertAndSend(EXCHANGE, "charging.session.started", event);
+        ApplicationEventPublisher.convertAndSend(EXCHANGE, "charging.session.started", event);
     }
 
     public void publishSessionCompleted(Object event) {
         log.info("Publishing ChargingSessionCompleted event");
-        rabbitTemplate.convertAndSend(EXCHANGE, "charging.session.completed", event);
+        ApplicationEventPublisher.convertAndSend(EXCHANGE, "charging.session.completed", event);
     }
 
     public void publishSessionFailed(Object event) {
         log.info("Publishing ChargingSessionFailed event");
-        rabbitTemplate.convertAndSend(EXCHANGE, "charging.session.failed", event);
+        ApplicationEventPublisher.convertAndSend(EXCHANGE, "charging.session.failed", event);
     }
 
     public void publishStationOccupied(Object event) {
         log.info("Publishing StationOccupied event");
-        rabbitTemplate.convertAndSend(EXCHANGE, "charging.station.occupied", event);
+        ApplicationEventPublisher.convertAndSend(EXCHANGE, "charging.station.occupied", event);
     }
 
     public void publishStationAvailable(Object event) {
         log.info("Publishing StationAvailable event");
-        rabbitTemplate.convertAndSend(EXCHANGE, "charging.station.available", event);
+        ApplicationEventPublisher.convertAndSend(EXCHANGE, "charging.station.available", event);
     }
 }
 EOF
 
 echo "[${SERVICE}] Infrastructure Layer created!"
 
-echo "[${SERVICE}] CHARGING SERVICE COMPLETE! ✓"
+echo "[${SERVICE}] CHARGING SERVICE COMPLETE! âœ“"
 
 #############################################################################
 # Continue with other services...

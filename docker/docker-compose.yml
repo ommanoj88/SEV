@@ -41,26 +41,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # RabbitMQ Message Queue
-  rabbitmq:
-    image: rabbitmq:3.12-management-alpine
-    container_name: evfleet-rabbitmq
-    environment:
-      RABBITMQ_DEFAULT_USER: evfleet
-      RABBITMQ_DEFAULT_PASS: evfleet123
-    ports:
-      - "5672:5672"   # AMQP port
-      - "15672:15672" # Management UI
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    networks:
-      - evfleet-network
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   # Eureka Server (Service Discovery)
   eureka-server:
     build:
@@ -156,14 +136,11 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/evfleet_fleet
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=Shobharain11@
-      - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_REDIS_HOST=redis
     depends_on:
       postgres:
         condition: service_healthy
       eureka-server:
-        condition: service_healthy
-      rabbitmq:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -191,14 +168,11 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/evfleet_charging
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=Shobharain11@
-      - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_REDIS_HOST=redis
     depends_on:
       postgres:
         condition: service_healthy
       eureka-server:
-        condition: service_healthy
-      rabbitmq:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -226,14 +200,11 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/evfleet_maintenance
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=Shobharain11@
-      - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_REDIS_HOST=redis
     depends_on:
       postgres:
         condition: service_healthy
       eureka-server:
-        condition: service_healthy
-      rabbitmq:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -261,14 +232,11 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/evfleet_driver
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=Shobharain11@
-      - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_REDIS_HOST=redis
     depends_on:
       postgres:
         condition: service_healthy
       eureka-server:
-        condition: service_healthy
-      rabbitmq:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -296,14 +264,11 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/evfleet_analytics
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=Shobharain11@
-      - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_REDIS_HOST=redis
     depends_on:
       postgres:
         condition: service_healthy
       eureka-server:
-        condition: service_healthy
-      rabbitmq:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -331,14 +296,11 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/evfleet_notification
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=Shobharain11@
-      - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_REDIS_HOST=redis
     depends_on:
       postgres:
         condition: service_healthy
       eureka-server:
-        condition: service_healthy
-      rabbitmq:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -366,14 +328,11 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/evfleet_billing
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=Shobharain11@
-      - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_REDIS_HOST=redis
     depends_on:
       postgres:
         condition: service_healthy
       eureka-server:
-        condition: service_healthy
-      rabbitmq:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -412,4 +371,3 @@ networks:
 volumes:
   postgres_data:
   redis_data:
-  rabbitmq_data:

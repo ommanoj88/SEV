@@ -1,4 +1,4 @@
-# Commercial EV Fleet Management Platform - Complete Application Flow Chart
+﻿# Commercial EV Fleet Management Platform - Complete Application Flow Chart
 
 ## Table of Contents
 1. [High-Level Architecture Overview](#high-level-architecture-overview)
@@ -19,8 +19,8 @@
 ```mermaid
 flowchart TB
     subgraph "Client Layer"
-        WEB[🌐 Web Browser]
-        MOBILE[📱 Mobile App]
+        WEB[ðŸŒ Web Browser]
+        MOBILE[ðŸ“± Mobile App]
     end
 
     subgraph "Frontend - React Application :3000"
@@ -30,30 +30,30 @@ flowchart TB
     end
 
     subgraph "API Layer"
-        GATEWAY[🚪 API Gateway<br/>:8080]
-        EUREKA[📡 Eureka Server<br/>Service Discovery<br/>:8761]
+        GATEWAY[ðŸšª API Gateway<br/>:8080]
+        EUREKA[ðŸ“¡ Eureka Server<br/>Service Discovery<br/>:8761]
     end
 
     subgraph "Business Services Layer"
-        AUTH[🔐 Auth Service<br/>:8081]
-        FLEET[🚗 Fleet Service<br/>:8082]
-        CHARGING[⚡ Charging Service<br/>:8083]
-        MAINT[🔧 Maintenance Service<br/>:8084]
-        DRIVER[👤 Driver Service<br/>:8085]
-        ANALYTICS[📊 Analytics Service<br/>:8086]
-        NOTIFY[🔔 Notification Service<br/>:8087]
-        BILLING[💰 Billing Service<br/>:8088]
+        AUTH[ðŸ” Auth Service<br/>:8081]
+        FLEET[ðŸš— Fleet Service<br/>:8082]
+        CHARGING[âš¡ Charging Service<br/>:8083]
+        MAINT[ðŸ”§ Maintenance Service<br/>:8084]
+        DRIVER[ðŸ‘¤ Driver Service<br/>:8085]
+        ANALYTICS[ðŸ“Š Analytics Service<br/>:8086]
+        NOTIFY[ðŸ”” Notification Service<br/>:8087]
+        BILLING[ðŸ’° Billing Service<br/>:8088]
     end
 
     subgraph "Data Layer"
         POSTGRES[(PostgreSQL<br/>:5432)]
         REDIS[(Redis Cache<br/>:6379)]
-        RABBIT[🐰 RabbitMQ<br/>:5672)]
+        
     end
 
     subgraph "External Services"
-        FIREBASE_CLOUD[☁️ Firebase Auth]
-        MAPS[🗺️ Maps API]
+        FIREBASE_CLOUD[â˜ï¸ Firebase Auth]
+        MAPS[ðŸ—ºï¸ Maps API]
     end
 
     WEB --> REACT
@@ -87,12 +87,12 @@ flowchart TB
     FLEET --> REDIS
     GATEWAY --> REDIS
     
-    FLEET --> RABBIT
-    CHARGING --> RABBIT
-    MAINT --> RABBIT
-    ANALYTICS --> RABBIT
-    NOTIFY --> RABBIT
-    BILLING --> RABBIT
+
+
+
+
+
+
     
     REACT --> MAPS
 ```
@@ -111,22 +111,22 @@ flowchart LR
 
     subgraph "Core Business Modules"
         direction TB
-        AS[Auth Service<br/>• User Management<br/>• Firebase Integration<br/>• Role-Based Access<br/>:8081]
-        FS[Fleet Service<br/>• Vehicle Management<br/>• Fleet Operations<br/>• Events & State<br/>:8082]
-        CS[Charging Service<br/>• Station Management<br/>• Session Tracking<br/>• Network Integration<br/>:8083]
+        AS[Auth Service<br/>â€¢ User Management<br/>â€¢ Firebase Integration<br/>â€¢ Role-Based Access<br/>:8081]
+        FS[Fleet Service<br/>â€¢ Vehicle Management<br/>â€¢ Fleet Operations<br/>â€¢ Events & State<br/>:8082]
+        CS[Charging Service<br/>â€¢ Station Management<br/>â€¢ Session Tracking<br/>â€¢ Network Integration<br/>:8083]
     end
 
     subgraph "Supporting Modules"
         direction TB
-        MS[Maintenance Service<br/>• Scheduling<br/>• Predictive Analytics<br/>• Work Orders<br/>:8084]
-        DS[Driver Service<br/>• Driver Management<br/>• Performance<br/>• Assignments<br/>:8085]
-        ANS[Analytics Service<br/>• Reporting<br/>• Business Intelligence<br/>• TCO Analysis<br/>:8086]
+        MS[Maintenance Service<br/>â€¢ Scheduling<br/>â€¢ Predictive Analytics<br/>â€¢ Work Orders<br/>:8084]
+        DS[Driver Service<br/>â€¢ Driver Management<br/>â€¢ Performance<br/>â€¢ Assignments<br/>:8085]
+        ANS[Analytics Service<br/>â€¢ Reporting<br/>â€¢ Business Intelligence<br/>â€¢ TCO Analysis<br/>:8086]
     end
 
     subgraph "Communication Modules"
         direction TB
-        NS[Notification Service<br/>• Alerts<br/>• Email/SMS/Push<br/>• Templates<br/>:8087]
-        BS[Billing Service<br/>• Invoicing<br/>• Cost Tracking<br/>• Payments<br/>:8088]
+        NS[Notification Service<br/>â€¢ Alerts<br/>â€¢ Email/SMS/Push<br/>â€¢ Templates<br/>:8087]
+        BS[Billing Service<br/>â€¢ Invoicing<br/>â€¢ Cost Tracking<br/>â€¢ Payments<br/>:8088]
     end
 
     ES <--> GW
@@ -467,7 +467,7 @@ flowchart LR
     subgraph "Data Stores"
         DB[(PostgreSQL<br/>evfleet_fleet)]
         CACHE[(Redis Cache)]
-        MQ[RabbitMQ]
+        
     end
     
     subgraph "Consumers"
@@ -499,13 +499,13 @@ flowchart LR
 ```mermaid
 flowchart TB
     subgraph "Vehicle/Driver"
-        VEHICLE[🚗 Electric Vehicle]
-        DRIVER[👤 Driver App]
+        VEHICLE[ðŸš— Electric Vehicle]
+        DRIVER[ðŸ‘¤ Driver App]
     end
     
     subgraph "Charging Infrastructure"
-        STATION[⚡ Charging Station]
-        CONNECTOR[🔌 Connector]
+        STATION[âš¡ Charging Station]
+        CONNECTOR[ðŸ”Œ Connector]
     end
     
     subgraph "Backend Processing"
@@ -516,7 +516,7 @@ flowchart TB
     end
     
     subgraph "Events & Notifications"
-        MQ[RabbitMQ]
+        
         NOTIFY[Notification Service]
         ANALYTICS[Analytics Service]
     end
@@ -565,7 +565,7 @@ flowchart TB
         TELEM_PUB[Telematics Service]
     end
     
-    subgraph "RabbitMQ - Message Broker"
+    subgraph "Event Processing (removed)"
         direction TB
         
         subgraph "Exchanges"
@@ -761,7 +761,7 @@ sequenceDiagram
     participant RE as Redis
     participant SVC as Microservice
     participant DB as PostgreSQL
-    participant MQ as RabbitMQ
+    
 
     Note over C,MQ: Typical API Request Flow
     
@@ -1017,7 +1017,7 @@ flowchart TB
         subgraph "Infrastructure Containers"
             PG[PostgreSQL]
             REDIS[Redis]
-            RABBIT[RabbitMQ]
+            
         end
         
         subgraph "Service Containers"
@@ -1054,7 +1054,7 @@ flowchart TB
     PG --> AUTH_C
     PG --> FLEET_C
     REDIS --> GATEWAY
-    RABBIT --> FLEET_C
+    
     
     EUREKA --> GATEWAY
     GATEWAY --> AUTH_C
@@ -1135,7 +1135,7 @@ This document provides a comprehensive flow chart of the Commercial EV Fleet Man
 3. **Frontend Structure**: React application with Redux state management and protected routing
 4. **Backend Architecture**: Monolith structure with modular domain-driven design
 5. **Data Flow**: How data moves through the system for various operations
-6. **Event-Driven Communication**: RabbitMQ-based async messaging between services
+6. **Event-Driven Communication**: Spring Modulith ApplicationEvents for in-process communication
 7. **Database Architecture**: Multi-database setup with service isolation
 8. **API Structure**: RESTful API endpoint organization
 9. **Component Interactions**: Detailed flows for dashboard, vehicle lifecycle, and trips
@@ -1161,8 +1161,8 @@ This document provides a comprehensive flow chart of the Commercial EV Fleet Man
 | Eureka Server | 8761 | Service Discovery |
 | PostgreSQL | 5432 | Database |
 | Redis | 6379 | Cache |
-| RabbitMQ | 5672 | Message Queue |
-| RabbitMQ Management | 15672 | Queue Management UI |
+
+
 
 ---
 

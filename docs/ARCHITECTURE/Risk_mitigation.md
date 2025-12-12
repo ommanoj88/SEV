@@ -149,7 +149,7 @@ class TelemetryBuffer {
 ```
 
 **Server-Side Resilience:**
-- **Message Queue:** RabbitMQ with persistent queues + DLQ (Dead Letter Queue)
+- **Event Processing:** Spring Modulith ApplicationEvents with retry logic
 - **Consumer Pattern:**
   ```javascript
   async function processEvent(event) {
