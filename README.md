@@ -421,6 +421,31 @@ This script will:
 
 For detailed documentation, see [Database Reset Guide](DATABASE_RESET_GUIDE.md) and [Authentication Changes](AUTHENTICATION_CHANGES.md).
 
+### Database Setup with Initial Users (New)
+
+For a complete database setup that includes creating databases, tables, and seeding 20 initial users:
+
+```bash
+python db_connect.py
+```
+
+This script will:
+- Connect to PostgreSQL and verify availability
+- Create all 8 module databases (evfleet_auth, evfleet_fleet, etc.)
+- Create authentication tables (roles, users, user_roles)
+- Seed default roles (ADMIN, FLEET_MANAGER, DRIVER, etc.)
+- Seed 20 initial users with different roles and companies
+- Default password for all users: `User@123`
+
+For detailed documentation, see [Database Setup Guide](DB_SETUP_README.md).
+
+**Options:**
+```bash
+python db_connect.py              # Full setup: databases + tables + users
+python db_connect.py --skip-seed  # Only create databases and tables
+python db_connect.py --seed-only  # Only seed users (if DB exists)
+```
+
 ### Accessing PostgreSQL
 
 ```bash
