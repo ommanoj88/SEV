@@ -15,7 +15,6 @@ Usage:
 
 import os
 import sys
-import subprocess
 import time
 import argparse
 from datetime import datetime
@@ -35,9 +34,12 @@ class Colors:
     BOLD = '\033[1m'
 
 # Database configuration
+# IMPORTANT: For production, always use environment variables for sensitive data
+# Do not commit actual passwords to source control
 DB_HOST = os.getenv('DB_HOST', 'localhost')
 DB_PORT = os.getenv('DB_PORT', '5432')
 DB_USER = os.getenv('DB_USER', 'postgres')
+# Default password is for development only - MUST be changed in production
 DB_PASSWORD = os.getenv('DB_PASSWORD', 'Shobharain11@')
 
 # List of databases for modular monolith (8 module databases)
@@ -65,8 +67,11 @@ DEFAULT_ROLES = [
 ]
 
 # Initial 20 users to seed
-# Note: Password will be 'User@123' for all users (bcrypt hashed)
-# Bcrypt hash for 'User@123': $2a$10$fEZvRwKvXHlU6YJU8Vj5a.J3QK2h1L9vH6VhPYj/J7qVnQZ8Zs7tq
+# Note: These users are for initial setup and testing only
+# IMPORTANT: Firebase UIDs are placeholders and should be updated with actual Firebase UIDs
+#            when users register through Firebase authentication
+# Password management: The application uses Firebase authentication, so no password hashes
+#                     are stored in the database. Users authenticate via Firebase.
 INITIAL_USERS = [
     {
         'firebase_uid': 'user_001_firebase_uid',
@@ -627,12 +632,17 @@ def seed_initial_users():
         conn.close()
 
         print_success(f"Successfully created {users_created} users")
-        print_warning("\n⚠️  IMPORTANT PASSWORD INFORMATION:")
-        print_warning("All seeded users have the default password: 'User@123'")
-        print_warning("Users authenticate via Firebase, so they need to:")
-        print_warning("  1. Register via the application's Firebase authentication")
-        print_warning("  2. Their Firebase UID will be synced with the database")
-        print_warning("  3. OR update these users with actual Firebase UIDs from your Firebase console")
+        print_warning("\n⚠️  IMPORTANT FIREBASE INTEGRATION:")
+        print_warning("All seeded users have PLACEHOLDER Firebase UIDs (user_XXX_firebase_uid)")
+        print_warning("These users are for initial database setup and testing only.")
+        print_warning("")
+        print_warning("For production use, users must:")
+        print_warning("  1. Register via the application's Firebase authentication system")
+        print_warning("  2. Their actual Firebase UID will be synced with the database automatically")
+        print_warning("  3. OR manually update these placeholder UIDs with real Firebase UIDs from your Firebase console")
+        print_warning("")
+        print_warning("Default password concept: The application uses Firebase authentication,")
+        print_warning("so users will set their passwords through Firebase, not in the database.")
 
         return True
 

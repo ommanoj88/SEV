@@ -29,8 +29,11 @@ The script uses the following default configuration (can be overridden with envi
 DB_HOST=localhost
 DB_PORT=5432
 DB_USER=postgres
-DB_PASSWORD=Shobharain11@
+DB_PASSWORD=Shobharain11@  # Development default - CHANGE for production
 ```
+
+⚠️ **SECURITY WARNING**: The default password shown above is for development purposes only. 
+**NEVER use this password in production environments.**
 
 ### Environment Variables
 
@@ -40,8 +43,10 @@ You can customize the database connection by setting these environment variables
 export DB_HOST=your_host
 export DB_PORT=your_port
 export DB_USER=your_username
-export DB_PASSWORD=your_password
+export DB_PASSWORD=your_secure_password  # Use a strong password for production
 ```
+
+**Best Practice**: Store these in a `.env` file (excluded from git) or use a secrets management system.
 
 ## Usage
 
@@ -128,14 +133,16 @@ The script seeds 20 initial users across different roles:
 | driver7@evfleet.com | DRIVER | Mumbai Fleet Operations |
 | manager3@evfleet.com | FLEET_MANAGER | Bangalore Fleet Operations |
 
-**⚠️ IMPORTANT: Default Password**
+**⚠️ IMPORTANT: Firebase Integration**
 
-All seeded users have the default password: `User@123`
+These seeded users have **placeholder Firebase UIDs** (e.g., `user_001_firebase_uid`). They are for initial database setup and testing only.
 
-**Note:** The application uses Firebase authentication. These users need to:
-1. Register via the application's Firebase authentication system
-2. Their Firebase UID will be synced with the database automatically
-3. OR manually update these users with actual Firebase UIDs from your Firebase console
+**For production use:**
+1. Users must register via the application's Firebase authentication system
+2. Their actual Firebase UID will be synced with the database automatically
+3. OR manually update these placeholder UIDs with real Firebase UIDs from your Firebase console
+
+**Authentication:** The application uses Firebase authentication. Users authenticate through Firebase, not with database passwords. The database only stores user profile information and links to their Firebase UID.
 
 ## Integration with Application
 
@@ -213,11 +220,27 @@ ALTER USER postgres CREATEDB;
 
 ## Security Best Practices
 
-1. **Change Default Password**: Update the default password for all seeded users after first login
-2. **Use Environment Variables**: Store database credentials in environment variables, not in code
-3. **Firebase Integration**: Ensure proper Firebase configuration for authentication
+1. **Database Credentials**: 
+   - Never commit actual passwords to source control
+   - Use environment variables for all sensitive configuration
+   - Use strong, unique passwords for production databases
+   - Rotate database credentials regularly
+
+2. **Firebase Integration**: 
+   - Ensure proper Firebase configuration for authentication
+   - Update placeholder Firebase UIDs with actual UIDs when users register
+   - Use Firebase security rules to protect user data
+
+3. **Initial Users**:
+   - Seeded users are for development and initial setup only
+   - In production, disable or remove these test accounts
+   - Require actual Firebase registration for all real users
+
 4. **SSL/TLS**: Use SSL/TLS for PostgreSQL connections in production
-5. **Strong Passwords**: Enforce strong password policies in the application
+
+5. **Network Security**: Restrict database access to trusted IP addresses only
+
+6. **Audit Logging**: Enable PostgreSQL audit logging for production environments
 
 ## Next Steps
 
