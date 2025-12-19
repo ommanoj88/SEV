@@ -435,9 +435,12 @@ This script will:
 - Create authentication tables (roles, users, user_roles)
 - Seed default roles (ADMIN, FLEET_MANAGER, DRIVER, etc.)
 - Seed 20 initial users with different roles and companies
-- Default password for all users: `User@123`
+- Placeholder Firebase UIDs (to be replaced with actual Firebase authentication)
 
-For detailed documentation, see [Database Setup Guide](DB_SETUP_README.md).
+For detailed documentation, see:
+- [Database Setup Guide](DB_SETUP_README.md) - Complete setup instructions
+- [Database Scripts Guide](DATABASE_SCRIPTS_GUIDE.md) - Understanding all database scripts
+- [Customize Users Guide](CUSTOMIZE_USERS_GUIDE.md) - How to customize seeded users
 
 **Options:**
 ```bash
